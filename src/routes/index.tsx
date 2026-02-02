@@ -5,16 +5,26 @@ import { SocialLinks } from "@/components/SocialIcons";
 import { getAllArticles, formatDate } from "@/data/articles";
 import { projects } from "@/data/projects";
 import { ArrowRight, Briefcase, GraduationCap, Download } from "lucide-react";
-import {
-  PageTransition,
-  FadeIn,
-  StaggerView,
-  StaggerItem,
-} from "@/components/Motion";
+import { PageTransition, FadeIn } from "@/components/Motion";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
 });
+
+const skills = [
+  "Python",
+  "TypeScript",
+  "Java",
+  "React",
+  "Next.js",
+  "FastAPI",
+  "PostgreSQL",
+  "Docker",
+  "Kubernetes",
+  "Machine Learning",
+  "NLP",
+  "AWS",
+];
 
 function HomePage() {
   const recentArticles = getAllArticles().slice(0, 3);
@@ -104,6 +114,23 @@ function HomePage() {
           </FadeIn>
         </section>
 
+        {/* Skills */}
+        <section className="mb-16">
+          <FadeIn delay={0.1}>
+            <h2 className="text-lg font-semibold text-foreground">Skills</h2>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {skills.map((skill) => (
+                <span
+                  key={skill}
+                  className="rounded-full border border-border px-3 py-1 text-sm text-muted transition-colors hover:border-accent hover:text-foreground"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </FadeIn>
+        </section>
+
         {/* Recent Articles */}
         <section className="mb-16">
           <FadeIn>
@@ -120,10 +147,13 @@ function HomePage() {
               </Link>
             </div>
           </FadeIn>
-          <StaggerView className="space-y-4" fast>
-            {recentArticles.map((article) => (
-              <StaggerItem key={article.slug}>
-                <li className="group flex items-baseline justify-between gap-4 border-b border-border pb-4 last:border-0 list-none">
+          <FadeIn delay={0.05}>
+            <ul className="space-y-4">
+              {recentArticles.map((article) => (
+                <li
+                  key={article.slug}
+                  className="group flex items-baseline justify-between gap-4 border-b border-border pb-4 last:border-0"
+                >
                   <Link
                     to="/articles/$slug"
                     params={{ slug: article.slug }}
@@ -135,9 +165,9 @@ function HomePage() {
                     {formatDate(article.date)}
                   </time>
                 </li>
-              </StaggerItem>
-            ))}
-          </StaggerView>
+              ))}
+            </ul>
+          </FadeIn>
         </section>
 
         {/* Featured Projects */}
@@ -156,10 +186,13 @@ function HomePage() {
               </Link>
             </div>
           </FadeIn>
-          <StaggerView className="space-y-4" fast>
-            {featuredProjects.map((project) => (
-              <StaggerItem key={project.name}>
-                <li className="group border-b border-border pb-4 last:border-0 list-none">
+          <FadeIn delay={0.05}>
+            <ul className="space-y-4">
+              {featuredProjects.map((project) => (
+                <li
+                  key={project.name}
+                  className="group border-b border-border pb-4 last:border-0"
+                >
                   <a
                     href={project.link.href}
                     target="_blank"
@@ -174,9 +207,9 @@ function HomePage() {
                     </p>
                   </a>
                 </li>
-              </StaggerItem>
-            ))}
-          </StaggerView>
+              ))}
+            </ul>
+          </FadeIn>
         </section>
       </Container>
     </PageTransition>

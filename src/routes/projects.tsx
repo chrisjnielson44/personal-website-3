@@ -3,12 +3,7 @@ import { Container } from "@/components/Container";
 import { Card } from "@/components/Card";
 import { projects } from "@/data/projects";
 import { ArrowUpRight } from "lucide-react";
-import {
-  PageTransition,
-  FadeIn,
-  StaggerView,
-  StaggerItem,
-} from "@/components/Motion";
+import { PageTransition, FadeIn } from "@/components/Motion";
 
 export const Route = createFileRoute("/projects")({
   component: ProjectsPage,
@@ -32,7 +27,7 @@ function ProjectsPage() {
       <Container>
         <header className="mb-12">
           <FadeIn>
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-4xl">
               Projects
             </h1>
           </FadeIn>
@@ -44,10 +39,10 @@ function ProjectsPage() {
           </FadeIn>
         </header>
 
-        <StaggerView className="grid gap-6 sm:grid-cols-2" fast>
-          {projects.map((project) => (
-            <StaggerItem key={project.name}>
-              <Card className="h-full">
+        <FadeIn delay={0.1}>
+          <div className="grid gap-6 sm:grid-cols-2">
+            {projects.map((project) => (
+              <Card key={project.name} className="h-full">
                 <Card.Title href={project.link.href} external>
                   {project.name}
                 </Card.Title>
@@ -58,11 +53,11 @@ function ProjectsPage() {
                   label={project.link.label}
                 />
               </Card>
-            </StaggerItem>
-          ))}
-        </StaggerView>
+            ))}
+          </div>
+        </FadeIn>
 
-        <FadeIn delay={0.1}>
+        <FadeIn delay={0.15}>
           <div className="mt-12 rounded-lg border border-border p-6 transition-colors hover:border-accent">
             <p className="text-center text-muted">
               More projects on{" "}

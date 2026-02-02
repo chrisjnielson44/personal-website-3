@@ -6,7 +6,6 @@ import { motion } from "motion/react";
 
 const navItems = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
   { href: "/projects", label: "Projects" },
   { href: "/articles", label: "Articles" },
   { href: "/resources", label: "Resources" },
@@ -29,22 +28,11 @@ function NavLink({
     <Link
       to={href}
       className={cn(
-        "relative text-sm font-medium transition-colors",
-        isActive ? "text-foreground" : "text-muted hover:text-foreground",
+        "text-sm font-medium transition-colors",
+        isActive ? "!text-accent" : "text-muted hover:text-foreground",
       )}
     >
       {children}
-      {isActive && (
-        <motion.div
-          className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-accent"
-          layoutId="nav-underline"
-          transition={{
-            type: "spring",
-            stiffness: 350,
-            damping: 30,
-          }}
-        />
-      )}
     </Link>
   );
 }

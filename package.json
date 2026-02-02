@@ -22,6 +22,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.561.0",
     "motion": "^12.29.2",
+    "nitro": "npm:nitro-nightly@^3.0.1-20260202-124820-1954b824",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "rehype-pretty-code": "^0.14.1",

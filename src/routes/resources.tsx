@@ -1,12 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Container } from "@/components/Container";
 import { Card } from "@/components/Card";
-import {
-  PageTransition,
-  FadeIn,
-  StaggerView,
-  StaggerItem,
-} from "@/components/Motion";
+import { PageTransition, FadeIn } from "@/components/Motion";
 
 export const Route = createFileRoute("/resources")({
   component: ResourcesPage,
@@ -40,14 +35,14 @@ const resources: ToolsSection[] = [
     title: "Workstation",
     tools: [
       {
-        title: "MacBook Pro 16-inch (2019)",
+        title: "Mac Studio M3 Ultra",
         description:
-          "My daily driver for development work. Running on an Intel i7 processor, this laptop has been reliable for all my development needs.",
+          "My main development machine. The M3 Ultra handles everything I throw at it—compiling, running local models, and containerized workloads.",
       },
       {
         title: "Raspberry Pi 4 Model B",
         description:
-          "Running Debian, I use this versatile little computer for various projects and learning Linux administration.",
+          "Running Debian for home server projects and learning Linux administration.",
       },
     ],
   },
@@ -55,52 +50,28 @@ const resources: ToolsSection[] = [
     title: "Development Tools",
     tools: [
       {
-        title: "Zed",
-        href: "https://zed.dev",
+        title: "Cursor",
+        href: "https://cursor.com",
         description:
-          "My current favorite IDE. Zed offers a modern, fast editing experience with excellent syntax highlighting and collaborative features.",
-      },
-      {
-        title: "Git",
-        href: "https://git-scm.com",
-        description:
-          "Essential for version control. I use it through the command line and integrate it with other tools in my workflow.",
-      },
-      {
-        title: "GitHub Copilot",
-        href: "https://github.com/features/copilot",
-        description:
-          "AI pair programmer that helps with code completion and generation. Particularly useful for boilerplate code and common patterns.",
+          "AI-native code editor built on VS Code. The integrated AI assistance makes it great for rapid development.",
       },
       {
         title: "Warp",
         href: "https://www.warp.dev",
         description:
-          "A modern terminal that enhances productivity with features like AI command search, shared workflows, and built-in documentation.",
+          "Modern terminal with AI command search and block-based output. Much faster than traditional terminals.",
       },
       {
         title: "Docker",
         href: "https://www.docker.com",
         description:
-          "Container platform that ensures consistency across development environments and simplifies deployment processes.",
+          "Container platform for consistent development environments and simplified deployments.",
       },
       {
         title: "TablePlus",
         href: "https://tableplus.com",
         description:
-          "Clean and efficient database management tool. Supports multiple database types with a consistent interface.",
-      },
-      {
-        title: "pnpm",
-        href: "https://pnpm.io",
-        description:
-          "Fast, disk space efficient package manager for Node.js. Great for monorepos and maintaining consistent dependencies.",
-      },
-      {
-        title: "Sourcetree",
-        href: "https://www.sourcetreeapp.com",
-        description:
-          "Git GUI that makes complex version control operations visual and intuitive. Helpful for reviewing changes and managing branches.",
+          "Clean database GUI that supports Postgres, MySQL, SQLite, and more.",
       },
     ],
   },
@@ -217,7 +188,7 @@ function ResourcesPage() {
       <Container>
         <header className="mb-12">
           <FadeIn>
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-4xl">
               Resources
             </h1>
           </FadeIn>
@@ -236,19 +207,17 @@ function ResourcesPage() {
                 <h2 className="text-lg font-semibold text-foreground mb-6">
                   {section.title}
                 </h2>
-              </FadeIn>
-              <StaggerView className="space-y-4" fast>
-                {section.tools.map((tool) => (
-                  <StaggerItem key={tool.title}>
-                    <Card>
+                <div className="space-y-4">
+                  {section.tools.map((tool) => (
+                    <Card key={tool.title}>
                       <Card.Title href={tool.href} external>
                         {tool.title}
                       </Card.Title>
                       <Card.Description>{tool.description}</Card.Description>
                     </Card>
-                  </StaggerItem>
-                ))}
-              </StaggerView>
+                  ))}
+                </div>
+              </FadeIn>
             </section>
           ))}
         </div>
