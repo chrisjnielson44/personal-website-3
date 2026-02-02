@@ -5,6 +5,7 @@ import viteReact from "@vitejs/plugin-react";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 import contentCollections from "@content-collections/vite";
+import { nitro } from "nitro/vite";
 import { fileURLToPath, URL } from "url";
 
 const config = defineConfig({
@@ -23,6 +24,7 @@ const config = defineConfig({
     // content-collections for MDX article processing
     contentCollections(),
     tanstackStart(),
+    nitro(),
     viteReact(),
   ],
 });
