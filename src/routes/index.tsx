@@ -14,15 +14,25 @@ export const Route = createFileRoute("/")({
 const skills = [
   "Python",
   "TypeScript",
-  "Java",
   "React",
   "Next.js",
+  "Node.js",
+  "Java",
+  "C++",
+  "LangGraph",
+  "MCP",
+  "Multi-Agent Systems",
+  "LLM Architecture",
+  "RAG",
+  "NLP",
+  "Anomaly Detection",
+  "Scikit-learn",
   "FastAPI",
   "PostgreSQL",
+  "Snowflake",
+  "GraphQL",
   "Docker",
   "Kubernetes",
-  "Machine Learning",
-  "NLP",
   "AWS",
 ];
 
@@ -45,11 +55,10 @@ function HomePage() {
           </FadeIn>
           <FadeIn delay={0.1}>
             <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted">
-              Building AI platforms for risk management in financial services. I
-              design scalable systems that help businesses make smarter, faster
-              decisions—from end-to-end applications to dashboards that surface
-              actionable insights. Graduate student in Data Science & ML at
-              Carnegie Mellon.
+              Building production AI platforms for risk management in financial
+              services. I work across full-stack applications, backend
+              services, data systems, and LLM-powered workflows that turn
+              complex financial data into auditable, actionable insight.
             </p>
           </FadeIn>
           <FadeIn delay={0.15}>
@@ -73,7 +82,7 @@ function HomePage() {
                     Carnegie Mellon University
                   </p>
                   <p className="text-sm text-muted">
-                    Graduate Certificate · 2025
+                    Machine Learning & Data Science · 2026
                   </p>
                 </li>
                 <li>

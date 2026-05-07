@@ -1,0 +1,132 @@
+---
+title: "Semantic Models for Databases"
+description: "Why semantic models are becoming the missing layer between raw database schemas, business meaning, analytics, and AI systems."
+date: "2026-05-06"
+author: "Christopher Nielson"
+tags: ["Data", "Databases", "Semantic Models", "AI", "Risk"]
+published: true
+---
+
+Most databases are very good at storing data and very bad at explaining what the data means.
+
+That is not a criticism of databases. It is a boundary. A relational database can enforce types, constraints, indexes, keys, and query plans. It can tell you that a table has a column called `exposure_amount`, that the column is numeric, and that another table has a foreign key into a counterparty table. What it usually cannot tell you is whether `exposure_amount` means current exposure, potential future exposure, gross exposure, net exposure, exposure after collateral, or some internal reporting variant that only one team understands.
+
+That missing layer is where a lot of engineering and analytics pain lives.
+
+People often assume the schema is the source of truth. In reality, the schema is only part of the truth. The rest is spread across SQL files, dashboards, wiki pages, ticket comments, Slack threads, legacy ETL jobs, meetings, and the heads of people who have been around long enough to know which table is trustworthy. The database knows the shape of storage. The organization knows the shape of meaning. A semantic model is an attempt to bring those closer together.
+
+## Schemas are not business language
+
+The gap between database structure and business meaning shows up everywhere.
+
+An analyst opens a warehouse and sees five tables that all appear to contain trades. One is raw ingestion, one is normalized, one is enriched, one is a reporting table, and one exists for a legacy dashboard no one wants to break. The analyst needs "active trades by desk," but the schema does not clearly say which table represents the approved business view. They ask around, copy a query from an old dashboard, modify a filter, and hope the result is close.
+
+Now multiply that pattern across metrics. Revenue, exposure, churn, active user, balance, utilization, risk-weighted asset, and loss all sound like simple business terms until someone asks how they are calculated. The real definition often involves filters, joins, exclusions, timing rules, currency conversion, hierarchy rollups, and ownership conventions. If those rules are implemented separately in every dashboard, notebook, application, and AI agent, drift is guaranteed.
+
+This is why two dashboards can disagree while both are technically "correct." They may be reading from valid tables and running valid SQL. They are just using different definitions.
+
+A semantic model gives the organization a place to define concepts once and reuse them across systems. It does not eliminate complexity, but it makes complexity explicit.
+
+## What a semantic model actually is
+
+A semantic model is a layer that maps business concepts to physical data. It defines entities, dimensions, metrics, relationships, rules, and ownership in a way that both humans and software can use.
+
+For a trading or risk domain, the model might define a trade as a business entity with dimensions like asset class, desk, book, counterparty, region, and maturity bucket. It might define metrics like notional, current exposure, potential future exposure, expected loss, and value at risk. Each metric should have a description, a calculation, valid dimensions, default filters, data sources, lineage, and an owner.
+
+The important part is not the vocabulary alone. The important part is that the vocabulary connects to execution. A useful semantic model should not be a glossary that lives far away from the data platform. It should be close enough to compile into SQL, validate queries, power dashboards, guide AI agents, and explain lineage.
+
+When the semantic model says "potential future exposure," it should know which tables are involved, how the metric is calculated, what date logic applies, which dimensions are valid, and who owns the definition. If a user asks for PFE by counterparty, the system should not have to guess the join path from raw schema names.
+
+## The risk point of view
+
+Risk data makes the need for semantic models obvious because the same word can carry different meanings depending on the risk stripe, reporting audience, model, and time horizon.
+
+"Exposure" in a credit risk dashboard may not be the same exposure used in a counterparty credit risk report. A market risk team may care about value at risk, stress loss, sensitivities, and scenario results. A model risk team may care about model inventory, validation status, limitations, and performance monitoring. Operational risk may care about events, controls, issues, key risk indicators, and remediation status. All of these domains use structured data, but the meaning of each metric depends on definitions, lineage, ownership, and calculation rules.
+
+That is why a raw database schema is not enough for risk reporting. A table might contain `var_amount`, `pfe`, `expected_loss`, or `risk_score`, but the schema rarely tells you the methodology, confidence level, time horizon, aggregation rule, legal entity scope, close date, model version, or approved reporting use. Those details are not decorations. They determine whether a number is valid for a particular decision.
+
+A semantic model gives risk systems a way to encode that meaning close to execution. It can distinguish current exposure from potential future exposure, approved production VaR from exploratory analysis, or enterprise reporting metrics from desk-level analytics. It can make default filters explicit, such as business date, scenario set, legal entity scope, or inclusion and exclusion rules. It can also connect metrics to owners, controls, and source systems so that an AI assistant or dashboard does not treat every column as equally authoritative.
+
+From a risk perspective, the semantic layer is a control surface. It reduces the chance that two teams publish conflicting numbers because they used different joins or filters. It gives AI agents a governed path to query data. It helps reviewers understand where a number came from. And when definitions change, it creates a place to manage impact instead of relying on tribal knowledge.
+
+## Why this matters more with AI
+
+LLMs made semantic ambiguity more expensive.
+
+Before AI, ambiguity slowed humans down. An analyst might ask a teammate which table to use or inspect a trusted dashboard to reverse-engineer a query. That was inefficient, but the analyst carried context. They understood the business language, knew which numbers looked suspicious, and could ask follow-up questions.
+
+With AI agents, the situation changes. A model can generate SQL quickly, but speed is not the same as correctness. If the model sees a table called `counterparty_exposure_daily`, it may assume that table contains the approved exposure metric. If it sees several date columns, it may choose the wrong one. If a join technically works but violates the intended grain, the query may run and return a polished, wrong answer.
+
+The problem is not that LLMs are bad at SQL. Many are quite good at syntax and even decent at reasoning through joins. The problem is that raw schemas do not contain enough business meaning. The model is being asked to infer domain semantics from naming conventions and sparse metadata.
+
+A semantic model changes the interface. Instead of giving an agent unlimited access to a warehouse and hoping it behaves, you give it governed concepts. The agent can ask, "What metric matches this user request?" It can retrieve the approved definition, see allowed dimensions, generate a query through a controlled layer, and return the answer with an explanation of the metric.
+
+That is a much better contract.
+
+## Semantic models as guardrails
+
+The word "guardrail" gets overused in AI, but semantic models are one of the places where the idea is concrete.
+
+A semantic model can prevent invalid joins by exposing only approved relationships. It can prevent metric drift by centralizing calculations. It can enforce default filters so canceled trades, test accounts, internal counterparties, or stale records are handled consistently. It can attach ownership so users know who is accountable for a definition. It can also carry permissions, which matters when not every user should see every slice of data.
+
+This is different from telling the model in a prompt, "Please only use approved metrics." Prompts are instructions. Semantic models are executable constraints. The system should be designed so the easiest path for the agent is also the correct path.
+
+For example, a natural language data assistant should not start by reading every table in Snowflake or Postgres. It should start by resolving the user's intent into a known concept. If the user asks for "exposure by counterparty for the latest close," the agent should identify the relevant exposure metric, check whether "latest close" has a defined calendar meaning, select the counterparty dimension, apply the default filters, and only then generate or execute a query.
+
+If there are multiple possible exposure metrics, the agent should ask a clarifying question or present the options. Ambiguity should be surfaced, not hidden inside generated SQL.
+
+## The semantic layer and the graph layer
+
+Semantic models and knowledge graphs often overlap, but they are not exactly the same thing.
+
+A semantic model for databases usually focuses on queryable business concepts: metrics, dimensions, entities, joins, filters, and calculations. A knowledge graph focuses more broadly on relationships between entities: systems, reports, owners, controls, policies, datasets, applications, and business processes.
+
+In practice, the two can reinforce each other. A metric in the semantic model can also be a node in a knowledge graph. That metric can connect to the dashboards that use it, the policies that govern it, the models that produce it, and the teams that own it. The semantic model answers, "How do I calculate this correctly?" The graph answers, "Where does this concept fit in the business?"
+
+This is especially useful for AI systems. If an agent is asked to explain a number in a report, it may need the semantic model to calculate the metric and the graph to understand lineage and impact. The model definition alone is not enough. The table schema alone is not enough. The organization needs a connected representation of both meaning and dependency.
+
+## Building one without boiling the ocean
+
+The failure mode for semantic models is trying to model everything before shipping anything.
+
+That approach usually dies under its own weight. The organization spends months debating names, entities, and ownership while the real workflows continue to depend on copied SQL. A better path is to start with one domain where inconsistent definitions are already causing pain.
+
+Pick a workflow people care about. It could be executive reporting, risk metrics, revenue analytics, product usage, financial close, or model monitoring. Find the five to ten metrics that matter most. Define them carefully. Identify the approved source tables, valid dimensions, default filters, ownership, and lineage. Then make that model useful immediately, perhaps by powering a dashboard, validating generated SQL, or backing a natural language query interface.
+
+The first version should be small but real. It should answer actual questions. It should expose gaps in ownership and definition. It should become part of a workflow where correctness matters.
+
+From there, the model can grow. New metrics can be added as users ask for them. Relationships can become richer. Definitions can be versioned. Tests can be added to make sure changes do not silently alter important numbers.
+
+The goal is not a perfect ontology. The goal is a reliable interface between business language and data.
+
+## Testing meaning
+
+One underappreciated part of semantic modeling is testing.
+
+Engineers are used to testing code, but metric definitions are code in a business disguise. If the definition of active customer changes, downstream dashboards, forecasts, and decisions may change. If a join path changes, a metric may double count. If a default filter is removed, historical trends may shift.
+
+A serious semantic model should have tests. Some tests should verify SQL compilation. Some should check expected values for known examples. Some should enforce grain, uniqueness, and allowed dimensions. Others should catch large changes in output when a metric definition is modified.
+
+Testing also helps AI systems. If an agent generates a query through the semantic layer, the system can validate the query before execution. If the requested combination of metric and dimension is invalid, the agent can explain why. If a definition is deprecated, the agent can route the user to the replacement.
+
+This turns the semantic model into an active part of the system rather than a passive catalog.
+
+## Ownership is the hard part
+
+The technical work is only half the problem.
+
+Every important metric needs an owner. Every definition needs a process for change. Every semantic model needs a way to resolve disagreement. Otherwise, the model becomes another place where ambiguity accumulates.
+
+Ownership does not have to be bureaucratic, but it has to be explicit. If potential future exposure is owned by a risk analytics team, that team should approve changes to its definition. If a dashboard uses that metric, the dashboard should inherit the definition rather than copying it. If an AI agent answers questions about that metric, it should cite the approved definition and owner.
+
+This is where semantic models become governance tools as much as developer tools. They make it harder for critical business meaning to hide in scattered SQL files.
+
+## Where this is going
+
+As AI becomes a more common interface to data, semantic models will become more important, not less. The user experience people want is simple: ask a question in natural language and get a trustworthy answer. The system required to deliver that experience is not simple at all.
+
+The system needs to understand business terms, generate valid queries, respect permissions, explain definitions, cite lineage, handle ambiguity, and know when not to answer. Raw database schemas cannot carry all of that.
+
+Semantic models are the missing middle layer. They sit between storage and conversation, between tables and decisions, between SQL and business meaning. They give humans, dashboards, applications, and agents a shared contract.
+
+The database knows where the data lives. The semantic model knows what the data means. The AI system needs both if it is going to be more than a fluent SQL generator.

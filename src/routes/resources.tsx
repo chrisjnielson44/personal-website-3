@@ -40,9 +40,9 @@ const resources: ToolsSection[] = [
           "My main development machine. The M3 Ultra handles everything I throw at it—compiling, running local models, and containerized workloads.",
       },
       {
-        title: "Raspberry Pi 4 Model B",
+        title: "Raspberry Pi 5 8GB",
         description:
-          "Running Debian for home server projects and learning Linux administration.",
+          "Compact Linux machine for home server projects, self-hosted services, and lightweight experimentation away from my main workstation.",
       },
     ],
   },
@@ -50,28 +50,34 @@ const resources: ToolsSection[] = [
     title: "Development Tools",
     tools: [
       {
+        title: "Codex",
+        href: "https://openai.com/index/introducing-codex/",
+        description:
+          "Cloud-based software engineering agent for exploring codebases, implementing changes, running checks, and handing off focused development tasks.",
+      },
+      {
+        title: "Claude Code",
+        href: "https://docs.anthropic.com/en/docs/claude-code/overview",
+        description:
+          "Agentic coding tool in the terminal that is useful for codebase navigation, debugging, refactors, and turning rough ideas into working changes.",
+      },
+      {
+        title: "Windsurf",
+        href: "https://windsurf.com/editor",
+        description:
+          "AI-native editor with deep project context, autocomplete, and agentic workflows for fast iteration inside larger codebases.",
+      },
+      {
         title: "Cursor",
         href: "https://cursor.com",
         description:
           "AI-native code editor built on VS Code. The integrated AI assistance makes it great for rapid development.",
       },
       {
-        title: "Warp",
-        href: "https://www.warp.dev",
-        description:
-          "Modern terminal with AI command search and block-based output. Much faster than traditional terminals.",
-      },
-      {
         title: "Docker",
         href: "https://www.docker.com",
         description:
           "Container platform for consistent development environments and simplified deployments.",
-      },
-      {
-        title: "TablePlus",
-        href: "https://tableplus.com",
-        description:
-          "Clean database GUI that supports Postgres, MySQL, SQLite, and more.",
       },
     ],
   },

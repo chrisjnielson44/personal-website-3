@@ -1,0 +1,154 @@
+---
+title: "Production AI Agents in Enterprise Systems"
+description: "A practical architecture for building AI agents that can work with tools, data, permissions, and human review in production environments."
+date: "2026-05-05"
+author: "Christopher Nielson"
+tags: ["AI Agents", "Software Engineering", "Enterprise", "Architecture", "Risk"]
+published: true
+---
+
+AI agents are easy to demonstrate and difficult to put into production.
+
+The demonstration version usually looks simple. A user gives the model a goal, the model calls a few tools, and the system returns something impressive. It can search documents, write code, query a database, summarize an incident, or draft an analysis. In a controlled environment, this feels like magic.
+
+The production version is different. Production systems have users, permissions, bad inputs, incomplete data, latency constraints, audit requirements, cost limits, operational failures, and business consequences. A production agent cannot just be clever. It has to be accountable.
+
+That is the main shift. The question is not whether a model can complete a task once. The question is whether the system around the model can make the task reliable enough to trust.
+
+## The workflow comes before the agent
+
+The first mistake teams make is starting with the agent abstraction instead of the workflow.
+
+"We need an AI agent" is not a product requirement. It is an implementation guess. A better starting point is a workflow with a real user, a clear outcome, and an identifiable pain point. The workflow might be investigating a variance in a risk report, generating a first draft of a SQL query, reconciling outputs across systems, summarizing policy changes, or routing a data issue to the right owner.
+
+Once the workflow is clear, the architecture becomes easier to reason about. You can identify what context the agent needs, which tools it should call, what permissions apply, what output is expected, and where a human should review the result.
+
+Without that grounding, agents become generic chat boxes attached to powerful tools. They feel flexible, but they are hard to evaluate. If the system can do anything, it is difficult to say whether it did the right thing.
+
+The best production agents are usually narrower than the demos. They do a defined job very well. Over time, they can grow into broader orchestration systems, but the initial value comes from solving a workflow that already matters.
+
+## The risk point of view
+
+Risk is a natural place for AI agents, but it is also a place where the architecture has to be conservative.
+
+Many risk workflows are investigative. A number moves, a report breaks, a model output changes, a control fires, or a business user asks why a metric looks different from yesterday. The analyst has to gather context from several systems: data pipelines, model runs, market data, trade populations, metric definitions, lineage, dashboards, policy documents, and prior incidents. An agent can help enormously by assembling that evidence and producing a first-pass explanation.
+
+But in risk, the agent should not behave like a free-form oracle. It should behave more like a disciplined analyst: collect evidence, separate facts from hypotheses, show source material, identify uncertainty, and escalate when the conclusion would affect a regulated or financially material process. A risk agent that confidently invents a reason for a VaR movement is worse than no agent. A risk agent that says, "The move appears to be driven by these three trades and this market data shift, but the model run metadata is incomplete," is useful because it preserves judgment.
+
+This also changes how autonomy should be granted. Read-only investigation is usually the safest first step. Drafting a variance explanation for review may be appropriate. Updating a control status, changing a metric definition, approving a report, or modifying production data should require stronger gates. The more the action affects official reporting, regulatory controls, or financial decisions, the more the system should lean on human approval, audit logs, and rollback paths.
+
+The risk perspective makes one principle clear: the goal is not maximum automation. The goal is trustworthy acceleration. The agent should reduce the time it takes to gather evidence, understand lineage, compare outputs, and prepare a decision. It should not erase accountability.
+
+## The model is not the system
+
+A production agent system has several layers, and the model is only one of them.
+
+There is a user experience layer where people express intent and review results. There is an orchestration layer that manages state, plans steps, calls tools, and handles retries. There is a tool layer that exposes capabilities like retrieval, database access, code execution, ticket creation, or report generation. There is a context layer that supplies documents, metadata, semantic models, graph facts, and previous workflow state. There is a policy layer that enforces permissions and approval requirements. There is an observability layer that records what happened. There is an evaluation layer that tells you whether the system is improving or drifting.
+
+If any of those layers are missing, the model has to absorb responsibilities it should not own.
+
+A prompt should not be your permission system. A model response should not be your audit log. A chat transcript should not be your workflow state. A vector database should not be your only source of truth. The model is powerful because it can reason over context and language, but reliability comes from the surrounding software.
+
+This is why production agent work often feels more like systems engineering than prompt engineering. The prompt matters, but the contracts around the prompt matter more.
+
+## Tools need contracts
+
+Agents become useful when they can take action through tools. They also become risky for the same reason.
+
+A tool should be treated like an API, not like an informal capability handed to the model. It needs a name, a description, an input schema, an output schema, permissions, logging, error behavior, and clear expectations about side effects. A read-only search tool has a very different risk profile from a tool that updates a record, sends an email, changes a metric definition, or triggers a deployment.
+
+The tool layer should make safe behavior natural. If a user asks for a database analysis, the agent should not receive raw credentials and an open-ended SQL shell. It should call a constrained query tool that enforces identity, checks allowed data, validates generated SQL, applies limits, and returns structured results. If a user asks the agent to modify something, the tool should know whether that action requires approval.
+
+This is how you avoid turning the model into an unbounded operator. The model can decide what it wants to do. The system decides what it is allowed to do.
+
+Tool design also affects model quality. Clean tool outputs are easier for the model to reason over. If a tool returns a messy blob of logs, the model has to infer structure. If it returns typed fields, status codes, provenance, and next-step hints, the model can make better decisions.
+
+## Context should be curated
+
+Most agent failures are not purely model failures. Many are context failures.
+
+A model cannot reason well from missing context, stale context, unauthorized context, or too much irrelevant context. In enterprise environments, the context problem is especially hard because knowledge is scattered across documents, databases, dashboards, tickets, code repositories, metric catalogs, and people's heads.
+
+The answer is not to dump everything into the prompt. Context should be curated like a product surface. The system should retrieve relevant evidence, preserve source metadata, distinguish facts from generated summaries, respect permissions, and track freshness. It should also use the right representation for the job. Documents are useful for policy language. Semantic models are useful for metric definitions. Knowledge graphs are useful for lineage and dependencies. Tools are useful for live state.
+
+For example, an agent investigating a reporting variance may need several kinds of context at once. It may need documentation that explains the metric, a semantic model that defines the calculation, lineage showing upstream sources, recent job logs, market data changes, and prior incidents. If all of that arrives as undifferentiated text, the model has to do too much. If the context arrives as a structured packet with clear provenance, the agent can reason more reliably.
+
+Good context engineering is less about maximizing tokens and more about reducing ambiguity.
+
+## Permissions are not prompt instructions
+
+Enterprise agents must treat authorization as a first-class system concern.
+
+It is not enough to tell the model, "Do not show data the user cannot access." The model should never receive unauthorized data in the first place. Retrieval should filter by identity. Tool calls should enforce user permissions. Database access should apply row-level, column-level, object-level, and action-level controls where needed. Logs should record what was accessed and why.
+
+This matters for both security and trust. If users believe the agent is leaking information across teams, they will not use it. If auditors cannot reconstruct why an answer included certain data, the system will not survive serious scrutiny.
+
+The model can explain permission boundaries. It can ask the user to request access. It can route the task to an owner. But it should not be the thing deciding whether access is granted.
+
+This distinction is basic software engineering, but it is easy to forget when the interface is conversational. The fact that a user asks in natural language does not make authorization a natural language problem.
+
+## Human review is part of the design
+
+Human-in-the-loop workflows are sometimes described as a temporary stage before full automation. That is too narrow. In many enterprise systems, human review is the correct design.
+
+Some actions should not be fully automated because they carry financial, operational, legal, or regulatory consequences. An agent can gather evidence, draft a recommendation, compare options, and prepare an explanation, but a person may still need to approve the final action. This does not make the agent less useful. It changes where the value sits.
+
+The value is often in compressing the tedious parts of a workflow. An agent can collect the relevant documents, query the right systems, summarize differences, identify likely causes, and produce a review package. The human then spends time judging the decision rather than assembling the evidence.
+
+The review experience matters. A good review screen should show the proposed action, the evidence used, relevant tool calls, confidence signals, expected impact, and rollback path. If a reviewer has to reread the entire conversation to understand what happened, the workflow is not production-ready.
+
+Human review should also feed evaluation. If reviewers frequently edit the same part of an agent's output, that is a signal. If they reject certain tool choices, that is a signal. If they approve low-risk actions consistently, maybe those actions can move toward automation.
+
+## Observability makes agents governable
+
+A traditional application logs requests, errors, latency, and database activity. An agent system needs that, plus a record of reasoning-relevant events.
+
+You need to know what the user asked, which context was retrieved, which tools were called, what those tools returned, what the model decided, whether a human approved the result, and what final artifact was produced. You also need to know when the system declined to answer or escalated.
+
+This is not about spying on the model's private thoughts. It is about reconstructing the workflow. If an agent produces a bad answer, you need to know whether the problem was retrieval, permissions, tool failure, ambiguous user intent, stale data, or model judgment. Without that event trail, every failure becomes mysterious.
+
+Observability also makes improvement possible. You can measure task completion, tool success, retrieval quality, approval rates, escalation rates, latency, cost, and rework. Over time, these metrics tell you whether the agent is becoming more useful or just more active.
+
+An agent that calls many tools and writes long answers may look productive. The better question is whether it reduces the amount of human effort required to complete the workflow correctly.
+
+## Evaluation has to match the job
+
+It is tempting to evaluate agents with generic model benchmarks, but production systems need workflow-specific evaluation.
+
+If the agent is a SQL assistant, evaluate whether it chooses the right metric, uses valid joins, respects permissions, and returns results that match known answers. If the agent is a policy assistant, evaluate whether it retrieves the right policy sections, cites sources, and distinguishes current guidance from outdated material. If the agent is an incident assistant, evaluate whether it identifies the relevant timeline, avoids speculation, and escalates when evidence is incomplete.
+
+The unit of evaluation is not always the final sentence. Often it is the process: retrieve, reason, call tools, verify, produce an artifact, and get human approval.
+
+This means you need test cases that look like real work. Some should be happy paths. Some should involve ambiguity. Some should include missing data, permission restrictions, stale documents, conflicting evidence, or tool errors. The goal is to know where the agent is reliable and where it should slow down.
+
+Production quality is not the absence of failure. It is predictable behavior when failure is possible.
+
+## Design for graceful refusal
+
+One of the most underrated capabilities in an enterprise agent is the ability to stop.
+
+A useful agent should know when it lacks enough evidence, when the user is asking for something outside its permission boundary, when a tool result is inconsistent, or when an action requires approval. In those cases, the correct behavior is not to improvise. It is to ask a clarifying question, escalate, or explain what is missing.
+
+This is culturally difficult because demos reward confidence. Production rewards judgment.
+
+A system that occasionally says, "I cannot complete this safely because the metric definition is ambiguous," is much more trustworthy than one that always produces an answer. Users can work with uncertainty when it is surfaced clearly. They cannot work with hidden uncertainty presented as fact.
+
+## A practical maturity path
+
+The safest way to ship agents is to increase autonomy gradually.
+
+Start with a read-only assistant that retrieves evidence and cites sources. Then add analysis tools that operate within tight boundaries. Next, let the agent draft actions for human approval. After the system has enough evaluation data, allow low-risk actions to execute automatically. Only then should you consider broader multi-step autonomy.
+
+At each stage, the system needs better contracts, better logs, better evaluations, and better user experience. The maturity path is not just about giving the model more power. It is about earning the right to automate more of the workflow.
+
+This approach also helps teams learn. Early versions reveal which data sources are messy, which permissions are unclear, which tools need better schemas, and which tasks users actually trust the agent to perform.
+
+## The real lesson
+
+Production AI agents are not a replacement for software engineering. They are software engineering with a probabilistic reasoning component inside.
+
+That means the old ideas still matter: clear interfaces, typed contracts, permissions, logging, tests, retries, fallbacks, ownership, and thoughtful UX. The model brings language understanding, planning, and synthesis. The application brings reliability, safety, and accountability.
+
+The strongest agent systems will not be the ones with the most dramatic demos. They will be the ones that understand their workflow, expose the right tools, retrieve the right context, respect permissions, invite human judgment at the right moments, and leave a trail that can be inspected later.
+
+That is the bar for enterprise AI. Not just intelligent behavior, but responsible systems that can survive contact with production.
