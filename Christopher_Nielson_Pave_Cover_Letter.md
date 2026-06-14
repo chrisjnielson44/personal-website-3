@@ -1,0 +1,28 @@
+Christopher Nielson  
+Pittsburgh, PA  
+cjnielson44@gmail.com  
++1 239-307-8146  
+[cjnielson.com](https://cjnielson.com) | [linkedin.com/in/christopherjnielson](https://www.linkedin.com/in/christopherjnielson/) | [github.com/chrisjnielson44](https://github.com/chrisjnielson44)
+
+May 7, 2026
+
+Pave Engineering Hiring Team
+
+Dear Pave Engineering Hiring Team,
+
+I am excited to apply for the engineering role focused on Pave's AI compensation analyst. Pave is working on exactly the kind of product I want to build: an agentic AI system sitting on top of proprietary structured data, workflow software, and high-stakes business decisions. Compensation is a domain where accuracy, context, trust, and speed all matter at once. That combination strongly matches my experience building production AI systems for financial risk and compliance at BNY.
+
+In my current role as a Software Engineer in Risk Engineering, I originated, architected, and deployed BNY's Enterprise Risk MCP Server, a governance and orchestration layer for AI agents across the risk organization. I built it with FastMCP, elicitation, BM25 tool selection over agent metadata, hub-and-spoke routing to domain agents, and production controls for audit, entitlements, RBAC, and distributed authentication. The platform supports hundreds of agents, more than a thousand business users, and integrations across internal enterprise AI clients and risk applications. I also led a five-engineer team to take the idea from an engineering-originated concept to production infrastructure.
+
+That experience maps closely to the technical challenges behind Pave's AI compensation analyst. Reasoning over compensation data is not just a chat problem; it requires structured retrieval, semantic understanding of metrics, workflow execution, permissioning, evaluation, and human trust. I have shipped LangGraph-based multi-agent workflows with human-in-the-loop gates, MCP tool access, direct API integrations, Playwright automation for systems without APIs, and knowledge graph memory for preserving process context beyond simple chunk-based RAG. I have also built full-stack risk intelligence applications with Next.js, React, Python FastAPI microservices, PostgreSQL, and Snowflake.
+
+What draws me to Pave is the product surface. Market pricing, cycle planning, attrition analysis, and compensation benchmarking are complex workflows where an AI agent can become more than an assistant. It can reason over structured data, explain tradeoffs, trigger the next step in the workflow, and help teams make better decisions with confidence. I see a strong parallel between compensation decisions and risk decisions: both require clean data, careful definitions, workflow context, auditability, and a system that knows when to act and when to bring a human into the loop.
+
+I also bring a founder-oriented mindset. In college, I wanted to start a fintech company and began building Paywind, a personal finance and investment management platform. I treated it like an early startup: shaping the product idea, building a Next.js and TypeScript application, thinking through bank connectivity with Plaid, authentication, dashboards, modular financial views, and the security expectations of a finance product. Paywind taught me that I enjoy the messy early stage of turning a broad customer problem into a concrete product, and that I am energized by working across product, design, engineering, and infrastructure when the path is not fully defined.
+
+Pave's values around intellectual honesty, playing to win, and holding a high product standard resonate with how I like to work. I am comfortable moving quickly in ambiguity, but I care deeply about correctness when systems support important financial decisions. I would be excited to bring my experience in production AI agents, structured data systems, full-stack product engineering, and financial workflows to Pave as you build the next generation of compensation intelligence.
+
+Thank you for your time and consideration. I would welcome the opportunity to discuss how my background building agentic AI systems for regulated financial workflows could contribute to Pave's AI compensation analyst and broader compensation platform.
+
+Sincerely,  
+Christopher Nielson

@@ -1,72 +1,66 @@
 "use client";
 
 import { Link, useRouterState } from "@tanstack/react-router";
-import { cn } from "@/lib/utils";
-import { motion } from "motion/react";
-
-const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/projects", label: "Projects" },
-  { href: "/articles", label: "Articles" },
-  { href: "/resources", label: "Resources" },
-] as const;
-
-function NavLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  const routerState = useRouterState();
-  const isActive =
-    href === "/"
-      ? routerState.location.pathname === "/"
-      : routerState.location.pathname.startsWith(href);
-
-  return (
-    <Link
-      to={href}
-      className={cn(
-        "text-sm font-medium transition-colors",
-        isActive ? "!text-accent" : "text-muted hover:text-foreground",
-      )}
-    >
-      {children}
-    </Link>
-  );
-}
+import { ArrowUpRight, Github, Network } from "lucide-react";
+import { useReducedMotion } from "motion/react";
+import { motion, gentleSpring } from "@/components/Motion";
 
 export default function Header() {
-  return (
-    <motion.header
-      className="z-50 w-full bg-background"
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-    >
-      <nav className="mx-auto flex h-14 max-w-2xl items-center justify-between px-6 lg:px-8">
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ duration: 0.15 }}
-        >
-          <Link
-            to="/"
-            className="text-sm font-semibold tracking-tight text-foreground transition-colors hover:text-accent"
-          >
-            CN
-          </Link>
-        </motion.div>
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  });
+  const isArticle = pathname.startsWith("/articles/");
+  const isHome = pathname === "/";
+  const prefersReducedMotion = useReducedMotion();
 
-        <div className="flex items-center gap-6">
-          {navItems.map((item) => (
-            <NavLink key={item.href} href={item.href}>
-              {item.label}
-            </NavLink>
-          ))}
+  return (
+    <header className={`site-header ${isHome ? "is-overlay" : ""}`}>
+      <motion.nav
+        className="site-header-inner"
+        aria-label="Primary navigation"
+        initial={prefersReducedMotion ? false : { opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: prefersReducedMotion ? 0 : 0.3,
+          ease: [0.25, 0.1, 0.25, 1],
+        }}
+      >
+        <Link
+          to="/"
+          className="site-wordmark"
+          aria-label="Christopher Nielson home"
+        >
+          <span className="site-name">Christopher Nielson</span>
+          <span className="site-title">
+            <Network className="size-3.5" />
+            {isArticle ? "Career Graph / Article" : "Career Graph"}
+          </span>
+        </Link>
+
+        <div className="site-header-actions">
+          <motion.a
+            href="/christopher-nielson-resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={prefersReducedMotion ? undefined : { y: -1 }}
+            transition={gentleSpring}
+          >
+            Resume
+            <ArrowUpRight className="size-3" />
+          </motion.a>
+          <motion.a
+            href="https://github.com/chrisjnielson44"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Christopher Nielson on GitHub"
+            whileHover={prefersReducedMotion ? undefined : { y: -1 }}
+            transition={gentleSpring}
+          >
+            <Github className="size-3.5" />
+            <span className="hidden sm:inline">GitHub</span>
+          </motion.a>
         </div>
-      </nav>
-    </motion.header>
+      </motion.nav>
+    </header>
   );
 }

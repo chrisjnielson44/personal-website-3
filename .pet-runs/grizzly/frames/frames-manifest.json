@@ -1,0 +1,125 @@
+{
+  "ok": true,
+  "chroma_key": {
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "threshold": 96.0
+  },
+  "rows": [
+    {
+      "state": "idle",
+      "frames": [
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/idle/00.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/idle/01.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/idle/02.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/idle/03.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/idle/04.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/idle/05.png"
+      ],
+      "method": "components"
+    },
+    {
+      "state": "running-right",
+      "frames": [
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-right/00.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-right/01.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-right/02.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-right/03.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-right/04.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-right/05.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-right/06.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-right/07.png"
+      ],
+      "method": "components"
+    },
+    {
+      "state": "running-left",
+      "frames": [
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-left/00.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-left/01.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-left/02.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-left/03.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-left/04.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-left/05.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-left/06.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running-left/07.png"
+      ],
+      "method": "components"
+    },
+    {
+      "state": "waving",
+      "frames": [
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/waving/00.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/waving/01.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/waving/02.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/waving/03.png"
+      ],
+      "method": "components"
+    },
+    {
+      "state": "jumping",
+      "frames": [
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/jumping/00.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/jumping/01.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/jumping/02.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/jumping/03.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/jumping/04.png"
+      ],
+      "method": "components"
+    },
+    {
+      "state": "failed",
+      "frames": [
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/failed/00.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/failed/01.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/failed/02.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/failed/03.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/failed/04.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/failed/05.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/failed/06.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/failed/07.png"
+      ],
+      "method": "components"
+    },
+    {
+      "state": "waiting",
+      "frames": [
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/waiting/00.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/waiting/01.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/waiting/02.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/waiting/03.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/waiting/04.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/waiting/05.png"
+      ],
+      "method": "components"
+    },
+    {
+      "state": "running",
+      "frames": [
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running/00.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running/01.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running/02.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running/03.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running/04.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/running/05.png"
+      ],
+      "method": "components"
+    },
+    {
+      "state": "review",
+      "frames": [
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/review/00.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/review/01.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/review/02.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/review/03.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/review/04.png",
+        "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/frames/review/05.png"
+      ],
+      "method": "components"
+    }
+  ]
+}

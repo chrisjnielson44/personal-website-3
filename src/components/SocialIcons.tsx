@@ -1,7 +1,9 @@
 "use client";
 
 import { Github, Linkedin, Twitter, Mail } from "lucide-react";
+import { useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
+import { motion, gentleSpring } from "@/components/Motion";
 
 interface SocialIconProps {
   className?: string;
@@ -39,20 +41,24 @@ interface SocialLinkProps {
 
 export function SocialLink({ href, icon, label, className }: SocialLinkProps) {
   const Icon = iconMap[icon];
+  const prefersReducedMotion = useReducedMotion();
 
   return (
-    <a
+    <motion.a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
       className={cn(
-        "text-muted transition-colors duration-150 hover:text-accent",
+        "text-muted transition-colors duration-150 hover:text-foreground",
         className,
       )}
+      whileHover={prefersReducedMotion ? undefined : { y: -2 }}
+      whileTap={prefersReducedMotion ? undefined : { y: 0 }}
+      transition={gentleSpring}
     >
       <Icon />
-    </a>
+    </motion.a>
   );
 }
 

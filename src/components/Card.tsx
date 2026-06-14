@@ -1,6 +1,10 @@
+"use client";
+
 import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight } from "lucide-react";
+import { useReducedMotion } from "motion/react";
+import { motion, gentleSpring } from "@/components/Motion";
 
 interface CardProps {
   children: React.ReactNode;
@@ -8,15 +12,19 @@ interface CardProps {
 }
 
 export function Card({ children, className }: CardProps) {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
-    <article
+    <motion.article
       className={cn(
-        "group relative flex flex-col rounded-lg border border-border p-6 transition-colors hover:border-accent/50",
+        "group relative flex flex-col border-t border-border bg-transparent py-6 transition-[background-color,padding] duration-200 hover:bg-card hover:px-5",
         className,
       )}
+      whileHover={prefersReducedMotion ? undefined : { y: -2 }}
+      transition={gentleSpring}
     >
       {children}
-    </article>
+    </motion.article>
   );
 }
 
@@ -28,14 +36,13 @@ interface CardTitleProps {
 
 function CardTitle({ href, children, external = false }: CardTitleProps) {
   const className =
-    "text-base font-semibold text-foreground group-hover:text-accent transition-colors";
+    "text-xl font-normal leading-snug text-balance text-foreground transition-colors duration-150 group-hover:text-accent";
 
   if (href) {
     if (external) {
       return (
         <h2 className={className}>
           <a href={href} target="_blank" rel="noopener noreferrer">
-            <span className="absolute inset-0 z-10" />
             {children}
           </a>
         </h2>
@@ -45,7 +52,6 @@ function CardTitle({ href, children, external = false }: CardTitleProps) {
     return (
       <h2 className={className}>
         <Link to={href}>
-          <span className="absolute inset-0 z-10" />
           {children}
         </Link>
       </h2>
@@ -61,7 +67,7 @@ interface CardDescriptionProps {
 
 function CardDescription({ children }: CardDescriptionProps) {
   return (
-    <p className="mt-2 text-sm leading-relaxed text-muted line-clamp-3">
+    <p className="mt-3 line-clamp-5 text-sm leading-6 text-pretty text-muted">
       {children}
     </p>
   );
@@ -80,7 +86,7 @@ function CardEyebrow({
 }: CardEyebrowProps) {
   return (
     <Component
-      className="mb-2 text-sm text-muted-foreground"
+      className="mb-2 font-mono text-xs tabular-nums text-muted-foreground"
       {...(dateTime ? { dateTime } : {})}
     >
       {children}
@@ -98,12 +104,12 @@ function CardLink({ href, label, external = true }: CardLinkProps) {
   return (
     <a
       href={href}
-      className="mt-4 flex items-center gap-1 text-sm text-muted group-hover:text-accent transition-colors"
+      className="relative z-10 mt-auto flex items-center gap-1.5 pt-6 text-xs font-semibold uppercase tracking-[0.08em] text-muted transition-colors duration-150 hover:text-accent"
       target={external ? "_blank" : undefined}
       rel={external ? "noopener noreferrer" : undefined}
     >
       <span>{label}</span>
-      <ArrowUpRight className="h-3 w-3" />
+      <ArrowUpRight className="size-3" />
     </a>
   );
 }
@@ -114,11 +120,11 @@ interface CardTagsProps {
 
 function CardTags({ tags }: CardTagsProps) {
   return (
-    <div className="mt-4 flex flex-wrap gap-2">
+    <div className="mt-5 flex flex-wrap gap-x-3 gap-y-2">
       {tags.map((tag) => (
         <span
           key={tag}
-          className="rounded-full bg-border px-2.5 py-0.5 text-xs text-muted"
+          className="border-l border-accent pl-2 text-[11px] font-medium text-muted"
         >
           {tag}
         </span>

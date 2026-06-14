@@ -85,6 +85,8 @@ In practice, the two can reinforce each other. A metric in the semantic model ca
 
 This is especially useful for AI systems. If an agent is asked to explain a number in a report, it may need the semantic model to calculate the metric and the graph to understand lineage and impact. The model definition alone is not enough. The table schema alone is not enough. The organization needs a connected representation of both meaning and dependency.
 
+The graph can also constrain the context presented to the agent. Rather than loading every related schema, document, and prior interaction, the system can resolve the requested metric, traverse approved relationships to its source data and consumers, retrieve evidence attached to that subgraph, and compile a bounded context packet. I describe that pattern in [GraphRAG as Scoped Context for Production Agents](/articles/knowledge-graphs-vs-rag).
+
 ## Building one without boiling the ocean
 
 The failure mode for semantic models is trying to model everything before shipping anything.

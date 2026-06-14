@@ -1,0 +1,150 @@
+% Christopher Nielson - Ramp Applied AI Resume
+\documentclass[a4paper,10pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[pdftex]{hyperref}
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.530in}
+\addtolength{\evensidemargin}{-0.375in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.45in}
+\addtolength{\textheight}{1in}
+
+\urlstyle{rm}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-10pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-6pt}]
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[2]{
+  \item\small{
+    \textbf{#1}{#2 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[2]{
+  \vspace{-1pt}\item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeSubheadingEDU}[4]{
+  \vspace{-1pt}\item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{#3} & \textit{#4} \\
+    \end{tabular*}\vspace{0pt}
+}
+
+\newcommand{\resumeSubItem}[2]{\resumeItem{#1}{#2}\vspace{-3pt}}
+
+\renewcommand{\labelitemii}{$\circ$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-----------------------------
+%%%%%%  CV STARTS HERE  %%%%%%
+
+\begin{document}
+
+%----------HEADING-----------------
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+  \textbf{{Christopher Nielson}}\\
+  Portfolio: \href{https://cjnielson.com}{cjnielson.com} & Pittsburgh, PA (Open to NYC/SF) \\
+  LinkedIn: \href{https://www.linkedin.com/in/christopherjnielson/}{linkedin.com/in/christopherjnielson} & Mobile:~~~\href{tel:+12393078146}{+1 239-307-8146} \\
+  Github: \href{https://github.com/chrisjnielson44}{github.com/chrisjnielson44} & Email: \href{mailto:cjnielson44@gmail.com}{cjnielson44@gmail.com} \\
+\end{tabular*}
+
+%----------SUMMARY-----------------
+\vspace{4pt}
+\section{Summary}
+\small{Full-stack Software Engineer specializing in production AI platforms for regulated financial systems. At BNY, originated and shipped enterprise AI infrastructure across MCP orchestration, multi-agent workflows, human-in-the-loop automation, knowledge graph memory, and full-stack risk intelligence applications. Experienced across web frameworks, backend systems, AI agents, structured extraction, retrieval systems, tool routing, and infrastructure for enterprise-scale LLM use cases. Graduate certificate candidate in Machine Learning \& Data Science at Carnegie Mellon University.}
+
+%-----------EDUCATION-----------------
+\newcommand{\resumeEduListStart}{\begin{itemize}[leftmargin=-1pt,label={}]}
+\newcommand{\resumeEduListEnd}{\end{itemize}\vspace{-5pt}}
+
+\vspace{-1pt}
+\section{Education}
+  \resumeEduListStart
+    \resumeSubheadingEDU
+      {Carnegie Mellon University, School of Computer Science}{Pittsburgh, Pennsylvania}
+      {Graduate Certificate, Machine Learning \& Data Science}{May 2026}
+    \resumeSubheadingEDU
+      {Florida State University, College of Arts and Sciences}{Tallahassee, Florida}
+      {Bachelor of Science, Computer Science --- Minor in Business \& Mathematics}{December 2024}
+  \resumeEduListEnd
+\vspace{-1pt}
+
+%--------Experience--------
+\section{Experience}
+  \resumeSubHeadingListStart
+
+    \resumeSubheading{Bank of New York Mellon, \normalfont{SWE --- Risk Engineering}}{Pittsburgh, PA \textbf{--- February 2025 -- Present}}
+    \resumeItemListStart
+      \resumeItem{Enterprise Risk MCP Server: }{Originated, architected, and deployed BNY's Enterprise Risk MCP (Model Context Protocol) Server, a centralized governance and orchestration layer for AI agents across Risk. Built on FastMCP with elicitation, BM25 tool selection over agent metadata, hybrid hub-and-spoke routing to domain agents, and full audit, entitlements, RBAC, and distributed auth infrastructure for regulated production use. Led a five-engineer team across risk stripes; platform supports hundreds of agents and 1K+ business users.}
+      \vspace{2pt}
+      \resumeItem{Multi-Agent HITL Workflow Platform: }{Built and deployed a LangGraph-based platform for Risk \& Compliance workflows with human-in-the-loop gates modeled as first-class graph nodes. Integrated Anthropic Claude SDK and OpenAI SDK clients, MCP tool access, direct API integrations, and Playwright-driven browser automation for enterprise systems without APIs.}
+      \vspace{2pt}
+      \resumeItem{Quality Assurance Automation: }{Decomposed an ambiguous mandate to automate assurance testing across 250+ bank systems into reusable AI infrastructure. Used OCR and transcript extraction from SME process recordings to build an LLM wiki and typed knowledge graph with thousands of nodes, preserving workflow context beyond chunk-based RAG. Shipped a consolidated UI for SMEs to configure workflows; roughly 50 systems automated to date.}
+      \vspace{2pt}
+      \resumeItem{Risk Intelligence Platform: }{Full-stack contributor to a unified risk reporting and analysis platform consolidating Financial and Non-Financial Risk across the enterprise. Built with Next.js 16, React, Python FastAPI microservices, PostgreSQL, and Snowflake; contributed to CI/CD pipeline strategy, monorepo design standards, and service boundaries for AI-enabled financial applications.}
+      \vspace{2pt}
+      \resumeItem{Swarm Intelligence Engine: }{Architecting a service-oriented coordination engine across Credit, Market, and Model Risk to move beyond scripted orchestration toward emergent pattern detection, social-signal analysis, and scenario-driven synthesis of disparate model outputs for what-if intelligence.}
+    \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+
+\vspace{-1pt}
+
+%--------Skills------------
+\section{Skills Summary}
+  \resumeSubHeadingListStart
+    \resumeSubItem{Languages: }{Python, TypeScript, JavaScript, SQL, Java, C++, C\#, HTML, CSS, Swift}
+    \resumeSubItem{AI / ML: }{AI Agents, Multi-Agent Workflows, MCP Server Development, FastMCP, LangGraph, Human-in-the-Loop Systems, Knowledge Graphs, RAG, Structured Extraction, BM25, NLP, Anomaly Detection, Scikit-learn}
+    \vspace{2pt}
+    \resumeSubItem{Full-Stack / Backend: }{Next.js 16, React, FastAPI, Node.js, Django, Angular, REST APIs, Microservices, Playwright}
+    \resumeSubItem{Data \& Storage: }{PostgreSQL, Snowflake, MongoDB, Oracle SQL, MSSQL, NoSQL, GraphQL}
+    \resumeSubItem{Infrastructure: }{Docker, Kubernetes, GitHub/GitLab CI/CD, AWS, GCP, Microsoft Azure, Linux, MacOS, Nvidia CUDA}
+  \resumeSubHeadingListEnd
+\vspace{-5pt}
+
+%----------Languages---------
+\vspace{3pt}
+\section{Languages}
+\begin{description}[font=$\bullet$]
+  \resumeItem{Spanish: }{Fluency --- Read, Write, Speak}
+\end{description}
+\vspace{-1pt}
+
+%-----------Awards-----------------
+\section{Honors and Awards}
+\begin{description}[font=$\bullet$]
+  \item{\textbf{Florida Bright Futures Academic Scholar - Full Tuition} \hfill {August 2021 -- December 2024}}
+\end{description}
+
+\end{document}

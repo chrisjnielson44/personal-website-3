@@ -4,7 +4,15 @@ import { Container } from "@/components/Container";
 import { getArticleBySlug, formatDate } from "@/data/articles";
 import { ArticleContent } from "@/components/ArticleContent";
 import { ArrowLeft } from "lucide-react";
-import { PageTransition, FadeIn } from "@/components/Motion";
+import { useReducedMotion } from "motion/react";
+import {
+  FadeIn,
+  Stagger,
+  StaggerItem,
+  ReadingProgress,
+  motion,
+  gentleSpring,
+} from "@/components/Motion";
 
 export const Route = createFileRoute("/articles/$slug")({
   component: ArticlePage,
@@ -43,7 +51,7 @@ export const Route = createFileRoute("/articles/$slug")({
     ],
   }),
   notFoundComponent: () => (
-    <Container>
+    <Container className="max-w-3xl">
       <div className="py-16 text-center">
         <h1 className="text-2xl font-bold text-foreground">
           Article not found
@@ -52,11 +60,12 @@ export const Route = createFileRoute("/articles/$slug")({
           The article you're looking for doesn't exist.
         </p>
         <Link
-          to="/articles"
+          to="/"
+          search={{ types: "article" }}
           className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-accent transition-colors hover:text-accent/80"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to articles
+          Back to writing map
         </Link>
       </div>
     </Container>
@@ -65,43 +74,70 @@ export const Route = createFileRoute("/articles/$slug")({
 
 function ArticlePage() {
   const { article } = Route.useLoaderData();
+  const prefersReducedMotion = useReducedMotion();
+  const readingMinutes = Math.max(
+    1,
+    Math.ceil(article.content.trim().split(/\s+/).length / 220),
+  );
 
   return (
-    <PageTransition>
-      <Container>
-        <FadeIn>
-          <Link
-            to="/articles"
-            className="mb-8 inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-accent"
+    <>
+      <ReadingProgress />
+      <Container className="max-w-4xl">
+        <FadeIn className="mb-10 block">
+          <motion.span
+            className="inline-flex"
+            whileHover={prefersReducedMotion ? undefined : { x: -3 }}
+            transition={gentleSpring}
           >
-            <ArrowLeft className="h-4 w-4" />
-            Back to articles
-          </Link>
+            <Link
+              to="/"
+              search={{ types: "article" }}
+              className="inline-flex items-center gap-2 text-sm font-medium text-muted transition-colors duration-150 hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to writing map
+            </Link>
+          </motion.span>
         </FadeIn>
 
         <article>
-          <header className="mb-8">
-            <FadeIn delay={0.05}>
-              <time className="text-sm text-muted-foreground">
-                {formatDate(article.date)}
-              </time>
-              <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                {article.title}
-              </h1>
-              <p className="mt-4 text-lg text-muted">{article.description}</p>
-              {article.tags && article.tags.length > 0 && (
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {article.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full bg-border px-2.5 py-0.5 text-xs text-muted"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+          <header className="mb-12 border-b border-foreground pb-10">
+            <Stagger staggerDelay={0.07}>
+              <StaggerItem>
+                <div className="flex flex-wrap items-center gap-2 font-mono text-xs tabular-nums text-muted-foreground">
+                  <time>{formatDate(article.date)}</time>
+                  <span aria-hidden="true">/</span>
+                  <span>{readingMinutes} min read</span>
+                  <span aria-hidden="true">/</span>
+                  <span>{article.author}</span>
                 </div>
+              </StaggerItem>
+              <StaggerItem>
+                <h1 className="mt-5 text-4xl leading-[1] text-balance text-foreground sm:text-6xl">
+                  {article.title}
+                </h1>
+              </StaggerItem>
+              <StaggerItem>
+                <p className="mt-5 text-base leading-7 text-pretty text-muted sm:text-lg">
+                  {article.description}
+                </p>
+              </StaggerItem>
+              {article.tags && article.tags.length > 0 && (
+                <StaggerItem>
+                  <div className="mt-5 flex flex-wrap gap-x-3 gap-y-2">
+                    {article.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="border-l border-accent pl-2 text-[11px] font-medium text-muted"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </StaggerItem>
               )}
-            </FadeIn>
+            </Stagger>
           </header>
 
           <FadeIn delay={0.1}>
@@ -115,6 +151,6 @@ function ArticlePage() {
           </FadeIn>
         </article>
       </Container>
-    </PageTransition>
+    </>
   );
 }

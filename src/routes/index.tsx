@@ -1,226 +1,54 @@
+import { parseGraphSearch } from "@/lib/knowledgeGraph";
 import { createFileRoute } from "@tanstack/react-router";
-import { Link } from "@tanstack/react-router";
-import { Container } from "@/components/Container";
-import { SocialLinks } from "@/components/SocialIcons";
-import { getAllArticles, formatDate } from "@/data/articles";
-import { projects } from "@/data/projects";
-import { ArrowRight, Briefcase, GraduationCap, Download } from "lucide-react";
-import { PageTransition, FadeIn } from "@/components/Motion";
+import { lazy, Suspense } from "react";
+
+const KnowledgeGraph = lazy(() =>
+  import("@/components/KnowledgeGraph").then((module) => ({
+    default: module.KnowledgeGraph,
+  })),
+);
 
 export const Route = createFileRoute("/")({
   component: HomePage,
+  validateSearch: parseGraphSearch,
+  head: () => ({
+    meta: [
+      {
+        title: "Christopher Nielson - Personal Knowledge Graph",
+      },
+      {
+        name: "description",
+        content:
+          "Explore Christopher Nielson's experience, projects, writing, technologies, and production AI work as an interactive knowledge graph.",
+      },
+    ],
+  }),
 });
 
-const skills = [
-  "Python",
-  "TypeScript",
-  "React",
-  "Next.js",
-  "Node.js",
-  "Java",
-  "C++",
-  "LangGraph",
-  "MCP",
-  "Multi-Agent Systems",
-  "LLM Architecture",
-  "RAG",
-  "NLP",
-  "Anomaly Detection",
-  "Scikit-learn",
-  "FastAPI",
-  "PostgreSQL",
-  "Snowflake",
-  "GraphQL",
-  "Docker",
-  "Kubernetes",
-  "AWS",
-];
+function KnowledgeGraphSkeleton() {
+  return (
+    <div className="knowledge-graph-grid relative min-h-[calc(100dvh-3.5rem)] overflow-hidden">
+      <div className="absolute top-5 left-5 flex gap-2">
+        <div className="h-8 w-20 animate-pulse rounded bg-border" />
+        <div className="h-8 w-24 animate-pulse rounded bg-border" />
+        <div className="h-8 w-24 animate-pulse rounded bg-border" />
+      </div>
+      <div className="absolute inset-0 grid place-items-center">
+        <div className="size-28 animate-pulse rounded-full border border-border bg-surface" />
+      </div>
+      <div className="absolute right-4 bottom-5 left-4 mx-auto h-12 max-w-3xl animate-pulse rounded-lg bg-card" />
+    </div>
+  );
+}
 
 function HomePage() {
-  const recentArticles = getAllArticles().slice(0, 3);
-  const featuredProjects = projects.slice(0, 3);
+  const search = Route.useSearch();
 
   return (
-    <PageTransition>
-      <Container>
-        {/* Hero Section */}
-        <section className="mb-16">
-          <FadeIn>
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Christopher Nielson
-            </h1>
-          </FadeIn>
-          <FadeIn delay={0.05}>
-            <p className="mt-4 text-xl text-muted">Software Engineer @ BNY</p>
-          </FadeIn>
-          <FadeIn delay={0.1}>
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted">
-              Building production AI platforms for risk management in financial
-              services. I work across full-stack applications, backend
-              services, data systems, and LLM-powered workflows that turn
-              complex financial data into auditable, actionable insight.
-            </p>
-          </FadeIn>
-          <FadeIn delay={0.15}>
-            <div className="mt-6">
-              <SocialLinks />
-            </div>
-          </FadeIn>
-        </section>
-
-        {/* Education & Work */}
-        <section className="mb-16 grid gap-8 sm:grid-cols-2">
-          <FadeIn delay={0.1}>
-            <div>
-              <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                <GraduationCap className="h-4 w-4" />
-                Education
-              </h2>
-              <ul className="space-y-3">
-                <li>
-                  <p className="font-medium text-foreground">
-                    Carnegie Mellon University
-                  </p>
-                  <p className="text-sm text-muted">
-                    Machine Learning & Data Science · 2026
-                  </p>
-                </li>
-                <li>
-                  <p className="font-medium text-foreground">
-                    Florida State University
-                  </p>
-                  <p className="text-sm text-muted">
-                    BS, Computer Science · 2024
-                  </p>
-                </li>
-              </ul>
-            </div>
-          </FadeIn>
-          <FadeIn delay={0.15}>
-            <div>
-              <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                <Briefcase className="h-4 w-4" />
-                Work
-              </h2>
-              <ul className="space-y-3">
-                <li>
-                  <p className="font-medium text-foreground">
-                    Software Engineer
-                  </p>
-                  <p className="text-sm text-muted">BNY · 2024 – Present</p>
-                </li>
-              </ul>
-              <a
-                href="https://chris-n.s3.us-east-2.amazonaws.com/images/Christopher_Nielson_Resume.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-accent"
-              >
-                <Download className="h-4 w-4" />
-                Download Resume
-              </a>
-            </div>
-          </FadeIn>
-        </section>
-
-        {/* Skills */}
-        <section className="mb-16">
-          <FadeIn delay={0.1}>
-            <h2 className="text-lg font-semibold text-foreground">Skills</h2>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {skills.map((skill) => (
-                <span
-                  key={skill}
-                  className="rounded-full border border-border px-3 py-1 text-sm text-muted transition-colors hover:border-accent hover:text-foreground"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </FadeIn>
-        </section>
-
-        {/* Recent Articles */}
-        <section className="mb-16">
-          <FadeIn>
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-foreground">
-                Recent Articles
-              </h2>
-              <Link
-                to="/articles"
-                className="flex items-center gap-1 text-sm text-muted transition-colors hover:text-accent"
-              >
-                View all
-                <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
-          </FadeIn>
-          <FadeIn delay={0.05}>
-            <ul className="space-y-4">
-              {recentArticles.map((article) => (
-                <li
-                  key={article.slug}
-                  className="group flex items-baseline justify-between gap-4 border-b border-border pb-4 last:border-0"
-                >
-                  <Link
-                    to="/articles/$slug"
-                    params={{ slug: article.slug }}
-                    className="font-medium text-foreground transition-colors group-hover:text-accent"
-                  >
-                    {article.title}
-                  </Link>
-                  <time className="shrink-0 text-sm text-muted-foreground">
-                    {formatDate(article.date)}
-                  </time>
-                </li>
-              ))}
-            </ul>
-          </FadeIn>
-        </section>
-
-        {/* Featured Projects */}
-        <section>
-          <FadeIn>
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-foreground">
-                Projects
-              </h2>
-              <Link
-                to="/projects"
-                className="flex items-center gap-1 text-sm text-muted transition-colors hover:text-accent"
-              >
-                View all
-                <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
-          </FadeIn>
-          <FadeIn delay={0.05}>
-            <ul className="space-y-4">
-              {featuredProjects.map((project) => (
-                <li
-                  key={project.name}
-                  className="group border-b border-border pb-4 last:border-0"
-                >
-                  <a
-                    href={project.link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block"
-                  >
-                    <h3 className="font-medium text-foreground transition-colors group-hover:text-accent">
-                      {project.name}
-                    </h3>
-                    <p className="mt-1 text-sm text-muted line-clamp-2">
-                      {project.description}
-                    </p>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </FadeIn>
-        </section>
-      </Container>
-    </PageTransition>
+    <div className="min-h-[calc(100dvh-3.5rem)]">
+      <Suspense fallback={<KnowledgeGraphSkeleton />}>
+        <KnowledgeGraph initialSearch={search} />
+      </Suspense>
+    </div>
   );
 }

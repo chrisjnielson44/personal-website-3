@@ -13,7 +13,10 @@ export function Container({
 }: ContainerProps) {
   return (
     <Component
-      className={cn("mx-auto w-full max-w-2xl px-6 lg:px-8", className)}
+      className={cn(
+        "mx-auto w-full max-w-[var(--spacing-content)] px-5 sm:px-7 lg:px-10",
+        className,
+      )}
     >
       {children}
     </Component>

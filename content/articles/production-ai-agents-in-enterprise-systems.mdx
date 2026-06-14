@@ -27,6 +27,22 @@ Without that grounding, agents become generic chat boxes attached to powerful to
 
 The best production agents are usually narrower than the demos. They do a defined job very well. Over time, they can grow into broader orchestration systems, but the initial value comes from solving a workflow that already matters.
 
+## Context should be reconstructed, not accumulated
+
+Long-running agents create a context management problem. Every step produces more material: retrieved documents, plans, tool definitions, API responses, errors, intermediate conclusions, and user corrections. Keeping all of it in the prompt feels safe because nothing is discarded, but it eventually makes the agent less focused and more expensive.
+
+Large context windows do not remove this tradeoff. Research such as [Lost in the Middle](https://arxiv.org/abs/2307.03172) and [RULER](https://arxiv.org/abs/2404.06654) shows that effective use of long input can degrade as context length, distractors, and reasoning demands increase. Production agents therefore need external state and an explicit policy for assembling working context.
+
+I prefer to separate three layers:
+
+- **working context**, containing only what the current inference needs
+- **episodic state**, containing events and unresolved work from the current run
+- **durable knowledge**, containing governed entities, relationships, definitions, ownership, permissions, and provenance
+
+A knowledge graph can serve as an index over durable knowledge. Before an agent step, the system resolves the focal entities, applies authorization, traverses a bounded set of relevant relationships, retrieves supporting evidence, and compiles a small context packet. After the step changes state, the packet can be rebuilt instead of endlessly appended.
+
+This is the architecture developed in more detail in [GraphRAG as Scoped Context for Production Agents](/articles/knowledge-graphs-vs-rag). The important idea is that memory should remain external and queryable. The model should receive a projection of memory scoped to the decision it is making now.
+
 ## The risk point of view
 
 Risk is a natural place for AI agents, but it is also a place where the architecture has to be conservative.

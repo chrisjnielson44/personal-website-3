@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-label="Carnegie Mellon University">
+  <rect width="1200" height="440" fill="#C41230"/>
+  <g fill="#ffffff" font-family="Georgia, 'Times New Roman', serif">
+    <text x="600" y="208" text-anchor="middle" font-size="112" font-weight="700" letter-spacing="-2">Carnegie Mellon</text>
+    <rect x="430" y="250" width="340" height="3" rx="1.5"/>
+    <text x="600" y="316" text-anchor="middle" font-size="46" font-weight="400" letter-spacing="22">UNIVERSITY</text>
+  </g>
+</svg>

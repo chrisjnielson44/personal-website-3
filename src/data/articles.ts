@@ -2,6 +2,7 @@ import { allArticles, type Article } from "content-collections";
 
 // Re-export the Article type from content-collections
 export type { Article };
+export { formatDate } from "@/lib/utils";
 
 /**
  * Get all published articles, sorted by date (newest first)
@@ -37,16 +38,4 @@ export function getAllTags(): string[] {
     article.tags.forEach((tag) => tags.add(tag));
   });
   return Array.from(tags).sort();
-}
-
-/**
- * Format a date string for display
- */
-export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
 }

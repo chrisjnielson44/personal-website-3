@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "run_dir": "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly",
+  "spritesheet": "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/final/spritesheet.webp",
+  "validation": "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/final/validation.json",
+  "contact_sheet": "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/qa/contact-sheet.png",
+  "review": "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/qa/review.json",
+  "videos": "/Users/cjnielson/Projects/personal-website-3/.pet-runs/grizzly/qa/videos",
+  "package": "/Users/cjnielson/.codex/pets/grizzly"
+}

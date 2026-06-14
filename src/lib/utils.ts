@@ -10,7 +10,7 @@ export function cn(...classes: (string | undefined | null | false)[]): string {
  * Format a date string to a human-readable format
  */
 export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
+  const date = parseDate(dateString);
   return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -22,7 +22,7 @@ export function formatDate(dateString: string): string {
  * Format a date to show just month and year
  */
 export function formatMonthYear(dateString: string): string {
-  const date = new Date(dateString);
+  const date = parseDate(dateString);
   return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
@@ -34,4 +34,15 @@ export function formatMonthYear(dateString: string): string {
  */
 export function getCurrentYear(): number {
   return new Date().getFullYear();
+}
+
+function parseDate(dateString: string): Date {
+  const dateOnlyMatch = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(dateString);
+
+  if (!dateOnlyMatch) {
+    return new Date(dateString);
+  }
+
+  const [, year, month, day = "1"] = dateOnlyMatch;
+  return new Date(Number(year), Number(month) - 1, Number(day));
 }

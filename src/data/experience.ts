@@ -14,7 +14,7 @@ export const workExperience: Experience[] = [
     start: "Jun 2024",
     end: "Present",
     description:
-      "Working on risk engineering applications and machine learning-driven solutions for financial risk assessment.",
+      "Building governed infrastructure for production AI agents across financial risk, including MCP tool execution, FastAPI and TypeScript services, observability, evaluation, RBAC, audit logging, GraphRAG, and human-in-the-loop workflows.",
   },
   {
     company: "BNY",
@@ -37,15 +37,15 @@ export const workExperience: Experience[] = [
 export const education: Experience[] = [
   {
     company: "Carnegie Mellon University",
-    title: "Graduate Certificate",
+    title: "Graduate Certificate, Machine Learning & Data Science",
     start: "2025",
-    end: "Present",
+    end: "May 2026",
   },
   {
     company: "Florida State University",
     title: "BS, Computer Science",
-    start: "2021",
-    end: "2024",
+    start: "Aug 2021",
+    end: "Dec 2024",
     description: "Minor in Business and Mathematics",
   },
 ];

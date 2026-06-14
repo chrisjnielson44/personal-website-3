@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-label="BNY">
+  <rect width="1200" height="440" fill="#0f1722"/>
+  <g font-family="Georgia, 'Times New Roman', serif">
+    <text x="600" y="248" text-anchor="middle" font-size="168" font-weight="700" letter-spacing="6" fill="#ffffff">BNY</text>
+    <text x="600" y="320" text-anchor="middle" font-size="34" font-weight="400" letter-spacing="14" fill="#7da2cf">EST. 1784</text>
+  </g>
+</svg>

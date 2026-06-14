@@ -1,130 +1,541 @@
 ---
-title: "Knowledge Graphs vs. RAG"
-description: "When to use retrieval-augmented generation, when to use knowledge graphs, and how hybrid systems combine the strengths of both."
-date: "2026-05-07"
+title: "GraphRAG as Scoped Context for Production Agents"
+description: "How knowledge graphs can reconstruct small, permission-aware context packets for agents, reduce context rot, and preserve relationships, provenance, and time."
+date: "2026-06-13"
 author: "Christopher Nielson"
-tags: ["AI", "RAG", "Knowledge Graphs", "LLMs", "Risk"]
+tags: ["GraphRAG", "AI Agents", "Knowledge Graphs", "Context Engineering", "Agent Memory"]
 published: true
 ---
 
-Retrieval-augmented generation and knowledge graphs are usually described as separate patterns. One comes from the recent wave of LLM applications, the other from a longer history of symbolic AI, search, data integration, and enterprise knowledge management. Because they come from different traditions, teams sometimes talk about them like they are competing answers to the same question.
+The default strategy for giving an AI agent more knowledge is to keep adding context.
 
-That framing is not very useful. RAG and knowledge graphs solve different problems. RAG is a way to bring relevant external context into a model's working memory. A knowledge graph is a way to represent entities and relationships in a domain. RAG helps a model find the paragraph that matters. A graph helps a system understand how things are connected.
+Add the conversation history. Add retrieved documents. Add tool definitions. Add the last ten tool outputs. Add the system architecture. Add a memory summary. Add the user's preferences. Add a few examples so the model behaves consistently.
 
-The interesting work starts when you stop choosing between them and start asking what kind of knowledge the system needs.
+Every addition is individually defensible. Together, they create a new failure mode: the agent has access to the right information, but the signal is buried inside an increasingly noisy working set.
 
-## The shape of the question matters
+This is the practical problem behind **context rot**. A model may support a very large context window, but that does not mean every token in that window receives equal attention or remains equally useful. The agent's working context accumulates stale facts, duplicated instructions, irrelevant tool output, and evidence from earlier steps that no longer matches the current task.
 
-The easiest way to think about the difference is to look at the shape of user questions.
+The answer is not simply a larger window. The answer is a better context architecture.
 
-Some questions are document-shaped. If someone asks, "What does our model risk policy say about annual validation?" the answer probably lives in a few paragraphs. The system needs to find the right policy document, retrieve the relevant section, and ask the LLM to summarize or explain it. RAG is a natural fit. The source of truth is text, and the answer can be grounded in text.
+My preferred pattern is to treat a knowledge graph as a **context control plane**. The graph is not pasted into the prompt. It is queried before each meaningful agent step to identify the entities, relationships, evidence, permissions, and current state that matter now. The result is a bounded context packet assembled for a specific task.
 
-Other questions are relationship-shaped. If someone asks, "Which reports would be affected if this metric definition changed?" the answer does not live in one paragraph. It lives in a network of dependencies: metrics, dashboards, source tables, owners, downstream reports, business rules, and maybe controls. Vector search might find documents that mention the metric, but it does not naturally know the dependency chain. It can retrieve hints. It cannot reliably traverse the business.
+That is the role I see for GraphRAG in production agents: not unlimited memory, but **scoped context reconstruction**.
 
-That distinction matters because LLMs are very good at explaining context but much less reliable when they have to infer hidden structure. If the structure is important, it should not be left implicit in a chunk of text. It should be represented directly.
+## Long context is not the same as durable memory
 
-## What RAG gives you
+A context window is working memory. It contains the information available to the model during one inference. Agent memory is a different system problem: deciding what should persist, how it should change, and what should be recalled for a future task.
 
-RAG became popular because it solves a very real problem: models do not know your private data, and their built-in knowledge gets stale. Rather than retrain a model every time a policy changes or a document is added, you retrieve relevant content at request time and provide that content to the model.
+Conflating the two leads to fragile architectures. If an agent needs to remember a system owner, an approved metric definition, or the result of a prior investigation, putting the entire history into every future prompt is not a memory strategy. It is replay.
 
-This is powerful because most organizations already have a mountain of unstructured or semi-structured knowledge. Policies, procedures, design docs, architecture decision records, tickets, incident reports, PDFs, meeting notes, regulatory text, source code comments, and wiki pages all contain knowledge that people use every day. RAG gives an LLM a way to work with that material.
+Research has repeatedly shown why replay is insufficient.
 
-A simple RAG system has a familiar flow. Documents are split into chunks, chunks are embedded into vectors, and user queries are embedded into the same space. At runtime, the system retrieves chunks that are close to the query and places them in the model context. The model then answers using those passages.
+The [Lost in the Middle](https://arxiv.org/abs/2307.03172) study found that model performance can vary substantially based on where relevant information appears in a long input. Models often used evidence near the beginning or end more reliably than evidence in the middle. The [RULER benchmark](https://arxiv.org/abs/2404.06654) extended long-context evaluation beyond simple retrieval into multi-hop tracing and aggregation, showing that advertised window size and effective task performance are not the same thing.
 
-The best version of this pattern is not just "stuff text into the prompt." Production RAG requires careful chunking, metadata, permissions, freshness checks, retrieval evaluation, reranking, and answer validation. The hard part is rarely the first demo. The hard part is making sure the system retrieves the right thing when the wording changes, the corpus grows, or the user asks a question with ambiguous terminology.
+Long-term memory research finds a related problem across sessions. [LongMemEval](https://arxiv.org/abs/2410.10813) evaluates information extraction, multi-session reasoning, temporal reasoning, knowledge updates, and abstention. Its results show substantial degradation as assistants work over sustained histories. The newer [LongMemEval-V2](https://arxiv.org/abs/2605.12493) frames memory as context gathering from as many as 500 prior trajectories and more than 100 million tokens. The challenge is not to replay that history. It is to retrieve compact evidence that helps the agent behave like an experienced colleague.
 
-Still, RAG is a good starting point when the knowledge is textual and the main job is to explain, summarize, compare, or cite. If you want a policy copilot, documentation assistant, contract Q&A tool, research assistant, or internal search experience, RAG is often the shortest path to something useful.
+Anthropic describes the operational response as [context engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents): repeatedly curating the smallest high-signal set of tokens from a much larger universe of possible information.
 
-## Where RAG starts to bend
+This distinction is the foundation:
 
-RAG becomes less satisfying when relevance is not enough.
+- **Long context** is how much the model can technically receive.
+- **Memory** is what the system retains outside the model.
+- **Context engineering** is how the system decides what the model receives now.
 
-Imagine a risk analyst asks, "Why did exposure for this counterparty move between yesterday and today?" A RAG system may retrieve a few documents about exposure, counterparty risk, and daily reporting. Those passages may be relevant, but the actual answer may require knowing which trades changed, which market data shifted, which model version ran, which legal entity hierarchy applies, and which report consumes the calculated value.
+A knowledge graph can participate in all three, but its highest-value role is in the third.
 
-The problem is not that the model needs more text. The problem is that the system needs a representation of the domain. It needs to know that a counterparty belongs to a legal entity, that a legal entity rolls up to a parent, that an exposure metric is produced by a model, that the model consumes market data, and that the result appears in a specific report. Those relationships are not incidental. They are the thing being queried.
+## What context rot looks like in an agent
 
-This is where many RAG systems quietly turn into piles of heuristics. Teams add better prompts, more chunks, broader retrieval, manually curated context, and rerankers. Those improvements help, but they do not change the underlying shape of the system. If the question is relational, the system needs relational knowledge.
+Context rot is not one defect. It is the combined effect of several kinds of degradation.
 
-## What knowledge graphs give you
+### Irrelevant accumulation
 
-A knowledge graph makes relationships first-class. Instead of representing knowledge only as text, it represents entities and edges: applications depend on datasets, reports use metrics, metrics are defined by rules, rules are owned by teams, teams operate systems, systems produce outputs, and outputs feed decisions.
+An agent performs a ten-step investigation. Each tool returns several thousand tokens. By step ten, the prompt contains logs, schemas, intermediate hypotheses, and raw records that were useful earlier but are unrelated to the current decision.
 
-This sounds abstract until you put it next to a real workflow. In a large organization, people constantly ask relationship questions:
+The relevant fact is present, but it competes with everything else.
 
-Which systems consume this dataset? Which models depend on this feature? Which controls apply to this process? Which reports use this metric? Which business units are affected by a change to this source table? Which policies mention this obligation, and which applications implement it?
+### Stale state
 
-These questions are hard for pure vector retrieval because the answer is not a paragraph. It is a path. Sometimes it is several paths. A graph gives the system a way to follow those paths intentionally.
+The agent retrieves an owner, status, policy, or user preference that was correct last month. A later event superseded it, but both versions remain in memory. Semantic similarity alone may return the old and new records without a reliable way to identify which one is valid now.
 
-Knowledge graphs also make ambiguity easier to manage. A term like "exposure" might mean different things in credit risk, market risk, treasury, or reporting. A vector database can retrieve content related to all of those meanings. A graph can attach "exposure" to specific metric definitions, owners, calculation methods, and consuming reports. The graph can help resolve which concept the user means before retrieval even happens.
+This is especially dangerous because stale context often looks plausible.
 
-The tradeoff is effort. A useful graph does not appear automatically because someone installed a graph database. You have to define the ontology, decide which entities matter, maintain relationships, handle ownership, and keep the graph fresh. A stale knowledge graph is not intelligence. It is decorative complexity.
+### Duplicated or conflicting instructions
 
-## The real comparison
+Long-running agents accumulate summaries, handoffs, tool descriptions, and prior plans. If those artifacts are not versioned and compacted carefully, the model may receive several subtly different representations of the same rule.
 
-The cleanest distinction is this: RAG retrieves evidence, while a graph represents structure.
+### Relationship loss
 
-Evidence is what the model can quote, summarize, or ground itself in. Structure is what the system can traverse, constrain, and validate against. If a user asks, "What does this document say?" evidence is enough. If a user asks, "How does this change affect the business?" structure becomes necessary.
+Chunk retrieval finds passages that mention the right terms, but the agent still has to infer how those passages connect. It may retrieve a metric definition, a report description, and a model document without knowing that the model produces the metric and the report consumes it.
 
-The same domain may need both. A regulatory policy is text, so RAG helps retrieve the relevant obligation. But the obligation may apply to specific controls, systems, processes, owners, and reports, so a graph helps map impact. The document explains the rule. The graph explains where the rule lands.
+### Permission leakage
 
-This is especially important in enterprise AI, where correctness is not only about producing a fluent answer. It is about lineage, permissions, ownership, auditability, and operational consequences. A model that gives a confident summary without showing the dependency path may be impressive, but it is not always useful enough for production.
+A broad retriever may find semantically relevant content before the system has established whether the current user or agent is authorized to see it. Filtering after retrieval is both risky and inefficient.
 
-## The risk point of view
+### Tool overload
 
-Risk is a good domain for seeing why the distinction matters. Risk teams rarely ask questions that are purely textual or purely numerical. They ask questions that sit between policy, data, models, reports, controls, and business judgment.
+Agents connected to many systems may receive hundreds of tool definitions. Even before any business data is retrieved, tool metadata consumes context and creates selection ambiguity. Anthropic has described this problem in the context of [large MCP tool surfaces](https://www.anthropic.com/engineering/code-execution-with-mcp): loading every tool and passing every intermediate result through the model increases cost and slows the agent.
 
-Consider a question like, "Why did potential future exposure increase for this counterparty?" A useful answer may need the definition of PFE, the model version that produced it, recent market data movement, the portfolio of trades behind the number, the legal entity hierarchy, collateral treatment, reporting thresholds, and whether any known data quality issues were active during the run. Some of that context lives in documents. Some lives in databases. Some lives in model metadata. Some lives in lineage. Some lives in the relationship between all of those things.
+These are not solved by asking the model to "pay attention." They require the application to control context as a governed resource.
 
-RAG can retrieve the model methodology document, the reporting procedure, or the incident note from last week's run. That is valuable. But a risk analyst also needs to know which upstream datasets fed the calculation, which downstream reports consumed the value, who owns the metric, and whether the change affects a control or escalation threshold. That is graph-shaped context.
+## The graph is a map, not the prompt
 
-This is also where auditability changes the architecture. In a risk setting, the answer should not only sound reasonable. It should be inspectable. If an AI system says a dashboard was affected by a metric change, it should be able to show the path from metric to derived metric to report. If it cites a policy, it should show the source text. If it uses a model output, it should identify the run, version, and timestamp. The hybrid approach is not just a quality improvement. It is a way to make the AI system accountable enough for regulated work.
-
-## The hybrid pattern
-
-A hybrid RAG and knowledge graph system starts by treating the user question as both a language problem and a domain problem.
-
-Suppose someone asks, "Which credit risk reports are affected by changes to Exposure at Default?" A pure RAG system might search for "Exposure at Default" and "credit risk reports." It may retrieve a metric definition, a reporting procedure, and a few dashboard docs. That is helpful, but it may miss reports that depend on derived metrics or downstream dashboards that never mention the original term.
-
-A hybrid system can do something richer. First, it identifies "Exposure at Default" as a metric entity. Then it traverses graph relationships from that metric to derived metrics, dashboards, source tables, reports, owners, and controls. At the same time, it retrieves text describing the metric, reporting policy, and recent release notes. The LLM receives both the graph path and the textual evidence.
-
-The context packet might include a concise graph summary:
+A knowledge graph represents entities and typed relationships:
 
 ```txt
-Exposure at Default
-  -> used by Expected Loss
-  -> appears in Credit Portfolio Dashboard
-  -> feeds Risk Committee Report
-  -> owned by Credit Risk Analytics
+Counterparty
+  -> belongs_to -> Legal Entity
+  -> has_exposure -> PFE Metric
+
+PFE Metric
+  -> produced_by -> Risk Engine Run
+  -> sourced_from -> Trade Population
+  -> appears_in -> Daily Risk Report
+  -> governed_by -> Metric Definition
+
+Daily Risk Report
+  -> owned_by -> Reporting Team
+  -> reviewed_under -> Control
 ```
 
-It might also include document excerpts explaining how Exposure at Default is calculated and where it appears in reporting procedures. The final answer can then say not only what the metric means, but which downstream artifacts are affected and why.
+The graph may contain millions of nodes and edges. The model should almost never receive all of it. The graph's value is that the system can traverse a small neighborhood based on the task.
 
-That is the key: the graph does not replace RAG. It makes RAG more targeted and more explainable. The vector retriever brings in human-readable evidence. The graph brings in relationship-aware context. The model turns both into an answer a person can use.
+Microsoft's GraphRAG project makes a useful distinction between query modes:
 
-## How I would build it
+- [Local search](https://microsoft.github.io/graphrag/query/local_search/) starts from specific entities and combines graph structure with related source text.
+- [Global search](https://microsoft.github.io/graphrag/query/global_search/) reasons over community summaries to answer questions about a corpus as a whole.
+- [DRIFT search](https://microsoft.github.io/graphrag/query/drift_search/) combines local entity expansion with broader community context.
 
-I would start small. Pick a domain where relationships are valuable and the source material already exists. Risk reporting, data lineage, model inventory, application dependencies, and metric catalogs are good candidates because the entities are durable and the relationships matter.
+Those modes were developed for question answering over private corpora, but the underlying idea is broader. An agent should choose a retrieval scope based on the shape of its current step.
 
-The first version does not need to model the whole company. It needs enough structure to answer a real class of questions better than RAG alone. Define a handful of entity types, such as metric, report, dataset, model, owner, control, and policy. Then define the important relationships: uses, produces, owns, governs, depends on, appears in, and replaces.
+If the task is "inspect this counterparty's PFE movement," the agent needs a local subgraph around a counterparty, risk run, portfolio, and report. If the task is "identify recurring causes of PFE breaks this quarter," it may need community-level patterns plus selected local examples. If the task changes during execution, the context should be rebuilt rather than endlessly appended.
 
-Once the graph exists, pair it with retrieval. Use the graph to resolve entities and expand the query. Use vector search to retrieve supporting documentation. Use permissions before either result reaches the model. Then ask the model to answer from a structured bundle that separates graph facts from document excerpts.
+The graph remains external. The agent receives a projection.
 
-That separation matters. The model should know when a statement came from a governed relationship and when it came from an unstructured source. It should be able to cite documents and show graph paths. Users trust answers more when they can see where the reasoning came from.
+## A scoped context pipeline
 
-## When not to use a graph
+I would structure a graph-backed agent step as an explicit pipeline.
 
-Not every RAG system needs a knowledge graph. If your domain is mostly unstructured text and the questions are local to documents, building a graph too early can slow you down. A support assistant that answers from product documentation may not need graph traversal. A research assistant over papers may get plenty of value from high-quality retrieval, reranking, and citation handling.
+### 1. Resolve the task and candidate entities
 
-Graphs become worth the cost when the relationships have operational value outside the LLM. If the graph can also power lineage, governance, search, impact analysis, dashboards, and automation, the investment is easier to justify. If it only exists to decorate a chatbot, it may become another system to maintain without a clear payoff.
+Parse the user's request and the agent's current plan into:
 
-There is also a modeling risk. A badly designed ontology can force the business into categories that do not fit. The graph should emerge from real workflows, not from an abstract desire to make everything semantic.
+- task type
+- candidate entities
+- time range
+- desired output
+- risk level
+- required capabilities
 
-## The decision I use
+Entity resolution should be conservative. "Exposure" may refer to current exposure, potential future exposure, expected exposure, a dashboard field, or an internal dataset. If the system cannot resolve the term confidently, it should ask a question instead of expanding every possible interpretation.
 
-When I am thinking about RAG versus knowledge graphs, I ask one practical question: what would a human need to answer this well?
+### 2. Apply authorization before traversal
 
-If a human would search a few documents and quote the relevant passages, RAG is probably enough. If a human would open a lineage tool, check ownership, trace dependencies, inspect a metric catalog, and then read supporting documentation, the AI system probably needs a graph and RAG together.
+Permissions belong in the retrieval plan, not in a cleanup step after retrieval.
 
-This is why hybrid systems feel inevitable in serious enterprise settings. Text explains the world, but relationships organize it. RAG gives the model evidence. A knowledge graph gives the model a map.
+The system should determine:
 
-The best systems will not be "RAG systems" or "graph systems." They will be context systems. They will know when to retrieve text, when to traverse structure, when to call a tool, and when to ask a human for confirmation. That is the direction enterprise AI needs to move: not bigger prompts, but better representations of what the business actually knows.
+- which entity types the user may inspect
+- which edge types the agent may traverse
+- which source documents may be retrieved
+- which tools may be exposed
+- which actions require approval
+
+This allows the graph to function as an authorization-aware map. A user may be permitted to inspect a published risk metric but not the underlying counterparty records. Another user may access the data but not invoke a remediation action.
+
+### 3. Choose an expansion policy
+
+Graph traversal must be bounded.
+
+A useful expansion policy might include:
+
+- one or two hops from resolved entities
+- an allowlist of relationship types
+- a time window
+- a confidence threshold
+- a maximum number of nodes per type
+- a token budget for the final projection
+
+The traversal should be shaped by the task. An impact-analysis agent may follow `DEPENDS_ON`, `PRODUCES`, and `CONSUMES`. A policy agent may follow `GOVERNS`, `IMPLEMENTS`, and `OWNED_BY`. A debugging agent may follow `EXECUTED_BY`, `FAILED_AT`, `EMITTED`, and `DEPLOYED_AS`.
+
+Unbounded traversal simply recreates context overload in graph form.
+
+### 4. Retrieve evidence attached to the subgraph
+
+The graph supplies structure, but the model still needs evidence.
+
+Each selected node and edge should point to authoritative source material:
+
+- a metric definition
+- a model run record
+- a policy paragraph
+- an API response
+- a code location
+- a ticket
+- a deployment event
+- a conversation turn
+
+This is where vector or lexical retrieval remains useful. The graph identifies *where to search and why*. Document retrieval supplies the human-readable evidence needed to explain or verify the relationship.
+
+GraphRAG is strongest when it does not force a choice between graphs and text. The graph narrows the search space; the retriever gathers supporting passages; the agent receives both.
+
+### 5. Rank facts for the current decision
+
+Not every fact in the subgraph deserves prompt space.
+
+Rank candidates using signals such as:
+
+- direct connection to the focal entity
+- relationship relevance to the task
+- source authority
+- recency and temporal validity
+- user permissions
+- confidence
+- contradiction status
+- prior use in the current run
+
+The goal is **context precision**, not maximum recall. The packet should contain enough information to complete the step and no more than the step can use reliably.
+
+### 6. Compile a typed context packet
+
+The context compiler turns graph results into a stable interface for the model.
+
+```json
+{
+  "task": {
+    "type": "explain_metric_change",
+    "as_of": "2026-06-13T14:00:00Z"
+  },
+  "focus": {
+    "entity_id": "counterparty:8421",
+    "label": "Example Holdings"
+  },
+  "facts": [
+    {
+      "subject": "pfe:daily",
+      "relation": "produced_by",
+      "object": "risk_run:2026-06-13",
+      "valid_at": "2026-06-13",
+      "source": "risk-run-api",
+      "confidence": 1.0
+    }
+  ],
+  "evidence": [
+    {
+      "source_id": "model-methodology:v7",
+      "excerpt": "Potential future exposure is calculated...",
+      "supports": ["pfe:daily"]
+    }
+  ],
+  "tools": ["get_trade_changes", "get_market_data_moves"],
+  "constraints": [
+    "Do not infer causality without supporting evidence.",
+    "Escalate if model-run metadata is incomplete."
+  ]
+}
+```
+
+This is more reliable than prose assembled ad hoc. The model can distinguish governed facts, supporting excerpts, available tools, and behavioral constraints.
+
+### 7. Execute one step, then refresh
+
+The packet should have a lease.
+
+After a meaningful tool call or state change, the system should decide whether the context is still valid. A trade query may introduce new identifiers. A deployment check may show that the running version differs from the version in the initial graph. A user clarification may change which "exposure" metric is in scope.
+
+Rather than preserving the old packet and appending the new result, the system can:
+
+1. write the new event to run state,
+2. update or invalidate relevant graph facts,
+3. rerun scoped retrieval,
+4. compile the next packet.
+
+This is how the agent avoids carrying every historical intermediate into every future inference.
+
+## Three layers of agent context
+
+It helps to separate context into three layers.
+
+### Working context
+
+This is the model's immediate packet: current task, selected facts, recent tool outputs, available actions, and response requirements. It should be small and disposable.
+
+### Episodic run state
+
+This stores what happened during the current workflow:
+
+- steps completed
+- tools called
+- observations
+- unresolved hypotheses
+- approvals
+- generated artifacts
+
+The agent can retrieve from this layer when needed, but it does not need to replay the full event stream every step.
+
+### Durable knowledge
+
+This is the governed graph and its linked evidence:
+
+- entities
+- definitions
+- relationships
+- owners
+- permissions
+- policies
+- system topology
+- valid time
+- provenance
+
+Durable knowledge should change more slowly than run state, although some domains require frequent updates.
+
+This separation resembles the virtual-memory idea in [MemGPT](https://arxiv.org/abs/2310.08560): limited active context can be backed by larger external memory tiers. The graph adds a relational access path over that memory. Instead of paging in the most semantically similar text alone, the system can retrieve the facts connected to the current entity and task.
+
+## Why temporal edges matter
+
+An agent memory system must know not only what was true, but when it was true.
+
+Consider these facts:
+
+```txt
+Application A -> owned_by -> Team Red
+Application A -> owned_by -> Team Blue
+```
+
+Without time, the graph contains a contradiction. With validity intervals, it contains a history:
+
+```txt
+Application A -> owned_by -> Team Red
+valid_from: 2024-01-01
+valid_to:   2026-03-31
+
+Application A -> owned_by -> Team Blue
+valid_from: 2026-04-01
+valid_to:   null
+```
+
+The context compiler can now answer "who owns this application?" differently from "who owned it during the March incident?"
+
+This is not a niche concern. Long-term agent memory constantly encounters changing preferences, owners, statuses, policies, plans, and system versions. [LongMemEval](https://arxiv.org/abs/2410.10813) explicitly includes knowledge updates and temporal reasoning. The 2025 [Zep temporal knowledge graph paper](https://arxiv.org/abs/2501.13956) explores graph-based agent memory that synthesizes conversational and business data while maintaining historical relationships.
+
+The broader lesson is simple: agent memory needs mutation semantics. A new fact should be able to supersede, invalidate, or qualify an old fact. Otherwise retrieval can make context rot worse by repeatedly resurfacing obsolete information.
+
+## How scoped GraphRAG reduces context rot
+
+GraphRAG does not eliminate model limitations. It reduces the amount of irrelevant and ambiguous material those limitations have to operate over.
+
+### It replaces accumulation with reconstruction
+
+The system builds context from current state instead of carrying the full prompt forward forever.
+
+### It compresses relationships structurally
+
+A path such as:
+
+```txt
+Metric -> produced_by -> Model -> consumes -> Dataset
+```
+
+can preserve more operational meaning than several pages of documents that mention those components independently.
+
+### It makes scope explicit
+
+Traversal policies define which entities and relationships belong to the current task. This is easier to inspect and test than an opaque similarity search across the entire corpus.
+
+### It supports temporal filtering
+
+Validity intervals and event timestamps let the system prefer facts that are current for the requested time.
+
+### It preserves provenance
+
+Facts and edges can point back to source records. The model can explain which path it followed and which evidence supports each claim.
+
+### It narrows tools as well as data
+
+The graph can connect workflows and entity types to relevant tools. A counterparty investigation may expose risk and trade tools without loading deployment, HR, or content-management tools.
+
+### It creates natural checkpoints
+
+Each context packet can be logged, evaluated, and compared with the final action. This makes retrieval failures observable.
+
+The key is not that graphs are inherently immune to noise. The key is that graph traversal gives the application a programmable way to control noise.
+
+## A risk investigation example
+
+Suppose an analyst asks:
+
+> Why did Potential Future Exposure increase for this counterparty today?
+
+A weak implementation retrieves every document containing "PFE" and sends recent conversation history plus a large schema dump to the model.
+
+A scoped implementation proceeds differently.
+
+First, it resolves the counterparty and the approved PFE metric. It identifies today's and yesterday's calculation runs. It checks the user's entitlements before traversing into trade-level data.
+
+Then it builds a local subgraph:
+
+```txt
+Counterparty
+  -> has_portfolio -> Trade Population
+  -> measured_by -> PFE Metric
+
+PFE Metric
+  -> produced_by -> Today's Risk Run
+  -> produced_by -> Yesterday's Risk Run
+  -> defined_by -> Approved Methodology
+  -> appears_in -> Daily Counterparty Report
+
+Today's Risk Run
+  -> used_market_data -> Market Snapshot
+  -> used_model -> Model Version
+  -> emitted_issue -> Data Quality Alert
+```
+
+The agent retrieves only the evidence linked to those nodes: changed trades, market moves, model-run metadata, the applicable methodology excerpt, and the active data-quality alert.
+
+The final context packet may be a few thousand high-value tokens rather than tens of thousands of broadly relevant tokens. The model can form hypotheses, call targeted comparison tools, and distinguish observed causes from unresolved possibilities.
+
+If the agent discovers that today's run used a new model version, the context is rebuilt around that version and its release record. If the data-quality alert invalidates one source feed, the system marks affected evidence accordingly. If the user lacks trade-level permission, the agent returns an aggregate explanation and states the access limitation.
+
+That is GraphRAG as agent infrastructure, not chatbot decoration.
+
+## What the graph does not solve
+
+GraphRAG creates new engineering responsibilities.
+
+### Bad extraction creates bad structure
+
+If an LLM invents an entity or relationship during graph construction, the error may look more authoritative because it is now represented as a typed edge. High-impact graphs need source linkage, confidence, validation, and ownership.
+
+### Entity resolution is difficult
+
+Organizations contain aliases, renamed systems, duplicated identifiers, subsidiaries, and overloaded terminology. Incorrect merges can contaminate every downstream traversal. Incorrect splits can hide relevant connections.
+
+### Ontologies can become political
+
+The hard part is often deciding what a concept means, who owns it, and which relationship is authoritative. A graph database does not resolve organizational disagreement.
+
+### Traversal can still over-retrieve
+
+A highly connected node can explode into thousands of neighbors. Every query mode needs budgets, edge allowlists, relevance ranking, and stopping conditions.
+
+### Permission models must propagate
+
+Security cannot stop at node visibility. Derived paths, community summaries, cached context packets, and model outputs can all leak restricted facts if permissions are not enforced end to end.
+
+### Temporal truth needs maintenance
+
+Edges require update and invalidation paths. A graph that only adds facts will eventually contain a large amount of stale truth.
+
+### Global GraphRAG can be expensive
+
+Microsoft's original [GraphRAG research](https://www.microsoft.com/en-us/research/publication/from-local-to-global-a-graph-rag-approach-to-query-focused-summarization/) constructs entity graphs and community summaries to answer broad corpus-level questions. That indexing and summarization can be costly. [LazyGraphRAG](https://www.microsoft.com/en-us/research/blog/lazygraphrag-setting-a-new-standard-for-quality-and-cost/) explores a different quality-cost tradeoff that avoids up-front summarization. The right architecture depends on query patterns and corpus stability.
+
+The graph should earn its maintenance cost by powering more than prompt augmentation: lineage, impact analysis, ownership, governance, search, workflow routing, and audit.
+
+## How I would evaluate the system
+
+Final-answer quality is not enough. A scoped context system should be evaluated at every boundary.
+
+### Graph quality
+
+- entity-resolution precision and recall
+- relation extraction accuracy
+- duplicate entity rate
+- stale or invalid edge rate
+- percentage of facts with authoritative provenance
+
+### Retrieval quality
+
+- focal entity resolution accuracy
+- relevant path recall
+- context precision
+- temporal correctness
+- permission-filter correctness
+- evidence coverage
+
+### Context efficiency
+
+- input tokens per successful task
+- irrelevant-token rate
+- duplicate fact rate
+- number of context refreshes
+- tool definitions exposed per step
+
+### Agent behavior
+
+- factual grounding
+- path and source citation accuracy
+- correct tool selection
+- abstention when evidence is insufficient
+- correct handling of conflicting or superseded facts
+- human approval and rework rates
+
+### Operational behavior
+
+- graph freshness
+- retrieval latency
+- context compilation latency
+- indexing and update cost
+- audit completeness
+
+The evaluation set should include ambiguous names, permission boundaries, stale facts, conflicting evidence, missing relationships, and graph extraction errors. If every test assumes a clean graph, it does not test a production graph.
+
+## A practical implementation path
+
+I would not begin by modeling the entire enterprise.
+
+Start with one workflow where relationships already determine the answer. Good examples include:
+
+- risk metric investigation
+- data lineage and report impact
+- application ownership
+- model inventory
+- incident analysis
+- policy-to-control mapping
+- agent tool routing
+
+Define a small ontology around that workflow. Connect every important edge to evidence. Add validity time and ownership from the beginning. Implement local traversal first, because entity-centered questions are easier to evaluate than broad corpus synthesis.
+
+Then build a context compiler with a strict token budget. Separate graph facts from document evidence and tool results. Log the exact packet used for every inference. Measure whether the scoped packet performs better than vector retrieval alone and full-history prompting.
+
+Only after local retrieval is reliable should the system add community summaries, global search, agent-written memory, or automatic graph evolution.
+
+The goal is not to build the largest graph. It is to build the smallest graph that lets the agent gather the right context reliably.
+
+## The design principle
+
+An agent should not remember by carrying everything forward.
+
+It should externalize durable state, retrieve what the current step requires, and reconstruct a bounded working context from governed sources. A knowledge graph is useful because it represents the relationships that determine relevance: which facts belong together, which source is authoritative, which version is current, which user may see it, and which tool can act on it.
+
+That does not make the model immune to context rot. It changes the application from a passive prompt builder into an active context manager.
+
+The production pattern I expect to matter is:
+
+```txt
+large external memory
+  -> entity resolution
+  -> permission-aware graph traversal
+  -> evidence retrieval
+  -> context ranking and budgeting
+  -> small typed context packet
+  -> one agent step
+  -> state update
+  -> reconstruct again
+```
+
+The graph is not the answer, and it is not the entire memory.
+
+It is the map the system uses to decide what the agent should know next.
+
+## Research referenced
+
+- [From Local to Global: A Graph RAG Approach to Query-Focused Summarization](https://www.microsoft.com/en-us/research/publication/from-local-to-global-a-graph-rag-approach-to-query-focused-summarization/)
+- [Microsoft GraphRAG query modes](https://microsoft.github.io/graphrag/query/overview/)
+- [Lost in the Middle: How Language Models Use Long Contexts](https://arxiv.org/abs/2307.03172)
+- [RULER: What's the Real Context Size of Your Long-Context Language Models?](https://arxiv.org/abs/2404.06654)
+- [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
+- [LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory](https://arxiv.org/abs/2410.10813)
+- [LongMemEval-V2: Evaluating Long-Term Agent Memory Toward Experienced Colleagues](https://arxiv.org/abs/2605.12493)
+- [MemGPT: Towards LLMs as Operating Systems](https://arxiv.org/abs/2310.08560)
+- [Zep: A Temporal Knowledge Graph Architecture for Agent Memory](https://arxiv.org/abs/2501.13956)

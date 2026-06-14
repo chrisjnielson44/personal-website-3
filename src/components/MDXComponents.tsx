@@ -36,32 +36,32 @@ interface ImageProps {
 
 export const mdxComponents = {
   h1: ({ children }: HeadingProps) => (
-    <h1 className="mt-8 mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+    <h1 className="mt-12 mb-5 text-4xl leading-tight text-foreground sm:text-5xl">
       {children}
     </h1>
   ),
   h2: ({ children }: HeadingProps) => (
-    <h2 className="mt-8 mb-4 text-2xl font-semibold tracking-tight text-foreground">
+    <h2 className="mt-12 mb-5 border-t border-border pt-6 text-3xl leading-tight text-foreground">
       {children}
     </h2>
   ),
   h3: ({ children }: HeadingProps) => (
-    <h3 className="mt-6 mb-3 text-xl font-semibold text-foreground">
+    <h3 className="mt-9 mb-4 text-2xl leading-tight text-foreground">
       {children}
     </h3>
   ),
   h4: ({ children }: HeadingProps) => (
-    <h4 className="mt-4 mb-2 text-lg font-medium text-foreground">
+    <h4 className="mt-7 mb-3 text-lg font-semibold text-foreground">
       {children}
     </h4>
   ),
   p: ({ children }: { children?: ReactNode }) => (
-    <p className="mb-4 leading-7 text-muted">{children}</p>
+    <p className="mb-5 text-[1.05rem] leading-8 text-muted">{children}</p>
   ),
   a: ({ href, children }: LinkProps) => (
     <a
       href={href}
-      className="font-medium text-accent underline underline-offset-4 transition-colors hover:text-accent/80"
+      className="font-medium text-foreground underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-accent"
       target={href?.startsWith("http") ? "_blank" : undefined}
       rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
     >
@@ -72,7 +72,7 @@ export const mdxComponents = {
     // Inline code (no className means it's not inside a pre block)
     if (!className) {
       return (
-        <code className="rounded bg-border px-1.5 py-0.5 font-mono text-sm text-foreground">
+        <code className="bg-surface px-1.5 py-0.5 font-mono text-sm text-foreground">
           {children}
         </code>
       );
@@ -81,21 +81,21 @@ export const mdxComponents = {
     return <code className={className}>{children}</code>;
   },
   pre: ({ children }: PreProps) => (
-    <pre className="mb-4 overflow-x-auto rounded-lg bg-zinc-900 p-4 text-sm">
+    <pre className="mb-6 overflow-x-auto border-l-4 border-accent bg-foreground p-5 text-sm">
       {children}
     </pre>
   ),
   ul: ({ children }: ListProps) => (
-    <ul className="mb-4 ml-6 list-disc space-y-2 text-muted">{children}</ul>
+    <ul className="mb-5 ml-6 list-disc space-y-2 text-[1.05rem] text-muted">{children}</ul>
   ),
   ol: ({ children }: ListProps) => (
-    <ol className="mb-4 ml-6 list-decimal space-y-2 text-muted">{children}</ol>
+    <ol className="mb-5 ml-6 list-decimal space-y-2 text-[1.05rem] text-muted">{children}</ol>
   ),
   li: ({ children }: { children?: ReactNode }) => (
     <li className="leading-7">{children}</li>
   ),
   blockquote: ({ children }: BlockquoteProps) => (
-    <blockquote className="mb-4 border-l-4 border-accent pl-4 italic text-muted">
+    <blockquote className="my-8 border-y border-foreground py-6 font-display text-2xl leading-snug text-foreground">
       {children}
     </blockquote>
   ),
@@ -110,7 +110,7 @@ export const mdxComponents = {
     <img
       src={src}
       alt={alt}
-      className="my-4 rounded-lg"
+      className="my-8 border border-border"
       loading="lazy"
     />
   ),
