@@ -722,18 +722,33 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
       const maxY = Math.max(...ys) + 90;
       const boundsWidth = Math.max(maxX - minX, 220);
       const boundsHeight = Math.max(maxY - minY, 220);
-      // Clear the glass overlay header (top) and the floating search bar
-      // (bottom) so the graph frames inside the visible band.
-      const topClearance = viewportWidth < 768 ? 96 : 110;
-      const bottomClearance = viewportWidth < 768 ? 132 : 112;
+      // Clear the floating chrome so the graph frames inside the visible band.
+      // Below 960px the toolbar reflows into a full-width row near the top, so
+      // it needs a deeper top clearance than the desktop overlay header.
+      const compact = viewportWidth <= 960;
+      const topClearance = compact ? 120 : 110;
+      const bottomClearance = compact ? 100 : 112;
       const usableHeight = Math.max(
         viewportHeight - bottomClearance - topClearance,
         240,
       );
-      const scale = Math.min(
-        1.48,
-        0.94 / Math.max(boundsWidth / viewportWidth, boundsHeight / usableHeight),
-      );
+
+      const widthRatio = boundsWidth / viewportWidth;
+      const heightRatio = boundsHeight / usableHeight;
+      // "Contain": the whole selection fits within the visible band.
+      let scale = 0.94 / Math.max(widthRatio, heightRatio);
+
+      // On portrait phones/tablets a wide graph fit purely to width leaves big
+      // empty bands above and below and shrinks every node to an unreadable
+      // dot. Zoom in to fill the vertical space instead, letting the graph
+      // spill past the left/right edges (it pans) — but never wider than ~1.7x
+      // the viewport so it can't drift entirely off-screen.
+      if (compact && viewportHeight > viewportWidth) {
+        const fillHeight = 0.92 / heightRatio;
+        const overflowCap = (1.7 * viewportWidth) / boundsWidth;
+        scale = Math.max(scale, Math.min(fillHeight, overflowCap));
+      }
+      scale = Math.min(scale, 1.6);
       const x = viewportWidth / 2 - scale * (minX + maxX) / 2;
       const y =
         topClearance + usableHeight / 2 - scale * (minY + maxY) / 2 + 18;
@@ -748,10 +763,15 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
     const focusNode = (id: string) => {
       const node = graphNodes.find((candidate) => candidate.id === id);
       if (!node) return;
-      const scale = viewportWidth < 768 ? 1.1 : 1.35;
-      const offsetX = viewportWidth < 768 ? 0 : -Math.min(viewportWidth * 0.12, 150);
+      const phone = viewportWidth <= 767;
+      const scale = viewportWidth <= 960 ? 1.05 : 1.35;
+      // Desktop / tablet: nudge left so the right-side inspector panel doesn't
+      // cover the node. Phone: the inspector is a bottom sheet, so lift the node
+      // into the visible strip above it instead of centring it underneath.
+      const offsetX = phone ? 0 : -Math.min(viewportWidth * 0.12, 150);
+      const targetY = phone ? viewportHeight * 0.17 : viewportHeight / 2;
       const transform = zoomIdentity
-        .translate(viewportWidth / 2 + offsetX, viewportHeight / 2)
+        .translate(viewportWidth / 2 + offsetX, targetY)
         .scale(scale)
         .translate(-(node.x ?? 0), -(node.y ?? 0));
       svg
@@ -1042,6 +1062,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
           aria-label="Interactive knowledge map of Christopher Nielson's work, projects, writing, skills, education, and interests"
         />
 
+        <div className="graph-hud">
         <div className="graph-meta">
           <div className="graph-workspace-title">
             <Network className="size-3.5" />
@@ -1137,6 +1158,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
               <Plus className="size-3.5" />
             </motion.button>
           </div>
+        </div>
         </div>
 
         <form className="graph-question-bar" onSubmit={submitQuestion}>

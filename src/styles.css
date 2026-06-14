@@ -1481,6 +1481,13 @@ pre code {
   will-change: transform;
 }
 
+/* On desktop the HUD is transparent: graph-meta and graph-toolbar position
+   themselves independently against the canvas. On mobile it becomes a real
+   flex container that fuses them into a single top bar (see the 960px query). */
+.graph-hud {
+  display: contents;
+}
+
 /* Top-left meta row: node-count chip + drag/pan/zoom hint side by side. */
 .graph-meta {
   position: absolute;
@@ -2114,32 +2121,53 @@ pre code {
 }
 
 @media (max-width: 960px) {
-  .graph-toolbar {
-    top: 7.25rem;
+  /* Fuse the node-count chip and the toolbar into a single top bar: chip,
+     then Relations, then the horizontally-scrolling filter pills. */
+  .graph-hud {
+    display: flex;
+    position: absolute;
+    z-index: 16;
+    top: 4.25rem;
     right: 0.75rem;
     left: 0.75rem;
-    justify-content: stretch;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .graph-meta {
+    position: static;
+    top: auto;
+    left: auto;
+    flex: none;
+  }
+
+  .graph-toolbar {
+    position: static;
+    top: auto;
+    right: auto;
+    left: auto;
+    min-width: 0;
+    flex: 1;
+    justify-content: flex-start;
   }
 
   .graph-filter-panel {
     max-width: none;
+    min-width: 0;
     flex: 1;
   }
 
-  .graph-meta {
-    top: 4.25rem;
-    left: 0.75rem;
-  }
-
+  /* The drag/pan hint and the (already hidden) zoom controls don't belong in
+     the single bar. */
+  .graph-instructions,
   .graph-view-controls {
     display: none;
   }
 
-  /* The toolbar drops to a full-width row here, so push the floating panel
-     below it to keep the filters clear. */
+  /* The HUD is a single short row now, so the floating panel can sit higher. */
   .knowledge-inspector {
-    top: 10.5rem;
-    max-height: calc(100dvh - 16rem);
+    top: 8.5rem;
+    max-height: calc(100dvh - 14rem);
   }
 }
 
@@ -2171,10 +2199,6 @@ pre code {
 
   .question-submit {
     width: 2.25rem;
-  }
-
-  .graph-instructions {
-    display: none;
   }
 
   .inspector-scrim {
