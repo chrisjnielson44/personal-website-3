@@ -2234,6 +2234,21 @@ pre code {
     display: none;
   }
 
+  /* Restore the zoom controls on phones. Touch has no scroll-to-zoom, and
+     after a search focuses a node, pinching all the way back out to the
+     overview is awkward — so give a persistent, obvious Fit / zoom-out target
+     in the top bar (it sits flex:none at the end; the filter pills scroll). */
+  .graph-view-controls {
+    display: flex;
+    flex: none;
+  }
+
+  /* The hover tooltips are a desktop affordance — on touch they stick after a
+     tap and crowd the bar; every control already carries an aria-label. */
+  .graph-view-controls [data-tooltip]::after {
+    content: none;
+  }
+
   .graph-question-bar {
     right: 0.65rem;
     bottom: 0.65rem;

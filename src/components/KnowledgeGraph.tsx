@@ -773,7 +773,19 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
       const node = graphNodes.find((candidate) => candidate.id === id);
       if (!node) return;
       const phone = viewportWidth <= 767;
-      const scale = viewportWidth <= 960 ? 1.05 : 1.35;
+      // Phone: a node-filling zoom (the 1.05 desktop/tablet step) shows almost
+      // no surrounding graph on a narrow viewport — the node fills the strip
+      // above the sheet with no neighbours for context, and pinching back out
+      // from that depth is painful. Frame a neighbourhood-sized window instead
+      // (~viewport-width worth of world per ~820px, clamped) so the node still
+      // reads as the focus but its links and neighbours stay on screen and the
+      // overview is a short pinch — or one Fit tap — away. Desktop / tablet
+      // (> 767px) keep their existing 1.05 / 1.35 behaviour.
+      const scale = phone
+        ? Math.min(0.6, Math.max(0.4, viewportWidth / 820))
+        : viewportWidth <= 960
+          ? 1.05
+          : 1.35;
       // Desktop / tablet: nudge left so the right-side inspector panel doesn't
       // cover the node. Phone: the inspector is a bottom sheet, so lift the node
       // into the visible strip above it instead of centring it underneath.
