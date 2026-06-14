@@ -560,6 +560,50 @@ pre code {
   line-height: 1.65;
 }
 
+/* Longer narrative ("Overview") — prose paragraphs under a section title. */
+.inspector-overview {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.6rem;
+}
+
+.inspector-overview p {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+
+/* Quick facts ("At a glance") — a compact two-up grid of labelled cards. */
+.inspector-highlights {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+}
+
+.inspector-highlight {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--inspector-raised) 70%, transparent);
+  padding: 0.5rem 0.6rem;
+}
+
+.inspector-highlight dt {
+  color: var(--color-muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.inspector-highlight dd {
+  margin-top: 0.28rem;
+  color: var(--color-foreground);
+  font-size: 0.74rem;
+  font-weight: 560;
+  line-height: 1.4;
+}
+
 /* Obsidian-style node content: cover photo + inline article body. */
 .inspector-cover {
   overflow: hidden;
@@ -969,7 +1013,9 @@ pre code {
    The hub node mid-entrance (.is-hub-enter) is exempt so the name stays
    readable while the rest of the graph detonates around it. */
 .is-interacting .knowledge-node:not(.is-hub-enter) .knowledge-label,
-.is-interacting .knowledge-link-label {
+.is-entrance .knowledge-node:not(.is-hub-enter) .knowledge-label,
+.is-interacting .knowledge-link-label,
+.is-entrance .knowledge-link-label {
   display: none;
 }
 

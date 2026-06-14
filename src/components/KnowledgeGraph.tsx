@@ -44,6 +44,7 @@ import {
   type ZoomBehavior,
 } from "d3";
 import {
+  AlignLeft,
   ArrowRight,
   ArrowUpRight,
   ChevronRight,
@@ -57,6 +58,7 @@ import {
   Network,
   Plus,
   Search,
+  Sparkles,
   Tags,
   X,
 } from "lucide-react";
@@ -557,10 +559,10 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
       );
 
     // Flag "the graph is moving" so CSS can drop the expensive outlined text
-    // labels for the duration. Guarded so the class is written once per burst
-    // (not every frame), and debounced so labels reappear shortly after the
-    // last tick/zoom — covers entrance settle, drag, and pan/zoom uniformly,
-    // including the reduced-motion path where the sim is stopped via stop().
+    // labels while the user pans, zooms, or drags. Guarded so the class is
+    // written once per gesture (not every frame) and debounced so the names
+    // reappear shortly after motion stops. The entrance uses its own
+    // `is-entrance` flag instead, so the slow final settle never gates labels.
     let interacting = false;
     let interactionTimer = 0;
     const markInteracting = () => {
@@ -735,8 +737,11 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
 
       const widthRatio = boundsWidth / viewportWidth;
       const heightRatio = boundsHeight / usableHeight;
-      // "Contain": the whole selection fits within the visible band.
-      let scale = 0.94 / Math.max(widthRatio, heightRatio);
+      // Frame a touch tighter than a strict "contain" fit so the graph fills the
+      // viewport instead of floating with wide side margins. >1 is a slight,
+      // pannable overflow in the constraining dimension; the 90px bounds padding
+      // keeps the outermost nodes comfortably on-screen. Raise for more zoom.
+      let scale = 1.35 / Math.max(widthRatio, heightRatio);
 
       // On portrait phones/tablets a wide graph fit purely to width leaves big
       // empty bands above and below and shrinks every node to an unreadable
@@ -748,7 +753,11 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
         const overflowCap = (1.7 * viewportWidth) / boundsWidth;
         scale = Math.max(scale, Math.min(fillHeight, overflowCap));
       }
-      scale = Math.min(scale, 1.6);
+      // Upper bound on zoom. Kept high so the default overview (and small
+      // selections) can actually zoom in close on large viewports instead of
+      // being pinned to a low cap — that pin was silently swallowing fill-factor
+      // changes. The fill factor above is the real control now.
+      scale = Math.min(scale, 2.8);
       const x = viewportWidth / 2 - scale * (minX + maxX) / 2;
       const y =
         topClearance + usableHeight / 2 - scale * (minY + maxY) / 2 + 18;
@@ -891,6 +900,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
           node.fx = event.x;
           node.fy = event.y;
           simulation.alphaTarget(0.12).restart();
+          markInteracting();
         })
         .on("end", (_event, node) => {
           node.fx = null;
@@ -904,10 +914,10 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
           }
         }),
     );
-    simulation.on("tick", () => {
-      updatePositions();
-      markInteracting();
-    });
+    // Position updates every tick; label-hiding is handled explicitly (by the
+    // drag/zoom handlers and the entrance) so the slow final settle never keeps
+    // the names hidden for seconds after the layout already looks done.
+    simulation.on("tick", updatePositions);
 
     graphApiRef.current = {
       applyState,
@@ -967,6 +977,9 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
       otherNodes.style("opacity", "0");
       linkLayer.style("opacity", "0");
       relationLayer.style("opacity", "0");
+      // Hide the other names for the duration of the entrance explicitly — on a
+      // fixed beat, not tied to when the simulation finally comes to rest.
+      canvas.classed("is-entrance", true);
 
       // How long the lone name holds before the rest detonate around it.
       const HUB_BEAT = 720;
@@ -994,16 +1007,20 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
         simulation.alpha(1).alphaTarget(FLOAT_ALPHA).restart();
       }, HUB_BEAT);
 
-      // The live burst settles into slightly different positions than the
-      // static pre-settle, so re-frame once it has mostly come to rest. Also
-      // drop the hub-entrance exemption now so the name label hides during
-      // later interactions like every other label.
+      // Once the burst has visibly settled, reveal every name and re-frame to
+      // the live layout (which lands slightly differently than the pre-settle).
+      // The sim may still be doing a slow final creep — that's fine, the labels
+      // just drift gently into place with their nodes. markInteracting() bridges
+      // the reveal through the small re-framing glide so there's no 1-frame
+      // flash between the entrance flag clearing and the camera move starting.
       entranceTimer = window.setTimeout(() => {
+        canvas.classed("is-entrance", false);
         hubNode.classed("is-hub-enter", false);
+        markInteracting();
         if (resultIdsRef.current.size === 0 && !selectedIdRef.current) {
           fitIds(visibleIds);
         }
-      }, HUB_BEAT + 2000);
+      }, HUB_BEAT + 650);
     }
 
     let resizeFrame = 0;
@@ -1377,6 +1394,41 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
                       </p>
                     ) : null}
                   </header>
+
+                  {selectedNode.details && selectedNode.details.length > 0 ? (
+                    <section className="inspector-section">
+                      <h3 className="inspector-section-title">
+                        <AlignLeft className="size-3.5" />
+                        Overview
+                      </h3>
+                      <div className="inspector-overview">
+                        {selectedNode.details.map((paragraph) => (
+                          <p key={paragraph.slice(0, 32)}>{paragraph}</p>
+                        ))}
+                      </div>
+                    </section>
+                  ) : null}
+
+                  {selectedNode.highlights &&
+                  selectedNode.highlights.length > 0 ? (
+                    <section className="inspector-section">
+                      <h3 className="inspector-section-title">
+                        <Sparkles className="size-3.5" />
+                        At a glance
+                      </h3>
+                      <dl className="inspector-highlights">
+                        {selectedNode.highlights.map((highlight) => (
+                          <div
+                            key={highlight.label}
+                            className="inspector-highlight"
+                          >
+                            <dt>{highlight.label}</dt>
+                            <dd>{highlight.value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </section>
+                  ) : null}
 
                   {selectedArticle?.mdx ? (
                     <section className="inspector-section inspector-article-section">

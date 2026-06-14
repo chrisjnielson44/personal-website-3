@@ -288,6 +288,12 @@ const intentRules: Array<{
     weight: 14,
   },
   {
+    reason: "agent systems",
+    keywords: ["ai", "agent", "agents", "agentic"],
+    applies: (node) => node.id === "agent-infrastructure",
+    weight: 14,
+  },
+  {
     reason: "projects",
     keywords: [
       "project",
@@ -541,6 +547,15 @@ export function searchKnowledgeGraph(
       const labelMatches = countMatches(node.label, tokens);
       const tagMatches = countMatches(node.tags.join(" "), tokens);
       const descriptionMatches = countMatches(node.description, tokens);
+      const detailMatches = countMatches(
+        [
+          ...(node.details ?? []),
+          ...(node.highlights ?? []).map(
+            (highlight) => `${highlight.label} ${highlight.value}`,
+          ),
+        ].join(" "),
+        tokens,
+      );
       const eyebrowMatches = countMatches(node.eyebrow ?? "", tokens);
       const kindMatches = countMatches(
         `${knowledgeKindLabels[node.kind]} ${getNodeCategory(node)}`,
@@ -576,6 +591,7 @@ export function searchKnowledgeGraph(
         labelMatches * 9 +
         tagMatches * 6 +
         descriptionMatches * 4 +
+        detailMatches * 2 +
         eyebrowMatches * 3 +
         kindMatches * 3 +
         relationMatches * 4 +
@@ -590,7 +606,8 @@ export function searchKnowledgeGraph(
 
       if (labelMatches) reasons.push("name");
       if (tagMatches) reasons.push("tags");
-      if (descriptionMatches || eyebrowMatches) reasons.push("description");
+      if (descriptionMatches || eyebrowMatches || detailMatches)
+        reasons.push("description");
       if (kindMatches) reasons.push("type");
       if (relationMatches) reasons.push("relationships");
       if (neighborMatches) reasons.push("connected context");
