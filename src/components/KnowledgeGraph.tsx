@@ -8,6 +8,7 @@ import {
   type KnowledgeNodeKind,
 } from "@/data/knowledgeGraph";
 import { ArticleContent } from "@/components/ArticleContent";
+import { socialLinks } from "@/data/social";
 import { getArticleBySlug, formatDate } from "@/data/articles";
 import { getTechIcon, type TechIcon } from "@/data/techIcons";
 import {
@@ -52,6 +53,7 @@ import {
   FileText,
   Focus,
   Hash,
+  Info,
   Link2,
   Minus,
   Move,
@@ -148,6 +150,16 @@ const connectionLookup = buildConnectionIndex(knowledgeNodes, knowledgeLinks);
 function getNodeId(node: string | GraphNode): string {
   return typeof node === "string" ? node : node.id;
 }
+
+// Maps profile highlight labels to short, lowercase frontmatter keys for the
+// terminal/.md-style welcome card.
+const WELCOME_FACT_KEYS: Record<string, string> = {
+  "Based in": "location",
+  Focus: "focus",
+  Education: "studied",
+  Languages: "speaks",
+  Writing: "writes",
+};
 
 function getNodeImportance(node: KnowledgeNode): number {
   if (node.importance) return node.importance;
@@ -253,6 +265,28 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
   const [edgeLabelsVisible, setEdgeLabelsVisible] = useState(true);
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [suggestIndex, setSuggestIndex] = useState(-1);
+  // The top-left orientation card. Resets to visible on every mount (reload /
+  // re-navigation) so returning visitors still get the intro, but dismiss keeps
+  // it gone for the rest of the session.
+  const [welcomeOpen, setWelcomeOpen] = useState(true);
+  // The welcome card is a live projection of the profile node, so its identity
+  // and résumé facts stay in sync with the graph data (single source of truth).
+  const profileNode = useMemo(
+    () => knowledgeNodes.find((node) => node.id === "christopher"),
+    [],
+  );
+  const profileFacts = useMemo(
+    () =>
+      (profileNode?.highlights ?? [])
+        .filter((highlight) => highlight.label !== "Role")
+        .map((highlight) => ({
+          key:
+            WELCOME_FACT_KEYS[highlight.label] ??
+            highlight.label.toLowerCase(),
+          value: highlight.value,
+        })),
+    [profileNode],
+  );
 
   const selectedNode = selectedNodeId
     ? nodeLookup.get(selectedNodeId) ?? null
@@ -525,6 +559,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
           }`,
       )
       .attr("data-importance", (node) => getNodeImportance(node))
+      .attr("data-category", (node) => getNodeCategory(node))
       .attr("role", "button")
       .attr("tabindex", 0)
       .attr(
@@ -975,6 +1010,45 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
       });
       updatePositions();
 
+      // Reveal order ripples OUTWARD from the hub along the graph's own edges.
+      // BFS distance from "christopher" gives each node a ring depth, so the
+      // burst reads as the portfolio growing out of the profile rather than a
+      // flat fade in arbitrary data order. A small per-node jitter keeps each
+      // ring from popping in robotic unison, and normalising by the deepest
+      // ring keeps the whole wave the same length no matter how the graph grows.
+      const RIPPLE_SPREAD = 320; // ms from the first ring to the last
+      const depthById = new Map<string, number>([["christopher", 0]]);
+      let frontier: string[] = ["christopher"];
+      while (frontier.length > 0) {
+        const nextFrontier: string[] = [];
+        for (const id of frontier) {
+          const nextDepth = depthById.get(id)! + 1;
+          for (const neighborId of neighbors.get(id) ?? []) {
+            if (!depthById.has(neighborId)) {
+              depthById.set(neighborId, nextDepth);
+              nextFrontier.push(neighborId);
+            }
+          }
+        }
+        frontier = nextFrontier;
+      }
+      let maxDepth = 0;
+      for (const depth of depthById.values())
+        maxDepth = Math.max(maxDepth, depth);
+      const ringDelay = maxDepth > 0 ? RIPPLE_SPREAD / maxDepth : 0;
+      const enterDelay = new Map<string, number>();
+      graphNodes.forEach((node) => {
+        // Any node the BFS didn't reach (none today, but stay safe) rides in
+        // with the outermost ring.
+        const depth = depthById.get(node.id) ?? maxDepth;
+        const jitter =
+          [...node.id].reduce(
+            (value, character) => (value * 31 + character.charCodeAt(0)) % 997,
+            7,
+          ) % 60;
+        enterDelay.set(node.id, Math.round(depth * ringDelay + jitter));
+      });
+
       // Two-phase entrance. Phase 1: only the profile (name) node is on
       // screen, popping in at the centre while everything else stays imploded
       // beneath it and held invisible. Phase 2 (after a short beat): the rest
@@ -999,13 +1073,14 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
       entranceBurstTimer = window.setTimeout(() => {
         // Reveal the rest as they burst; bring the link/relation layers in
         // slightly later so they don't render as a knot at the implosion point.
+        // Each node pops in (scale + fade) as the wave reaches it. The per-node
+        // --enter-delay carries the BFS ripple so the reveal grows out of the
+        // hub instead of fading in flat; the pop itself lives in CSS (on the
+        // circles, via fill-box) so it stays centred on each node.
         otherNodes
           .style("opacity", null)
-          .style("animation", "knowledge-node-enter 620ms ease-out backwards")
-          .style(
-            "animation-delay",
-            (_node, index) => `${Math.min(index * 4, 300)}ms`,
-          );
+          .style("--enter-delay", (node) => `${enterDelay.get(node.id) ?? 0}ms`)
+          .classed("is-burst-enter", true);
         linkLayer
           .style("opacity", null)
           .style("animation", "knowledge-layer-enter 760ms ease-out backwards")
@@ -1132,6 +1207,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
               <motion.button
                 key={category}
                 type="button"
+                data-category={category}
                 onClick={() => toggleCategory(category)}
                 className={`graph-filter ${
                   activeCategories.has(category) ? "is-active" : ""
@@ -1189,6 +1265,112 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
           </div>
         </div>
         </div>
+
+        <AnimatePresence>
+          {welcomeOpen ? (
+            <motion.aside
+              key="graph-welcome"
+              className="graph-welcome"
+              aria-label="Welcome — about Christopher Nielson"
+              initial={
+                prefersReducedMotion
+                  ? false
+                  : { opacity: 0, y: 10, scale: 0.98 }
+              }
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={
+                prefersReducedMotion
+                  ? { opacity: 0 }
+                  : { opacity: 0, y: 6, scale: 0.985 }
+              }
+              transition={{
+                duration: prefersReducedMotion ? 0 : 0.32,
+                delay: prefersReducedMotion ? 0 : 0.15,
+                ease: [0.2, 0.8, 0.2, 1],
+              }}
+            >
+              <div className="graph-welcome-tab">
+                <span className="graph-welcome-file">
+                  <FileText className="size-3.5" />
+                  christopher.md
+                </span>
+                <button
+                  type="button"
+                  className="graph-welcome-close"
+                  onClick={() => setWelcomeOpen(false)}
+                  aria-label="Dismiss welcome"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              <div className="graph-welcome-body">
+                <div className="graph-welcome-heading">
+                  <h2 className="graph-welcome-title">
+                    <span aria-hidden="true">#</span>
+                    Christopher Nielson
+                  </h2>
+                  <p className="graph-welcome-role">
+                    {profileNode?.eyebrow ??
+                      "Software engineer · Risk Engineering at BNY"}
+                  </p>
+                </div>
+
+                <p className="graph-welcome-comment">
+                  // my résumé, as a living knowledge graph
+                </p>
+
+                {profileFacts.length > 0 ? (
+                  <dl className="graph-welcome-frontmatter">
+                    {profileFacts.map((fact) => (
+                      <div key={fact.key}>
+                        <dt>{fact.key}</dt>
+                        <dd>{fact.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                ) : null}
+
+                <div className="graph-welcome-actions">
+                  <button
+                    type="button"
+                    className="graph-welcome-cmd is-primary"
+                    onClick={() => {
+                      setWelcomeOpen(false);
+                      selectNode("christopher");
+                    }}
+                  >
+                    <ArrowRight className="size-3.5" />
+                    start with me
+                  </button>
+                  <a
+                    href="/christopher-nielson-resume.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="graph-welcome-cmd"
+                  >
+                    <FileText className="size-3.5" />
+                    résumé
+                  </a>
+                </div>
+
+                <div className="graph-welcome-social">
+                  {socialLinks.map((link) => (
+                    <a
+                      key={link.name}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="graph-welcome-social-link"
+                    >
+                      {link.name.toLowerCase()}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </motion.aside>
+          ) : null}
+        </AnimatePresence>
 
         <form className="graph-question-bar" onSubmit={submitQuestion}>
           <AnimatePresence>
@@ -1456,7 +1638,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
 
                   <section className="inspector-section">
                     <h3 className="inspector-section-title">
-                      <ChevronRight className="size-3.5" />
+                      <Info className="size-3.5" />
                       Properties
                     </h3>
                     <dl className="inspector-properties">
@@ -1466,7 +1648,8 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
                         </dt>
                         <dd>
                           <span
-                            className={`graph-kind-badge is-${selectedNode.kind}`}
+                            className="graph-kind-badge"
+                            data-category={getNodeCategory(selectedNode)}
                           >
                             {knowledgeKindLabels[selectedNode.kind]}
                           </span>
@@ -1482,14 +1665,30 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
                         <dt>
                           <Focus className="size-3.5" /> Prominence
                         </dt>
-                        <dd>{getNodeImportance(selectedNode)} / 4</dd>
+                        <dd>
+                          <span
+                            className="inspector-prominence"
+                            aria-label={`${getNodeImportance(selectedNode)} of 4`}
+                          >
+                            {[0, 1, 2, 3].map((pip) => (
+                              <span
+                                key={pip}
+                                className={`inspector-pip${
+                                  pip < getNodeImportance(selectedNode)
+                                    ? " is-on"
+                                    : ""
+                                }`}
+                              />
+                            ))}
+                          </span>
+                        </dd>
                       </div>
                     </dl>
                   </section>
 
                   <section className="inspector-section">
                     <h3 className="inspector-section-title">
-                      <ChevronRight className="size-3.5" />
+                      <Tags className="size-3.5" />
                       Evidence tags
                     </h3>
                     <div className="inspector-tags">
@@ -1505,7 +1704,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
                   <section className="inspector-section inspector-backlinks">
                     <div className="inspector-section-heading">
                       <h3 className="inspector-section-title">
-                        <ChevronRight className="size-3.5" />
+                        <Network className="size-3.5" />
                         Connected evidence
                       </h3>
                       <span>{selectedConnections.length} links</span>
@@ -1527,7 +1726,8 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
                             />
                           ) : (
                             <span
-                              className={`graph-connection-dot is-${node.kind}`}
+                              className="graph-connection-dot"
+                              data-category={getNodeCategory(node)}
                             />
                           )}
                           <span className="min-w-0 flex-1">

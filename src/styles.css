@@ -69,6 +69,15 @@
   --graph-node-accent: #2b4f9e;
   --graph-node-dark: #34383a;
   --graph-node-warm: #9db4dd;
+  /* Categorical node palette (light) — muted, harmonious hues, one per
+     filter category, so a node's colour says what it is. */
+  --cat-work: #2b4f9e;
+  --cat-projects: #2c8a66;
+  --cat-writing: #a06f24;
+  --cat-skills: #7344be;
+  --cat-education: #2c8593;
+  --cat-personal: #b3567a;
+  --cat-resources: #69707e;
   --inspector-background: #e6e5dd;
   --inspector-raised: #faf9f5;
   --inspector-hover: #edece5;
@@ -111,6 +120,14 @@
     --graph-node-accent: #7aa6ff;
     --graph-node-dark: #dad9d2;
     --graph-node-warm: #6a93dd;
+    /* Categorical node palette (dark) — tuned brighter for the near-black canvas. */
+    --cat-work: #7aa6ff;
+    --cat-projects: #56ba8f;
+    --cat-writing: #d8a65a;
+    --cat-skills: #b189e8;
+    --cat-education: #4fb4c6;
+    --cat-personal: #e58aaa;
+    --cat-resources: #8f97a8;
     --inspector-background: #1c1c1e;
     --inspector-raised: #222226;
     --inspector-hover: #2b2b2f;
@@ -814,6 +831,25 @@ pre code {
   font-weight: 550;
 }
 
+/* Prominence shown as a 4-pip meter rather than "4 / 4" — reads at a glance and
+   fits the graph's visual language better than a fraction. */
+.inspector-prominence {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.inspector-pip {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-foreground) 16%, transparent);
+}
+
+.inspector-pip.is-on {
+  background: var(--color-accent);
+}
+
 .inspector-tags {
   display: flex;
   flex-wrap: wrap;
@@ -961,6 +997,44 @@ pre code {
   color: var(--color-accent-foreground);
 }
 
+/* A category colour dot turns each filter into a legend for the node colours. */
+.graph-filter[data-category]::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: none;
+  border-radius: 999px;
+  background: var(--chip-hue);
+}
+.graph-filter[data-category="work"] {
+  --chip-hue: var(--cat-work);
+}
+.graph-filter[data-category="projects"] {
+  --chip-hue: var(--cat-projects);
+}
+.graph-filter[data-category="writing"] {
+  --chip-hue: var(--cat-writing);
+}
+.graph-filter[data-category="skills"] {
+  --chip-hue: var(--cat-skills);
+}
+.graph-filter[data-category="education"] {
+  --chip-hue: var(--cat-education);
+}
+.graph-filter[data-category="personal"] {
+  --chip-hue: var(--cat-personal);
+}
+.graph-filter[data-category="resources"] {
+  --chip-hue: var(--cat-resources);
+}
+
+/* On the accent-filled active/hover chip, swap the dot to the contrasting
+   foreground so it stays visible. */
+.graph-filter:hover[data-category]::before,
+.graph-filter.is-active[data-category]::before {
+  background: var(--color-accent-foreground);
+}
+
 .knowledge-link {
   stroke: color-mix(in srgb, var(--graph-link) 44%, transparent);
   transition:
@@ -1065,6 +1139,36 @@ pre code {
   animation: knowledge-node-enter 460ms ease-out 220ms backwards;
 }
 
+/* Phase 2: every other node pops in (scale + fade) as the burst wave reaches
+   it. The per-node --enter-delay (set in JS) ripples the reveal outward from
+   the hub by graph distance, so the portfolio appears to grow out of the
+   profile rather than fade in all at once. Like the hub pop, the scale rides on
+   the circles via fill-box so it stays centred without fighting the <g>'s
+   layout translate. The gentle back-out easing gives each node a small,
+   confident overshoot — softer than the hub's so 150-odd of them don't read as
+   busy. The class is intentionally left on after the run: a finished,
+   non-forwards animation hands back the base styles, whereas clearing it
+   mid-wave would snap the still-popping outer ring to full size. */
+@keyframes knowledge-node-burst {
+  from {
+    opacity: 0;
+    transform: scale(0.35);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.knowledge-node.is-burst-enter .knowledge-node-core,
+.knowledge-node.is-burst-enter .knowledge-node-ring,
+.knowledge-node.is-burst-enter .knowledge-node-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: knowledge-node-burst 480ms cubic-bezier(0.34, 1.28, 0.64, 1)
+    var(--enter-delay, 0ms) backwards;
+}
+
 .knowledge-node {
   cursor: grab;
   outline: none;
@@ -1076,8 +1180,12 @@ pre code {
 }
 
 .knowledge-node-core {
-  fill: var(--graph-node);
-  stroke: var(--graph-node-stroke);
+  fill: color-mix(
+    in srgb,
+    var(--node-hue, var(--graph-node-stroke)) 75%,
+    var(--graph-node)
+  );
+  stroke: var(--node-hue, var(--graph-node-stroke));
   stroke-width: 1.35px;
   transition:
     fill 150ms ease-out,
@@ -1103,67 +1211,62 @@ pre code {
     stroke 150ms ease-out;
 }
 
+/* Category hue carried on each node as --node-hue; the core fill is that hue
+   softened toward the neutral node body, the stroke is the pure hue, and the
+   prominence rings derive from it too — so a node's colour says what it is. */
+.knowledge-node {
+  --node-hue: var(--graph-node-stroke);
+}
+.knowledge-node[data-category="work"] {
+  --node-hue: var(--cat-work);
+}
+.knowledge-node[data-category="projects"] {
+  --node-hue: var(--cat-projects);
+}
+.knowledge-node[data-category="writing"] {
+  --node-hue: var(--cat-writing);
+}
+.knowledge-node[data-category="skills"] {
+  --node-hue: var(--cat-skills);
+}
+.knowledge-node[data-category="education"] {
+  --node-hue: var(--cat-education);
+}
+.knowledge-node[data-category="personal"] {
+  --node-hue: var(--cat-personal);
+}
+.knowledge-node[data-category="resources"] {
+  --node-hue: var(--cat-resources);
+}
+
+/* The profile hub is the anchor — the pure, brightest accent. */
 .knowledge-node.is-profile .knowledge-node-core {
-  fill: var(--graph-node-accent);
-  stroke: var(--graph-node-accent);
+  fill: var(--color-accent);
+  stroke: var(--color-accent);
 }
 
-.knowledge-node.is-experience .knowledge-node-core {
-  fill: var(--graph-node-medium);
-  stroke: var(--graph-node-accent);
-}
-
-.knowledge-node.is-domain .knowledge-node-core {
-  fill: var(--graph-node-accent);
-  stroke: var(--graph-node-accent);
-}
-
+/* Concepts and resources read as "looser" ideas with dashed rims. */
 .knowledge-node.is-concept .knowledge-node-core {
-  fill: var(--graph-node-soft);
-  stroke: var(--graph-node-accent);
   stroke-dasharray: 2 2;
 }
 
-.knowledge-node.is-project .knowledge-node-core {
-  fill: var(--graph-node-dark);
-  stroke: var(--graph-node-dark);
-}
-
-.knowledge-node.is-article .knowledge-node-core {
-  fill: var(--graph-node-warm);
-  stroke: var(--graph-node-accent);
-}
-
 .knowledge-node.is-resource .knowledge-node-core {
-  fill: var(--graph-node);
-  stroke: var(--graph-node-accent);
   stroke-dasharray: 3 2;
 }
 
-.knowledge-node.is-skill .knowledge-node-core {
-  fill: var(--graph-node-soft);
-  stroke: var(--graph-node-stroke);
-  stroke-width: 1.25px;
-}
-
-.knowledge-node.is-personal .knowledge-node-core {
-  fill: var(--graph-node-warm);
-  stroke: var(--graph-node-accent);
-}
-
+/* The dense skill / course dots keep a slightly thinner rim. */
+.knowledge-node.is-skill .knowledge-node-core,
 .knowledge-node.is-course .knowledge-node-core {
-  fill: var(--graph-node-soft);
-  stroke: var(--graph-node-stroke);
   stroke-width: 1.25px;
 }
 
 .knowledge-node.is-prominent .knowledge-node-ring {
-  stroke: color-mix(in srgb, var(--color-accent) 58%, transparent);
+  stroke: color-mix(in srgb, var(--node-hue) 55%, transparent);
 }
 
 .knowledge-node.is-prominent[data-importance="3"] .knowledge-node-ring,
 .knowledge-node.is-prominent[data-importance="4"] .knowledge-node-ring {
-  stroke: var(--color-accent);
+  stroke: var(--node-hue);
   stroke-width: 1.5px;
 }
 
@@ -1254,25 +1357,32 @@ pre code {
   text-transform: uppercase;
 }
 
-.graph-kind-badge.is-profile,
-.graph-kind-badge.is-domain,
-.graph-kind-badge.is-concept,
-.graph-kind-badge.is-article,
-.graph-kind-badge.is-personal {
-  border-color: color-mix(in srgb, var(--color-accent) 34%, var(--color-border));
-  background: color-mix(in srgb, var(--color-accent) 12%, var(--inspector-raised));
-  color: var(--color-accent);
+.graph-kind-badge[data-category="work"] {
+  --badge-hue: var(--cat-work);
+}
+.graph-kind-badge[data-category="projects"] {
+  --badge-hue: var(--cat-projects);
+}
+.graph-kind-badge[data-category="writing"] {
+  --badge-hue: var(--cat-writing);
+}
+.graph-kind-badge[data-category="skills"] {
+  --badge-hue: var(--cat-skills);
+}
+.graph-kind-badge[data-category="education"] {
+  --badge-hue: var(--cat-education);
+}
+.graph-kind-badge[data-category="personal"] {
+  --badge-hue: var(--cat-personal);
+}
+.graph-kind-badge[data-category="resources"] {
+  --badge-hue: var(--cat-resources);
 }
 
-.graph-kind-badge.is-experience {
-  border-color: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
-  background: color-mix(in srgb, var(--color-accent) 8%, var(--inspector-raised));
-  color: var(--color-accent);
-}
-
-.graph-kind-badge.is-project,
-.graph-kind-badge.is-resource {
-  color: var(--color-foreground);
+.graph-kind-badge[data-category] {
+  border-color: color-mix(in srgb, var(--badge-hue) 38%, var(--color-border));
+  background: color-mix(in srgb, var(--badge-hue) 15%, var(--inspector-raised));
+  color: var(--badge-hue);
 }
 
 .graph-connection-dot {
@@ -1284,32 +1394,31 @@ pre code {
   background: var(--inspector-raised);
 }
 
-.graph-connection-dot.is-profile,
-.graph-connection-dot.is-domain,
-.graph-connection-dot.is-concept,
-.graph-connection-dot.is-article,
-.graph-connection-dot.is-personal {
-  border-color: var(--color-accent);
-  background: var(--color-accent);
+.graph-connection-dot[data-category="work"] {
+  --dot-hue: var(--cat-work);
+}
+.graph-connection-dot[data-category="projects"] {
+  --dot-hue: var(--cat-projects);
+}
+.graph-connection-dot[data-category="writing"] {
+  --dot-hue: var(--cat-writing);
+}
+.graph-connection-dot[data-category="skills"] {
+  --dot-hue: var(--cat-skills);
+}
+.graph-connection-dot[data-category="education"] {
+  --dot-hue: var(--cat-education);
+}
+.graph-connection-dot[data-category="personal"] {
+  --dot-hue: var(--cat-personal);
+}
+.graph-connection-dot[data-category="resources"] {
+  --dot-hue: var(--cat-resources);
 }
 
-.graph-connection-dot.is-experience {
-  border-color: var(--color-accent);
-  background: var(--graph-node-medium);
-}
-
-.graph-connection-dot.is-project {
-  border-color: var(--color-foreground);
-  background: var(--color-foreground);
-}
-
-.graph-connection-dot.is-resource {
-  border-color: var(--color-foreground);
-}
-
-.graph-connection-dot.is-course {
-  border-color: var(--graph-node-stroke);
-  background: var(--inspector-raised);
+.graph-connection-dot[data-category] {
+  border-color: var(--dot-hue);
+  background: var(--dot-hue);
 }
 
 .content-visibility-auto {
@@ -1538,7 +1647,7 @@ pre code {
 .graph-meta {
   position: absolute;
   z-index: 12;
-  top: 4.5rem;
+  top: 1.25rem;
   left: 1rem;
   display: flex;
   align-items: center;
@@ -1576,10 +1685,239 @@ pre code {
   padding-left: 0.55rem;
 }
 
+/* Top-left welcome / orientation card. Glass like the HUD chips but more opaque
+   so the copy stays crisp over the graph. Sits in the empty corner below the
+   meta row, frames the whole page as Christopher's résumé, and points first-time
+   visitors at the two ways in (click a node, ask a question). Dismissible. */
+.graph-welcome {
+  position: absolute;
+  z-index: 14;
+  top: 4.5rem;
+  left: 1rem;
+  display: flex;
+  width: clamp(18rem, 24vw, 21.5rem);
+  max-height: calc(100dvh - 9rem);
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  background: var(--glass-bg-strong);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-highlight),
+    0 0 0 1px color-mix(in srgb, var(--color-accent) 6%, transparent);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+/* Editor-style filename tab — mirrors the node inspector's `christopher.md`. */
+.graph-welcome-tab {
+  display: flex;
+  height: 2.4rem;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--glass-border) 60%, transparent);
+  background: color-mix(in srgb, var(--inspector-raised) 35%, transparent);
+  padding: 0 0.5rem 0 0.85rem;
+}
+
+.graph-welcome-file {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--color-muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.01em;
+}
+
+.graph-welcome-file svg {
+  color: var(--color-accent);
+}
+
+.graph-welcome-close {
+  display: grid;
+  width: 1.7rem;
+  height: 1.7rem;
+  flex: none;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--color-muted-foreground);
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.graph-welcome-close:hover {
+  background: var(--inspector-hover);
+  color: var(--color-foreground);
+}
+
+.graph-welcome-body {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.85rem;
+  overflow-y: auto;
+  padding: 1.05rem 1.15rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.graph-welcome-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* `# Heading` — the markdown hash is a quiet accent token, the name is bold. */
+.graph-welcome-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  font-size: 1.2rem;
+  font-weight: 720;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.graph-welcome-title span {
+  color: color-mix(in srgb, var(--color-accent) 80%, var(--color-muted));
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.graph-welcome-role {
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: lowercase;
+}
+
+.graph-welcome-comment {
+  color: var(--color-muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+
+/* Frontmatter-style facts: `key   value`, no boxes. */
+.graph-welcome-frontmatter {
+  display: grid;
+  gap: 0.42rem;
+  margin: 0;
+  border-top: 1px solid
+    color-mix(in srgb, var(--glass-border) 45%, transparent);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--glass-border) 45%, transparent);
+  padding: 0.75rem 0;
+}
+
+.graph-welcome-frontmatter > div {
+  display: grid;
+  grid-template-columns: 4.25rem minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: baseline;
+}
+
+.graph-welcome-frontmatter dt {
+  color: var(--color-muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.01em;
+}
+
+.graph-welcome-frontmatter dd {
+  margin: 0;
+  color: var(--color-foreground);
+  font-size: 0.76rem;
+  font-weight: 540;
+  line-height: 1.35;
+}
+
+/* Command-style CTAs. */
+.graph-welcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.graph-welcome-cmd {
+  display: inline-flex;
+  height: 2.05rem;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--inspector-raised) 55%, transparent);
+  padding: 0 0.8rem;
+  color: var(--color-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.graph-welcome-cmd svg {
+  color: var(--color-accent);
+}
+
+.graph-welcome-cmd:hover {
+  background: var(--inspector-hover);
+  transform: translateY(-1px);
+}
+
+.graph-welcome-cmd.is-primary {
+  border-color: transparent;
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.graph-welcome-cmd.is-primary svg {
+  color: #fff;
+}
+
+.graph-welcome-cmd.is-primary:hover {
+  background: color-mix(in srgb, var(--color-accent) 88%, #ffffff);
+}
+
+/* Mono text social links. */
+.graph-welcome-social {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.graph-welcome-social-link {
+  color: var(--color-muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  transition: color 150ms ease;
+}
+
+.graph-welcome-social-link:hover {
+  color: var(--color-accent);
+}
+
 .graph-toolbar {
   position: absolute;
   z-index: 15;
-  top: 4.5rem;
+  top: 1.25rem;
   right: 1rem;
   left: 18rem;
   display: flex;
@@ -1889,7 +2227,7 @@ pre code {
 .inspector-scrim {
   position: fixed;
   z-index: 84;
-  inset: 3.5rem 0 0;
+  inset: 0;
   border: 0;
   /* Obsidian-like: selecting a node opens the side panel but leaves the
      graph crisp and fully interactive — no dim, no blur. The scrim only
@@ -1906,13 +2244,13 @@ pre code {
      grows (then scrolls internally) up to a max-height that clears the
      search bar — so sparse nodes get a compact card, not a tall empty one.
      The graph stays interactive in the space around it. */
-  top: 8.25rem;
+  top: 5rem;
   right: 1.1rem;
   bottom: auto;
   display: flex;
   width: clamp(420px, 38vw, 600px);
   min-height: 0;
-  max-height: calc(100dvh - 13.75rem);
+  max-height: calc(100dvh - 10.5rem);
   flex-direction: column;
   overflow: hidden;
   border: 1px solid var(--glass-border);
@@ -2173,7 +2511,7 @@ pre code {
     display: flex;
     position: absolute;
     z-index: 16;
-    top: 4.25rem;
+    top: 1rem;
     right: 0.75rem;
     left: 0.75rem;
     align-items: center;
@@ -2212,8 +2550,8 @@ pre code {
 
   /* The HUD is a single short row now, so the floating panel can sit higher. */
   .knowledge-inspector {
-    top: 8.5rem;
-    max-height: calc(100dvh - 14rem);
+    top: 5.25rem;
+    max-height: calc(100dvh - 10.75rem);
   }
 }
 
@@ -2290,5 +2628,21 @@ pre code {
   .inspector-properties,
   .graph-connections {
     grid-template-columns: 1fr;
+  }
+
+  /* Shrink the welcome card to a compact badge on phones so the graph stays
+     front-and-centre: keep the identity + lead + CTAs, drop the hint list and
+     social row (the question bar and tappable nodes are self-evident here). */
+  .graph-welcome {
+    top: 4.25rem;
+    right: 0.75rem;
+    left: 0.75rem;
+    width: auto;
+    max-width: 20rem;
+  }
+
+  .graph-welcome-body {
+    gap: 0.7rem;
+    padding: 0.9rem 0.95rem;
   }
 }

@@ -142,12 +142,15 @@ function RootComponent() {
         <HeadContent />
       </head>
       <body className="flex min-h-dvh flex-col bg-background text-foreground antialiased">
-        <Header />
+        {/* The graph home is full-bleed and self-identifying (welcome card +
+            the central profile node), so it drops the top header. Every other
+            route keeps it for branding and the link back to the graph. */}
+        {isGraphHome ? null : <Header />}
         <main
           className={cn(
             "page-shell flex-1",
             isGraphHome
-              ? "min-h-[calc(100dvh-3.5rem)]"
+              ? "min-h-dvh"
               : "pt-10 sm:pt-16",
           )}
         >
