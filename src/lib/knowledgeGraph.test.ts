@@ -157,6 +157,65 @@ describe("local graph retrieval", () => {
     expect(ids).not.toContain("financial-risk");
   });
 
+  it("tolerates typos via bounded edit distance", () => {
+    const pyton = searchKnowledgeGraph(
+      "pyton",
+      knowledgeNodes,
+      knowledgeLinks,
+    ).map((result) => result.node.id);
+    const typescirpt = searchKnowledgeGraph(
+      "typescirpt",
+      knowledgeNodes,
+      knowledgeLinks,
+    ).map((result) => result.node.id);
+
+    expect(pyton).toContain("python");
+    expect(typescirpt).toContain("typescript");
+  });
+
+  it("matches mid-word substrings for longer tokens", () => {
+    // "script" should reach "typescript" even though it is neither a whole word
+    // nor a prefix of it.
+    const ids = searchKnowledgeGraph(
+      "script",
+      knowledgeNodes,
+      knowledgeLinks,
+    ).map((result) => result.node.id);
+
+    expect(ids).toContain("typescript");
+  });
+
+  it("returns nothing for queries that match no node", () => {
+    // Previously high-importance nodes leaked through on the importance floor
+    // alone; a no-match query must now come back empty.
+    expect(
+      searchKnowledgeGraph("xyzzy", knowledgeNodes, knowledgeLinks),
+    ).toEqual([]);
+  });
+
+  it("never surfaces a node without a real match reason", () => {
+    const results = searchKnowledgeGraph(
+      "python",
+      knowledgeNodes,
+      knowledgeLinks,
+    );
+
+    expect(results.length).toBeGreaterThan(0);
+    expect(results.every((result) => result.reasons.length > 0)).toBe(true);
+  });
+
+  it("lets a rare term outrank a common one (IDF weighting)", () => {
+    // "context" is corpus-wide filler; "graphrag" is distinctive, so a GraphRAG
+    // node should lead rather than something that only matched "context".
+    const results = searchKnowledgeGraph(
+      "graphrag context",
+      knowledgeNodes,
+      knowledgeLinks,
+    );
+
+    expect(results[0]!.node.id).toMatch(/graphrag/);
+  });
+
   it("expands evidence paths only between ranked result nodes", () => {
     const results = searchKnowledgeGraph(
       "GraphRAG context",

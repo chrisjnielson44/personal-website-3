@@ -400,7 +400,11 @@ const coreKnowledgeNodes: KnowledgeNode[] = [
     highlights: [
       { label: "Based in", value: "Pittsburgh, PA" },
       { label: "Role", value: "Software Engineer, Risk Engineering" },
-      { label: "Focus", value: "Production AI agent infrastructure" },
+      {
+        label: "Focus",
+        value:
+          "Production AI agent infra, knowledge systems & context engineering",
+      },
       { label: "Education", value: "Carnegie Mellon · Florida State" },
       { label: "Languages", value: "English · Spanish" },
       { label: "Writing", value: "Agents, knowledge systems, risk" },
@@ -665,7 +669,7 @@ const coreKnowledgeNodes: KnowledgeNode[] = [
     label: "Python",
     kind: "skill",
     description:
-      "My primary language — agent services, machine learning, analytics, APIs, and data pipelines.",
+      "My primary language for agent services, machine learning, analytics, APIs, and data pipelines — whitespace-sensitive, and frankly so am I.",
     tags: ["Backend", "ML", "Data"],
   },
   {
@@ -673,7 +677,7 @@ const coreKnowledgeNodes: KnowledgeNode[] = [
     label: "TypeScript",
     kind: "skill",
     description:
-      "I use it for type-safe product and platform work across interfaces, services, and shared contracts.",
+      "I use it for type-safe product and platform work across interfaces, services, and shared contracts — and yes, reaching for `any` feels like giving up.",
     tags: ["Frontend", "Backend", "Type Safety"],
   },
   {
@@ -817,7 +821,7 @@ const coreKnowledgeNodes: KnowledgeNode[] = [
     label: "Linux",
     kind: "skill",
     description:
-      "My development and operations environment for containerized services, GPU workloads, and automation.",
+      "My development and operations home for containerized services, GPU workloads, and automation. The terminal is my comfort zone; the GUI is for guests.",
     tags: ["Systems", "Operations", "Nvidia CUDA"],
   },
   {
@@ -1029,7 +1033,7 @@ const coreKnowledgeNodes: KnowledgeNode[] = [
     kind: "personal",
     eyebrow: "Favorite sport",
     description:
-      "I play basketball — a competitive, social, and active counterbalance to engineering work.",
+      "I play basketball — my favorite debugger for a long day, and the one place I'll happily take the L.",
     tags: ["Sports", "Teamwork", "Fitness"],
     importance: 2,
   },
@@ -1039,7 +1043,7 @@ const coreKnowledgeNodes: KnowledgeNode[] = [
     kind: "personal",
     eyebrow: "Bernese Mountain Dog",
     description:
-      "Grizzly is my Bernese Mountain Dog and a big part of life away from software.",
+      "Grizzly, my Bernese Mountain Dog — my most loyal (and by far furriest) rubber-duck debugger, and the best reason to close the laptop and go outside.",
     tags: ["Bernese Mountain Dog", "Dog", "Family"],
     importance: 3,
     image: "/grizzly.jpg",
@@ -1050,7 +1054,7 @@ const coreKnowledgeNodes: KnowledgeNode[] = [
     kind: "personal",
     eyebrow: "Engineering practice",
     description:
-      "I like contributing fixes, tools, examples, and ideas back to the software communities I build with.",
+      "I give fixes, tools, and examples back to the communities I build on — because someone else's weekend pull request has bailed me out more times than I can count.",
     tags: ["Open Source", "GitHub", "Community"],
     importance: 3,
   },
@@ -1060,7 +1064,7 @@ const coreKnowledgeNodes: KnowledgeNode[] = [
     kind: "personal",
     eyebrow: "Hands-on systems",
     description:
-      "I pick components, assemble custom computers, tune performance, and understand systems from the hardware up.",
+      "I build my own PCs — picking parts, cable-managing like it's an art form, and chasing performance from the silicon up. The RGB is non-negotiable.",
     tags: ["Hardware", "PC Building", "Performance"],
     importance: 2,
   },
@@ -1139,6 +1143,440 @@ const coreKnowledgeNodes: KnowledgeNode[] = [
       "The best way to reach me about software engineering, AI systems, and technical opportunities.",
     tags: ["Contact", "Collaboration"],
     href: "mailto:cjnielson44@gmail.com",
+  },
+
+  // Agentic + knowledge-graph capabilities (concept nodes).
+  {
+    id: "swarm-intelligence",
+    label: "Swarm intelligence",
+    kind: "concept",
+    description:
+      "I run swarms of role-specialized agents that reason together over a shared knowledge graph, surfacing conclusions no single agent reaches alone.",
+    tags: ["Multi-Agent", "Collective Reasoning", "Emergence"],
+  },
+  {
+    id: "agent-simulation",
+    label: "Agent-based simulation",
+    kind: "concept",
+    description:
+      "I build agent-based simulations where cooperative and adversarial agents interact to reveal emergent behavior and edge cases.",
+    tags: ["Simulation", "Emergent Behavior", "Agents"],
+  },
+  {
+    id: "persona-agents",
+    label: "Persona agents",
+    kind: "concept",
+    description:
+      "I give each agent a role, mandate, and lens so a panel can analyze a problem from multiple perspectives with evidence-cited findings.",
+    tags: ["Perspectives", "Roles", "Evidence-Cited"],
+  },
+  {
+    id: "kg-construction",
+    label: "Knowledge graph construction",
+    kind: "concept",
+    description:
+      "I build pipelines that turn heterogeneous seed data into provenance-tracked graphs through ingest, extract, resolve, upsert, index, and snapshot stages.",
+    tags: ["Pipelines", "Provenance", "ETL"],
+  },
+  {
+    id: "provenance",
+    label: "Provenance",
+    kind: "concept",
+    description:
+      "I attach a source and confidence to every fact so the graph stays auditable and each claim can be traced to its origin.",
+    tags: ["Auditability", "Confidence", "Lineage"],
+  },
+  {
+    id: "ontology-extraction",
+    label: "Ontology-driven extraction",
+    kind: "concept",
+    description:
+      "I guide LLM extraction with a declared set of allowed entity and edge types so the resulting graph stays consistent and queryable.",
+    tags: ["Ontology", "Extraction", "Schema"],
+  },
+  {
+    id: "narrative-generation",
+    label: "Narrative generation",
+    kind: "concept",
+    description:
+      "I generate natural-language explanations of metric movements, breaches, and themes so results read as a story instead of just numbers.",
+    tags: ["Explanations", "Reporting", "Insights"],
+  },
+  {
+    id: "scenario-simulation",
+    label: "Scenario simulation",
+    kind: "concept",
+    description:
+      "I build what-if engines that re-run metrics under hypothetical changes so I can compare outcomes across scenarios.",
+    tags: ["What-If", "Scenarios", "Modeling"],
+  },
+  {
+    id: "stress-testing",
+    label: "Stress testing",
+    kind: "concept",
+    description:
+      "I run sensitivity and stress analysis under adverse scenarios to find where systems and metrics break down.",
+    tags: ["Sensitivity", "Adverse Scenarios", "Resilience"],
+  },
+  {
+    id: "metric-lineage",
+    label: "Metric lineage",
+    kind: "concept",
+    description:
+      "I trace metrics back through their inputs and transformations so every number stays explainable and reproducible.",
+    tags: ["Lineage", "Traceability", "Reproducibility"],
+  },
+  {
+    id: "streaming-chat",
+    label: "Streaming chat",
+    kind: "concept",
+    description:
+      "I build streaming conversational interfaces over agents and governed tools so responses and tool calls render token by token.",
+    tags: ["Streaming", "Conversational UI", "Realtime"],
+  },
+  {
+    id: "elicitation",
+    label: "Elicitation",
+    kind: "concept",
+    description:
+      "I use MCP elicitation so tools can pause mid-run to request missing input from the user before continuing.",
+    tags: ["MCP", "Interactive Tools", "Human Input"],
+  },
+
+  // Additional technologies (skill nodes).
+  {
+    id: "ai-sdk",
+    label: "AI SDK",
+    kind: "skill",
+    description:
+      "I use it for streaming chat interfaces and tool calling on the frontend.",
+    tags: ["Streaming", "Frontend AI", "Tool Calling"],
+  },
+  {
+    id: "fastmcp",
+    label: "FastMCP",
+    kind: "skill",
+    description:
+      "I use it to build Model Context Protocol servers that expose governed, schema-validated tools to agents.",
+    tags: ["MCP", "Tool Servers", "Python"],
+  },
+  {
+    id: "entra",
+    label: "Microsoft Entra ID",
+    kind: "skill",
+    description:
+      "I use it for identity, authentication, and role-based access control in enterprise apps.",
+    tags: ["Identity", "Authentication", "RBAC"],
+  },
+  {
+    id: "highcharts",
+    label: "Highcharts",
+    kind: "skill",
+    description:
+      "I use it for interactive charts and data visualization in analytical dashboards.",
+    tags: ["Charts", "Visualization", "Dashboards"],
+  },
+  {
+    id: "ag-grid",
+    label: "AG Grid",
+    kind: "skill",
+    description:
+      "I use it for high-performance data grids with sorting, filtering, and large datasets.",
+    tags: ["Data Grid", "Tables", "UI"],
+  },
+  {
+    id: "zustand",
+    label: "Zustand",
+    kind: "skill",
+    description:
+      "I use it for lightweight, ergonomic state management in React apps.",
+    tags: ["State Management", "React", "Frontend"],
+  },
+  {
+    id: "kuzu",
+    label: "Kuzu",
+    kind: "skill",
+    description:
+      "I use it as an embedded graph database for fast, local property-graph queries.",
+    tags: ["Graph Database", "Embedded", "Cypher"],
+  },
+  {
+    id: "graphiti",
+    label: "Graphiti",
+    kind: "skill",
+    description:
+      "I use it to build temporally-aware knowledge graphs for agent memory and retrieval.",
+    tags: ["Knowledge Graphs", "Temporal", "Agent Memory"],
+  },
+
+  // Additional languages (from the résumé skills summary).
+  {
+    id: "java",
+    label: "Java",
+    kind: "skill",
+    description:
+      "I use it for object-oriented backend work and JVM systems — and it's where I first cut my teeth on data structures.",
+    tags: ["Backend", "OOP", "JVM"],
+  },
+  {
+    id: "cpp",
+    label: "C++",
+    kind: "skill",
+    description:
+      "I reach for it when performance and low-level control actually matter.",
+    tags: ["Systems", "Performance", "Low-Level"],
+  },
+  {
+    id: "csharp",
+    label: "C#",
+    kind: "skill",
+    description: "I use it for .NET services and tooling.",
+    tags: ["Backend", ".NET", "OOP"],
+  },
+  {
+    id: "swift",
+    label: "Swift",
+    kind: "skill",
+    description: "I use it for native iOS and Apple-platform apps.",
+    tags: ["iOS", "Apple", "Mobile"],
+  },
+
+  // Additional frameworks / web tech (from the résumé).
+  {
+    id: "nodejs",
+    label: "Node.js",
+    kind: "skill",
+    description:
+      "I use it for JavaScript/TypeScript services, build tooling, and APIs.",
+    tags: ["Backend", "JavaScript", "Runtime"],
+  },
+  {
+    id: "django",
+    label: "Django",
+    kind: "skill",
+    description: "I use it for batteries-included Python web backends.",
+    tags: ["Python", "Web Framework", "Backend"],
+  },
+  {
+    id: "angular",
+    label: "Angular",
+    kind: "skill",
+    description: "I use it for structured, large-scale front-end applications.",
+    tags: ["Frontend", "TypeScript", "SPA"],
+  },
+  {
+    id: "graphql",
+    label: "GraphQL",
+    kind: "skill",
+    description:
+      "I use it for typed, client-driven APIs that fetch exactly what the UI needs.",
+    tags: ["API", "Typed", "Querying"],
+  },
+  {
+    id: "playwright",
+    label: "Playwright",
+    kind: "skill",
+    description:
+      "I use it to drive browsers so agents can operate enterprise systems that never shipped an API.",
+    tags: ["Browser Automation", "Testing", "Agents"],
+  },
+
+  // Cloud platforms (from the résumé infrastructure list).
+  {
+    id: "aws",
+    label: "AWS",
+    kind: "skill",
+    description: "I deploy and run production services on AWS.",
+    tags: ["Cloud", "Infrastructure", "Deployment"],
+  },
+  {
+    id: "gcp",
+    label: "GCP",
+    kind: "skill",
+    description: "I deploy and run services on Google Cloud.",
+    tags: ["Cloud", "Infrastructure", "Deployment"],
+  },
+  {
+    id: "azure",
+    label: "Microsoft Azure",
+    kind: "skill",
+    description: "I deploy and run enterprise services on Azure.",
+    tags: ["Cloud", "Infrastructure", "Enterprise"],
+  },
+
+  // Additional AI/ML capabilities (from the résumé).
+  {
+    id: "bm25",
+    label: "BM25",
+    kind: "concept",
+    description:
+      "I use BM25 ranking to pick the right tools and documents out of large sets by relevance.",
+    tags: ["Retrieval", "Ranking", "Search"],
+  },
+  {
+    id: "nlp",
+    label: "NLP",
+    kind: "concept",
+    description:
+      "I apply natural-language processing to pull structure and meaning out of unstructured text.",
+    tags: ["Language", "Extraction", "Text"],
+  },
+  {
+    id: "ocr",
+    label: "OCR",
+    kind: "concept",
+    description:
+      "I use OCR and transcript extraction to turn recordings and documents into structured, searchable knowledge.",
+    tags: ["Extraction", "Documents", "Vision"],
+  },
+
+  // Machines I own (from the old site's "Software and Tools I Use").
+  {
+    id: "macbook-pro",
+    label: "MacBook Pro 16″",
+    kind: "resource",
+    description:
+      "My daily driver — a 2019 16-inch on an Intel i7 that has stayed reliable through everything I've thrown at it.",
+    tags: ["Workstation", "macOS", "Daily Driver"],
+  },
+  {
+    id: "raspberry-pi",
+    label: "Raspberry Pi 4",
+    kind: "resource",
+    description:
+      "My tinkering box — running Debian for side projects and hands-on Linux administration.",
+    tags: ["Hardware", "Linux", "Homelab"],
+  },
+
+  // Tools I use.
+  {
+    id: "zed",
+    label: "Zed",
+    kind: "resource",
+    description: "My current editor — fast, modern, and out of the way.",
+    tags: ["Editor", "IDE", "Productivity"],
+    href: "https://zed.dev",
+  },
+  {
+    id: "warp",
+    label: "Warp",
+    kind: "resource",
+    description:
+      "A modern terminal with AI command search and shared workflows.",
+    tags: ["Terminal", "CLI", "Productivity"],
+    href: "https://www.warp.dev",
+  },
+  {
+    id: "obsidian",
+    label: "Obsidian",
+    kind: "resource",
+    description:
+      "My second brain — linked notes and a personal knowledge graph (yes, the inspiration for this page is showing).",
+    tags: ["Notes", "Knowledge Graph", "PKM"],
+    href: "https://obsidian.md",
+  },
+  {
+    id: "notion",
+    label: "Notion",
+    kind: "resource",
+    description: "Where I plan projects and keep shared documentation.",
+    tags: ["Docs", "Planning", "Collaboration"],
+    href: "https://notion.so",
+  },
+  {
+    id: "things3",
+    label: "Things 3",
+    kind: "resource",
+    description:
+      "My task manager — clean enough that I actually keep using it.",
+    tags: ["Tasks", "Productivity", "GTD"],
+    href: "https://culturedcode.com/things/",
+  },
+  {
+    id: "tableplus",
+    label: "TablePlus",
+    kind: "resource",
+    description: "A clean GUI for poking at databases across engines.",
+    tags: ["Database", "GUI", "Tooling"],
+    href: "https://tableplus.com",
+  },
+  {
+    id: "pnpm",
+    label: "pnpm",
+    kind: "resource",
+    description:
+      "Fast, disk-efficient package management — my default for Node monorepos.",
+    tags: ["Package Manager", "Node.js", "Monorepo"],
+    href: "https://pnpm.io",
+  },
+  {
+    id: "sourcetree",
+    label: "Sourcetree",
+    kind: "resource",
+    description:
+      "A visual Git client for reviewing changes and untangling branches.",
+    tags: ["Git", "GUI", "Version Control"],
+    href: "https://www.sourcetreeapp.com",
+  },
+  {
+    id: "vercel",
+    label: "Vercel",
+    kind: "resource",
+    description:
+      "Where I ship front-ends — zero-config deploys wired straight to GitHub.",
+    tags: ["Deployment", "Hosting", "Frontend"],
+    href: "https://vercel.com",
+  },
+  {
+    id: "github-copilot",
+    label: "GitHub Copilot",
+    kind: "resource",
+    description: "My AI pair programmer for boilerplate and the boring parts.",
+    tags: ["AI", "Pair Programming", "Productivity"],
+    href: "https://github.com/features/copilot",
+  },
+
+  // Learning resources I recommend.
+  {
+    id: "neetcode",
+    label: "NeetCode",
+    kind: "resource",
+    description: "Where I keep my data-structures and algorithms sharp.",
+    tags: ["Algorithms", "DSA", "Learning"],
+    href: "https://neetcode.io/",
+  },
+  {
+    id: "big-o-cheatsheet",
+    label: "Big-O Cheat Sheet",
+    kind: "resource",
+    description:
+      "My quick reference for the time and space complexity of common algorithms.",
+    tags: ["Algorithms", "Complexity", "Reference"],
+    href: "https://www.bigocheatsheet.com/",
+  },
+  {
+    id: "visualgo",
+    label: "VisuAlgo",
+    kind: "resource",
+    description: "Interactive visualizations that make data structures click.",
+    tags: ["Algorithms", "Visualization", "Learning"],
+    href: "https://visualgo.net/",
+  },
+  {
+    id: "grokking-algorithms",
+    label: "Grokking Algorithms",
+    kind: "resource",
+    description: "An illustrated guide that makes hard algorithms approachable.",
+    tags: ["Algorithms", "Book", "Learning"],
+    href: "https://www.manning.com/books/grokking-algorithms",
+  },
+  {
+    id: "basecs",
+    label: "BaseCS",
+    kind: "resource",
+    description: "Bite-sized essays on computer-science fundamentals.",
+    tags: ["Computer Science", "Fundamentals", "Learning"],
+    href: "https://medium.com/basecs",
   },
 ];
 
@@ -1364,6 +1802,71 @@ const coreKnowledgeLinks: KnowledgeLink[] = [
   { source: "mlrisk", target: "anomaly-detection", relation: "performs" },
   { source: "financial-risk", target: "anomaly-detection", relation: "monitors with" },
   { source: "anomaly-detection", target: "scikit", relation: "modeled with" },
+  // Swarm intelligence, knowledge-graph construction, and the tools behind them.
+  { source: "agent-infrastructure", target: "swarm-intelligence", relation: "runs" },
+  { source: "swarm-intelligence", target: "multi-agent", relation: "builds on" },
+  { source: "swarm-intelligence", target: "persona-agents", relation: "uses" },
+  { source: "swarm-intelligence", target: "agent-simulation", relation: "drives" },
+  { source: "knowledge-systems", target: "kg-construction", relation: "built with" },
+  { source: "knowledge-systems", target: "provenance", relation: "tracks" },
+  { source: "knowledge-systems", target: "kuzu", relation: "stored in" },
+  { source: "kg-construction", target: "entity-resolution", relation: "uses" },
+  { source: "kg-construction", target: "ontology-extraction", relation: "uses" },
+  { source: "kg-construction", target: "provenance", relation: "records" },
+  { source: "kg-construction", target: "graphrag", relation: "feeds" },
+  { source: "kg-construction", target: "neo4j", relation: "writes to" },
+  { source: "kg-construction", target: "graphiti", relation: "uses" },
+  { source: "amats", target: "swarm-intelligence", relation: "applies" },
+  { source: "amats", target: "agent-simulation", relation: "uses" },
+  { source: "mcp", target: "fastmcp", relation: "built with" },
+  { source: "mcp", target: "elicitation", relation: "supports" },
+  { source: "full-stack", target: "highcharts", relation: "uses" },
+  { source: "full-stack", target: "ag-grid", relation: "uses" },
+  { source: "full-stack", target: "zustand", relation: "uses" },
+  { source: "full-stack", target: "entra", relation: "secures with" },
+  { source: "rbac", target: "entra", relation: "implemented with" },
+  { source: "financial-risk", target: "narrative-generation", relation: "explained with" },
+  { source: "financial-risk", target: "scenario-simulation", relation: "models with" },
+  { source: "financial-risk", target: "stress-testing", relation: "validated with" },
+  { source: "streaming-chat", target: "ai-sdk", relation: "built with" },
+  { source: "streaming-chat", target: "mcp", relation: "calls" },
+  { source: "metric-lineage", target: "audit", relation: "supports" },
+  // Languages, frameworks, cloud, and AI capabilities from the résumé.
+  { source: "fsu", target: "java", relation: "studied" },
+  { source: "fsu", target: "cpp", relation: "studied" },
+  { source: "christopher", target: "csharp", relation: "codes in" },
+  { source: "christopher", target: "swift", relation: "codes in" },
+  { source: "full-stack", target: "nodejs", relation: "runs on" },
+  { source: "full-stack", target: "django", relation: "built with" },
+  { source: "full-stack", target: "angular", relation: "built with" },
+  { source: "full-stack", target: "graphql", relation: "queries with" },
+  { source: "agent-infrastructure", target: "playwright", relation: "automates with" },
+  { source: "platform-engineering", target: "aws", relation: "deploys on" },
+  { source: "platform-engineering", target: "gcp", relation: "deploys on" },
+  { source: "platform-engineering", target: "azure", relation: "deploys on" },
+  { source: "agent-infrastructure", target: "bm25", relation: "selects tools with" },
+  { source: "enterprise-risk-mcp", target: "bm25", relation: "ranks with" },
+  { source: "knowledge-systems", target: "nlp", relation: "applies" },
+  { source: "nlp", target: "embeddings", relation: "uses" },
+  { source: "amats", target: "ocr", relation: "extracts with" },
+  // Machines, tools, and learning resources (from the old site).
+  { source: "christopher", target: "macbook-pro", relation: "works on" },
+  { source: "raspberry-pi", target: "linux", relation: "runs" },
+  { source: "christopher", target: "zed", relation: "writes code in" },
+  { source: "warp", target: "linux", relation: "terminal for" },
+  { source: "knowledge-systems", target: "obsidian", relation: "modeled on" },
+  { source: "christopher", target: "notion", relation: "plans in" },
+  { source: "christopher", target: "things3", relation: "organizes with" },
+  { source: "tableplus", target: "postgres", relation: "manages" },
+  { source: "full-stack", target: "pnpm", relation: "packages with" },
+  { source: "git", target: "sourcetree", relation: "managed with" },
+  { source: "nextjs", target: "vercel", relation: "deployed on" },
+  { source: "christopher", target: "github-copilot", relation: "pairs with" },
+  { source: "christopher", target: "neetcode", relation: "learns from" },
+  { source: "neetcode", target: "visualgo", relation: "alongside" },
+  { source: "neetcode", target: "big-o-cheatsheet", relation: "alongside" },
+  { source: "neetcode", target: "grokking-algorithms", relation: "alongside" },
+  { source: "neetcode", target: "basecs", relation: "alongside" },
 ];
 
 export const knowledgeLinks: KnowledgeLink[] = [

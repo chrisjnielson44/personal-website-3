@@ -458,27 +458,97 @@ function tokenize(value: string): string[] {
   return [...expanded];
 }
 
-function countMatches(haystack: string, tokens: string[]): number {
-  const words = haystack
+function splitWords(value: string): string[] {
+  return value
     .toLowerCase()
     .split(/[^a-z0-9+#.]+/)
     .filter(Boolean);
+}
+
+/**
+ * Bounded Levenshtein: returns true when `a` can be turned into `b` in at most
+ * `max` single-character edits. Powers typo tolerance ("pyton" → "python")
+ * without the cost of a full distance: a length-gap pre-check and a per-row
+ * minimum let it bail the moment the budget is blown.
+ */
+function withinEditDistance(a: string, b: string, max: number): boolean {
+  const la = a.length;
+  const lb = b.length;
+  if (Math.abs(la - lb) > max) return false;
+  if (a === b) return true;
+
+  let prev = Array.from({ length: lb + 1 }, (_, j) => j);
+  let curr = new Array<number>(lb + 1);
+
+  for (let i = 1; i <= la; i++) {
+    curr[0] = i;
+    let rowMin = i;
+    for (let j = 1; j <= lb; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      const value = Math.min(
+        prev[j]! + 1, // deletion
+        curr[j - 1]! + 1, // insertion
+        prev[j - 1]! + cost, // substitution
+      );
+      curr[j] = value;
+      if (value < rowMin) rowMin = value;
+    }
+    // Every cell in this row already exceeds the budget, so no completion can
+    // come back under it — stop early.
+    if (rowMin > max) return false;
+    [prev, curr] = [curr, prev];
+  }
+
+  return prev[lb]! <= max;
+}
+
+/**
+ * Scores how well a single query token matches a word from node text, in tiers
+ * of decreasing confidence. Returns the best tier found (tiers don't stack):
+ *   1.00  exact whole word            ("react" → "react")
+ *   0.60  prefix, token ≥ 4           ("postgres" → "postgresql")
+ *   0.45  infix, token ≥ 5            ("script" → "typescript")
+ *   0.35  fuzzy, token ≥ 5            ("pyton" → "python")
+ * Short tokens stay whole-word-only so "ai" can't leak into "dom*ai*n".
+ */
+function tokenMatchStrength(
+  token: string,
+  words: string[],
+  wordSet: ReadonlySet<string>,
+): number {
+  if (wordSet.has(token)) return 1;
+  if (token.length < 4) return 0;
+
+  const fuzzyBudget = token.length >= 8 ? 2 : 1;
+  let best = 0;
+
+  for (const word of words) {
+    if (word.startsWith(token)) return 0.6; // best possible non-exact tier
+    if (token.length >= 5) {
+      if (word.includes(token)) best = Math.max(best, 0.45);
+      else if (best < 0.35 && withinEditDistance(token, word, fuzzyBudget))
+        best = Math.max(best, 0.35);
+    }
+  }
+
+  return best;
+}
+
+function countMatches(
+  haystack: string,
+  tokens: string[],
+  idf?: ReadonlyMap<string, number>,
+): number {
+  const words = splitWords(haystack);
+  if (words.length === 0) return 0;
   const wordSet = new Set(words);
 
   return tokens.reduce((score, token) => {
-    if (wordSet.has(token)) {
-      // Whole-word hit: the strongest, least ambiguous signal.
-      return score + 1;
-    }
-
-    // Prefix hit handles simple morphology (school/schools, agent/agents,
-    // postgres/postgresql) without the false positives substring matching
-    // produced (e.g. "ai" matching "domain").
-    if (token.length >= 4 && words.some((word) => word.startsWith(token))) {
-      return score + 0.6;
-    }
-
-    return score;
+    const strength = tokenMatchStrength(token, words, wordSet);
+    if (strength === 0) return score;
+    // Rare terms (low document frequency) count for more than corpus-wide
+    // filler like "engineering"; idf defaults to 1 when no index is supplied.
+    return score + strength * (idf?.get(token) ?? 1);
   }, 0);
 }
 
@@ -522,12 +592,78 @@ export function buildConnectionIndex(
   return connections;
 }
 
+/**
+ * Precomputed, query-independent search structures. The connection graph and
+ * the per-term document frequencies never change, so building them once (rather
+ * than on every keystroke) keeps live search cheap and lets ranking weight rare
+ * terms via IDF.
+ */
+export interface SearchIndex {
+  connections: ConnectionIndex;
+  /** How many nodes contain each term across their searchable text. */
+  documentFrequency: Map<string, number>;
+  totalDocuments: number;
+}
+
+/** The own-text words a node contributes to the corpus (no neighbors). */
+function nodeDocumentWords(node: KnowledgeNode): string[] {
+  return splitWords(
+    [
+      node.label,
+      node.tags.join(" "),
+      node.description,
+      ...(node.details ?? []),
+      ...(node.highlights ?? []).map(
+        (highlight) => `${highlight.label} ${highlight.value}`,
+      ),
+      node.eyebrow ?? "",
+      knowledgeKindLabels[node.kind],
+      getNodeCategory(node),
+    ].join(" "),
+  );
+}
+
+export function buildSearchIndex(
+  nodes: KnowledgeNode[],
+  links: KnowledgeLink[],
+): SearchIndex {
+  const documentFrequency = new Map<string, number>();
+
+  for (const node of nodes) {
+    // Count each term once per node so frequency reflects how many nodes use a
+    // term, not how often it's repeated within one.
+    for (const word of new Set(nodeDocumentWords(node))) {
+      documentFrequency.set(word, (documentFrequency.get(word) ?? 0) + 1);
+    }
+  }
+
+  return {
+    connections: buildConnectionIndex(nodes, links),
+    documentFrequency,
+    totalDocuments: nodes.length,
+  };
+}
+
+// How hard IDF pulls ranking toward rare terms. Kept gentle so a distinctive
+// match (e.g. "graphrag") edges ahead of a generic one ("engineering") without
+// letting term rarity overwhelm the field weights below.
+const IDF_STRENGTH = 0.35;
+
+function idfWeight(token: string, index: SearchIndex): number {
+  const df = index.documentFrequency.get(token) ?? 0;
+  // Out-of-vocabulary tokens are only reachable via fuzzy/infix matches; treat
+  // them as rare-but-capped (as if they appeared in a single node).
+  const safeDf = df > 0 ? df : 1;
+  const raw = Math.log((index.totalDocuments + 1) / (safeDf + 1));
+  return 1 + IDF_STRENGTH * Math.max(0, raw);
+}
+
 export function searchKnowledgeGraph(
   query: string,
   nodes: KnowledgeNode[],
   links: KnowledgeLink[],
   limit = 8,
-  precomputedConnections?: ConnectionIndex,
+  precomputedIndex?: SearchIndex,
 ): GraphSearchResult[] {
   const normalizedQuery = query.toLowerCase().trim();
   const tokens = tokenize(query);
@@ -537,16 +673,19 @@ export function searchKnowledgeGraph(
     return [];
   }
 
-  // Reuse a caller-supplied index where available — the connection graph is
-  // static, so there's no reason to rebuild it on every keystroke.
-  const connections =
-    precomputedConnections ?? buildConnectionIndex(nodes, links);
+  // Reuse a caller-supplied index where available — the connection graph and
+  // term frequencies are static, so there's no reason to rebuild them on every
+  // keystroke.
+  const index = precomputedIndex ?? buildSearchIndex(nodes, links);
+  const connections = index.connections;
+  // Weight each query term by how rare it is across the corpus, computed once.
+  const idf = new Map(tokens.map((token) => [token, idfWeight(token, index)]));
 
   return nodes
     .map((node) => {
-      const labelMatches = countMatches(node.label, tokens);
-      const tagMatches = countMatches(node.tags.join(" "), tokens);
-      const descriptionMatches = countMatches(node.description, tokens);
+      const labelMatches = countMatches(node.label, tokens, idf);
+      const tagMatches = countMatches(node.tags.join(" "), tokens, idf);
+      const descriptionMatches = countMatches(node.description, tokens, idf);
       const detailMatches = countMatches(
         [
           ...(node.details ?? []),
@@ -555,16 +694,19 @@ export function searchKnowledgeGraph(
           ),
         ].join(" "),
         tokens,
+        idf,
       );
-      const eyebrowMatches = countMatches(node.eyebrow ?? "", tokens);
+      const eyebrowMatches = countMatches(node.eyebrow ?? "", tokens, idf);
       const kindMatches = countMatches(
         `${knowledgeKindLabels[node.kind]} ${getNodeCategory(node)}`,
         tokens,
+        idf,
       );
       const linked = connections.get(node.id) ?? [];
       const relationMatches = countMatches(
         linked.map(({ relation }) => relation).join(" "),
         tokens,
+        idf,
       );
       const neighborMatches = countMatches(
         linked
@@ -573,6 +715,7 @@ export function searchKnowledgeGraph(
           )
           .join(" "),
         tokens,
+        idf,
       );
 
       const reasons: string[] = [];
@@ -614,7 +757,11 @@ export function searchKnowledgeGraph(
 
       return { node, score, reasons };
     })
-    .filter((result) => result.score > 0.5)
+    // Require a real match signal. The importance baseline and label/keyword
+    // bonuses only ever break ties *between matches* — on their own they let
+    // high-importance nodes surface for queries (typos, gibberish) that match
+    // nothing, which is just noise.
+    .filter((result) => result.reasons.length > 0)
     .sort(
       (left, right) =>
         right.score - left.score ||

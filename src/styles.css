@@ -1087,9 +1087,7 @@ pre code {
    The hub node mid-entrance (.is-hub-enter) is exempt so the name stays
    readable while the rest of the graph detonates around it. */
 .is-interacting .knowledge-node:not(.is-hub-enter) .knowledge-label,
-.is-entrance .knowledge-node:not(.is-hub-enter) .knowledge-label,
-.is-interacting .knowledge-link-label,
-.is-entrance .knowledge-link-label {
+.is-interacting .knowledge-link-label {
   display: none;
 }
 
@@ -1685,6 +1683,51 @@ pre code {
   padding-left: 0.55rem;
 }
 
+/* Re-opens the dismissed welcome card. Mirrors the node-count chip's glass so
+   the two read as one meta cluster; only present while the card is closed. */
+.graph-meta-reopen {
+  display: grid;
+  width: 2.1rem;
+  height: 2.1rem;
+  flex: none;
+  place-items: center;
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  background: var(--glass-bg);
+  color: var(--color-muted);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-highlight);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.graph-meta-reopen svg {
+  color: var(--color-accent);
+}
+
+.graph-meta-reopen:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 38%, var(--glass-border));
+  background: var(--glass-bg-strong);
+  color: var(--color-foreground);
+}
+
+/* The shared tooltip centers under its host, which would clip off the left
+   edge here — anchor it to the button's left instead. */
+.graph-meta-reopen[data-tooltip]::after {
+  left: 0;
+  transform: translateX(0) translateY(-0.25rem);
+}
+
+.graph-meta-reopen[data-tooltip]:hover::after,
+.graph-meta-reopen[data-tooltip]:focus-visible::after {
+  transform: translateX(0) translateY(0);
+}
+
 /* Top-left welcome / orientation card. Glass like the HUD chips but more opaque
    so the copy stays crisp over the graph. Sits in the empty corner below the
    meta row, frames the whole page as Christopher's résumé, and points first-time
@@ -1810,30 +1853,42 @@ pre code {
   line-height: 1.45;
 }
 
-/* Frontmatter-style facts: `key   value`, no boxes. */
+/* Real YAML frontmatter: `---` fences (type, not borders) wrapping `key: value`
+   rows, the way the file would actually open in an editor. */
 .graph-welcome-frontmatter {
   display: grid;
   gap: 0.42rem;
   margin: 0;
-  border-top: 1px solid
-    color-mix(in srgb, var(--glass-border) 45%, transparent);
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--glass-border) 45%, transparent);
-  padding: 0.75rem 0;
+  padding: 0;
+}
+
+.graph-welcome-frontmatter::before,
+.graph-welcome-frontmatter::after {
+  content: "---";
+  color: color-mix(in srgb, var(--color-muted-foreground) 60%, transparent);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
 }
 
 .graph-welcome-frontmatter > div {
   display: grid;
-  grid-template-columns: 4.25rem minmax(0, 1fr);
+  grid-template-columns: 4.75rem minmax(0, 1fr);
   gap: 0.6rem;
   align-items: baseline;
 }
 
 .graph-welcome-frontmatter dt {
-  color: var(--color-muted-foreground);
+  color: color-mix(in srgb, var(--color-accent) 55%, var(--color-muted-foreground));
   font-family: var(--font-mono);
   font-size: 0.64rem;
   letter-spacing: 0.01em;
+}
+
+.graph-welcome-frontmatter dt::after {
+  content: ":";
+  color: var(--color-muted-foreground);
 }
 
 .graph-welcome-frontmatter dd {
@@ -1895,12 +1950,12 @@ pre code {
   background: color-mix(in srgb, var(--color-accent) 88%, #ffffff);
 }
 
-/* Mono text social links. */
+/* Mono text social links, middot-separated like a terminal list. */
 .graph-welcome-social {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.55rem;
 }
 
 .graph-welcome-social-link {
@@ -1908,6 +1963,12 @@ pre code {
   font-family: var(--font-mono);
   font-size: 0.66rem;
   transition: color 150ms ease;
+}
+
+.graph-welcome-social-link:not(:last-child)::after {
+  content: "·";
+  margin-left: 0.55rem;
+  color: color-mix(in srgb, var(--color-muted-foreground) 70%, transparent);
 }
 
 .graph-welcome-social-link:hover {
@@ -2130,6 +2191,63 @@ pre code {
 
 .graph-question-bar input::placeholder {
   color: var(--color-muted-foreground);
+}
+
+.question-help {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  cursor: help;
+  border-radius: 6px;
+  outline-offset: 3px;
+}
+
+.question-help-tip {
+  position: absolute;
+  bottom: calc(100% + 0.7rem);
+  left: -0.6rem;
+  z-index: 30;
+  width: min(20rem, 78vw);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  background: var(--glass-bg-strong);
+  padding: 0.7rem 0.8rem;
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity var(--transition-fast) ease,
+    transform var(--transition-fast) ease;
+  pointer-events: none;
+}
+
+.question-help-tip-title {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--color-foreground);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.question-help:hover .question-help-tip,
+.question-help:focus-visible .question-help-tip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .question-help-tip {
+    transition: none;
+    transform: none;
+  }
 }
 
 .question-suggest {
@@ -2583,7 +2701,8 @@ pre code {
 
   /* The hover tooltips are a desktop affordance — on touch they stick after a
      tap and crowd the bar; every control already carries an aria-label. */
-  .graph-view-controls [data-tooltip]::after {
+  .graph-view-controls [data-tooltip]::after,
+  .graph-meta-reopen[data-tooltip]::after {
     content: none;
   }
 

@@ -12,7 +12,7 @@ import { socialLinks } from "@/data/social";
 import { getArticleBySlug, formatDate } from "@/data/articles";
 import { getTechIcon, type TechIcon } from "@/data/techIcons";
 import {
-  buildConnectionIndex,
+  buildSearchIndex,
   expandResultNodeIds,
   getCategoryLabel,
   getNodeCategory,
@@ -101,8 +101,8 @@ interface GraphApi {
   zoomBy: (factor: number) => void;
 }
 
-const WORLD_WIDTH = 2600;
-const WORLD_HEIGHT = 1440;
+const WORLD_WIDTH = 3200;
+const WORLD_HEIGHT = 1800;
 
 const baseNodeRadius: Record<KnowledgeNodeKind, number> = {
   profile: 20,
@@ -145,7 +145,10 @@ const nodeAnchors: Record<string, [number, number]> = {
 };
 
 const nodeLookup = new Map(knowledgeNodes.map((node) => [node.id, node]));
-const connectionLookup = buildConnectionIndex(knowledgeNodes, knowledgeLinks);
+// Built once at module load: the connection graph + term frequencies that every
+// search reuses (the data is static, so live search never rebuilds them).
+const searchIndex = buildSearchIndex(knowledgeNodes, knowledgeLinks);
+const connectionLookup = searchIndex.connections;
 
 function getNodeId(node: string | GraphNode): string {
   return typeof node === "string" ? node : node.id;
@@ -245,7 +248,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
             knowledgeNodes,
             knowledgeLinks,
             8,
-            connectionLookup,
+            searchIndex,
           )
         : [],
     [initialSearch.q],
@@ -278,7 +281,12 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
   const profileFacts = useMemo(
     () =>
       (profileNode?.highlights ?? [])
-        .filter((highlight) => highlight.label !== "Role")
+        // "Role" lives in the eyebrow already; "Languages" is intentionally
+        // dropped from the card (still shown in the profile node's inspector).
+        .filter(
+          (highlight) =>
+            highlight.label !== "Role" && highlight.label !== "Languages",
+        )
         .map((highlight) => ({
           key:
             WELCOME_FACT_KEYS[highlight.label] ??
@@ -323,10 +331,20 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
       knowledgeNodes,
       knowledgeLinks,
       6,
-      connectionLookup,
+      searchIndex,
     );
   }, [question]);
   const showSuggestions = suggestOpen && suggestions.length > 0;
+
+  // While the visitor is typing, light up the matching nodes on the canvas
+  // itself (not just in the dropdown) so the graph previews the answer live.
+  // Null when not actively suggesting, so highlighting falls back to the
+  // submitted result set.
+  const previewIds = useMemo(
+    () => (showSuggestions ? expandResultNodeIds(suggestions, knowledgeLinks) : null),
+    [showSuggestions, suggestions],
+  );
+  const matchedIds = previewIds ?? resultIds;
 
   useEffect(() => {
     setSuggestIndex(-1);
@@ -419,7 +437,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
       knowledgeNodes,
       knowledgeLinks,
       8,
-      connectionLookup,
+      searchIndex,
     );
     const nextResultIds = expandResultNodeIds(nextResults, knowledgeLinks);
 
@@ -436,28 +454,32 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
     );
   };
 
+  // Highlight tracks the live preview (typing) as well as the committed state.
   useEffect(() => {
     selectedIdRef.current = selectedNodeId;
     categoryRef.current = activeCategories;
     resultIdsRef.current = resultIds;
     edgeLabelsVisibleRef.current = edgeLabelsVisible;
-    graphApiRef.current?.applyState(
-      selectedNodeId,
-      visibleIds,
-      resultIds,
-    );
+    graphApiRef.current?.applyState(selectedNodeId, visibleIds, matchedIds);
+  }, [
+    activeCategories,
+    edgeLabelsVisible,
+    matchedIds,
+    resultIds,
+    selectedNodeId,
+    visibleIds,
+  ]);
+
+  // Framing reacts only to committed state (filters, submitted search,
+  // selection) — never to live typing, so previewing matches doesn't yank the
+  // viewport around on every keystroke.
+  useEffect(() => {
     if (activeCategories.size > 0) {
       graphApiRef.current?.fitIds(visibleIds);
     } else if (resultIds.size === 0 && !selectedNodeId) {
       graphApiRef.current?.fitIds();
     }
-  }, [
-    activeCategories,
-    edgeLabelsVisible,
-    resultIds,
-    selectedNodeId,
-    visibleIds,
-  ]);
+  }, [activeCategories, resultIds, selectedNodeId, visibleIds]);
 
   useEffect(() => {
     if (!drawerOpen) return;
@@ -594,10 +616,10 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
       );
 
     // Flag "the graph is moving" so CSS can drop the expensive outlined text
-    // labels while the user pans, zooms, or drags. Guarded so the class is
-    // written once per gesture (not every frame) and debounced so the names
-    // reappear shortly after motion stops. The entrance uses its own
-    // `is-entrance` flag instead, so the slow final settle never gates labels.
+    // labels while it does — entrance settle, drag cooldown, pan, and zoom.
+    // Guarded so the class is written once per gesture (not every frame) and
+    // debounced so the names reappear shortly after motion stops. The entrance
+    // freezes the sim once settled, so this reveals the names quickly there too.
     let interacting = false;
     let interactionTimer = 0;
     const markInteracting = () => {
@@ -648,10 +670,10 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
             // instead of dragging neighbours into the center; short course
             // spokes hug each course to FSU on the academic island.
             if (source.kind === "profile" || target.kind === "profile")
-              return 300;
-            if (source.kind === "course" || target.kind === "course") return 95;
-            if (source.kind === "domain" || target.kind === "domain") return 230;
-            return 185;
+              return 360;
+            if (source.kind === "course" || target.kind === "course") return 110;
+            if (source.kind === "domain" || target.kind === "domain") return 300;
+            return 240;
           })
           .strength((link) => {
             const source = link.source as GraphNode;
@@ -670,10 +692,10 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
             // Everything else repels harder, scaled by importance, so hubs
             // carve out room and their labels stop overlapping.
             node.kind === "course"
-              ? -95
-              : -360 - getNodeImportance(node) * 60,
+              ? -120
+              : -470 - getNodeImportance(node) * 60,
           )
-          .distanceMax(900),
+          .distanceMax(1200),
       )
       .force(
         "x",
@@ -695,7 +717,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
         forceCollide<GraphNode>()
           // Pad wider than a label line (labels sit at radius + 16) so
           // neighbouring hub labels never overlap.
-          .radius((node) => getNodeRadius(node) + (node.kind === "course" ? 28 : 50))
+          .radius((node) => getNodeRadius(node) + (node.kind === "course" ? 30 : 58))
           .strength(1)
           .iterations(3),
       )
@@ -717,17 +739,39 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
       .velocityDecay(0.45)
       .stop();
 
-    // The layout settles and STOPS after the entrance instead of ticking
-    // forever. A perpetual alphaTarget kept D3's timer running at ~60fps,
-    // rewriting every node/link/label each frame indefinitely, which pegged
-    // the main thread and made the whole UI lag. Interactions (drag) re-warm
-    // the simulation briefly, then it cools back to rest on its own.
-    const FLOAT_ALPHA = 0;
+    // A low, non-zero alphaTarget keeps the simulation gently "floating" — the
+    // forces never fully rest, so nodes drift in slow, subtle motion instead of
+    // freezing solid. This intentionally re-introduces a light perpetual tick
+    // (the thing we removed to kill lag), so it's the perf knob to watch: set
+    // back to 0 to freeze the layout, or raise for more drift. Interactions
+    // (drag) re-warm it the same way.
+    const FLOAT_ALPHA = 0.03;
 
     // Pre-settle once (off-screen) so the camera can frame the eventual
     // layout before the entrance plays.
     for (let index = 0; index < 460; index += 1) simulation.tick();
     updatePositions();
+
+    // Gentle perpetual "float". The low alphaTarget keeps the timer alive, but a
+    // settled layout has ~zero net force, so nothing would actually move on its
+    // own. This custom force injects a slow, per-node sine nudge each tick
+    // (then velocityDecay damps it), so nodes drift continuously while the
+    // anchors + collision still hold the overall shape. Registered after the
+    // pre-settle so framing stays deterministic; skipped under reduced motion
+    // and for any node being dragged. Amplitude/speed below are the dials.
+    let floatTick = 0;
+    simulation.force("float", () => {
+      if (reducedMotion) return;
+      floatTick += 1;
+      const t = floatTick * 0.013;
+      for (let index = 0; index < graphNodes.length; index += 1) {
+        const node = graphNodes[index];
+        if (node.fx != null || node.fy != null) continue;
+        const phase = index * 0.7;
+        node.vx = (node.vx ?? 0) + Math.cos(t + phase) * 0.16;
+        node.vy = (node.vy ?? 0) + Math.sin(t * 1.17 + phase) * 0.16;
+      }
+    });
 
     zoomBehavior = zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.2, 3.4])
@@ -961,10 +1005,19 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
           }
         }),
     );
-    // Position updates every tick; label-hiding is handled explicitly (by the
-    // drag/zoom handlers and the entrance) so the slow final settle never keeps
-    // the names hidden for seconds after the layout already looks done.
-    simulation.on("tick", updatePositions);
+    // Hide the labels whenever the layout is in motion. Any per-frame position
+    // change forces a repaint of ~190 outlined labels regardless of how far
+    // things move, so painting them through the settle / drag-cooldown is what
+    // makes the graph feel laggy. The entrance freezes the sim once it's
+    // visually settled (below), so this still reveals the names quickly.
+    simulation.on("tick", () => {
+      updatePositions();
+      // Only ENERGETIC motion (entrance burst, drag, zoom) hides the labels for
+      // performance. The gentle perpetual float settles at ~FLOAT_ALPHA, so
+      // anything at or below that energy keeps the node names visible instead of
+      // dropping them forever (which it did when every tick counted as motion).
+      if (simulation.alpha() > FLOAT_ALPHA + 0.01) markInteracting();
+    });
 
     graphApiRef.current = {
       applyState,
@@ -1063,9 +1116,6 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
       otherNodes.style("opacity", "0");
       linkLayer.style("opacity", "0");
       relationLayer.style("opacity", "0");
-      // Hide the other names for the duration of the entrance explicitly — on a
-      // fixed beat, not tied to when the simulation finally comes to rest.
-      canvas.classed("is-entrance", true);
 
       // How long the lone name holds before the rest detonate around it.
       const HUB_BEAT = 720;
@@ -1094,20 +1144,19 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
         simulation.alpha(1).alphaTarget(FLOAT_ALPHA).restart();
       }, HUB_BEAT);
 
-      // Once the burst has visibly settled, reveal every name and re-frame to
-      // the live layout (which lands slightly differently than the pre-settle).
-      // The sim may still be doing a slow final creep — that's fine, the labels
-      // just drift gently into place with their nodes. markInteracting() bridges
-      // the reveal through the small re-framing glide so there's no 1-frame
-      // flash between the entrance flag clearing and the camera move starting.
+      // Once the explosion has visibly settled, freeze the layout and re-frame.
+      // Freezing is what reveals the names: with no more ticks the simulation
+      // stops repainting, markInteracting's debounce lifts, and the labels pop in
+      // on a now-static graph — fast AND lag-free (no settling frames painting
+      // ~190 outlined labels). The re-frame glide is GPU-cheap since nodes no
+      // longer move, and it keeps labels hidden until the camera lands.
       entranceTimer = window.setTimeout(() => {
-        canvas.classed("is-entrance", false);
+        simulation.stop();
         hubNode.classed("is-hub-enter", false);
-        markInteracting();
         if (resultIdsRef.current.size === 0 && !selectedIdRef.current) {
           fitIds(visibleIds);
         }
-      }, HUB_BEAT + 650);
+      }, HUB_BEAT + 1000);
     }
 
     let resizeFrame = 0;
@@ -1168,6 +1217,32 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
 
         <div className="graph-hud">
         <div className="graph-meta">
+          <AnimatePresence>
+            {!welcomeOpen ? (
+              <motion.button
+                key="welcome-reopen"
+                type="button"
+                className="graph-meta-reopen"
+                onClick={() => setWelcomeOpen(true)}
+                data-tooltip="Open christopher.md"
+                aria-label="Open intro card"
+                initial={
+                  prefersReducedMotion ? false : { opacity: 0, scale: 0.85 }
+                }
+                animate={{ opacity: 1, scale: 1 }}
+                exit={
+                  prefersReducedMotion
+                    ? { opacity: 0 }
+                    : { opacity: 0, scale: 0.85 }
+                }
+                transition={gentleSpring}
+                whileHover={prefersReducedMotion ? undefined : { y: -1 }}
+                whileTap={tapScale}
+              >
+                <FileText className="size-3.5" />
+              </motion.button>
+            ) : null}
+          </AnimatePresence>
           <div className="graph-workspace-title">
             <Network className="size-3.5" />
             <span>{knowledgeNodes.length} nodes</span>
@@ -1316,10 +1391,6 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
                   </p>
                 </div>
 
-                <p className="graph-welcome-comment">
-                  // my résumé, as a living knowledge graph
-                </p>
-
                 {profileFacts.length > 0 ? (
                   <dl className="graph-welcome-frontmatter">
                     {profileFacts.map((fact) => (
@@ -1330,6 +1401,10 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
                     ))}
                   </dl>
                 ) : null}
+
+                <p className="graph-welcome-comment">
+                  // my career as a living knowledge graph
+                </p>
 
                 <div className="graph-welcome-actions">
                   <button
@@ -1415,7 +1490,23 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
               </motion.ul>
             ) : null}
           </AnimatePresence>
-          <CircleHelp className="size-4 shrink-0 text-accent" />
+          <span
+            className="question-help"
+            tabIndex={0}
+            role="button"
+            aria-label="How search works"
+          >
+            <CircleHelp className="size-4 shrink-0 text-accent" />
+            <span className="question-help-tip" role="tooltip">
+              <span className="question-help-tip-title">How search works</span>
+              Client-side weighted scoring — no embeddings or API. The query is
+              tokenized (stopwords and my name dropped, synonyms expanded), then
+              matched on word boundaries across each node&rsquo;s name, tags,
+              description, type, relations, and neighbors with per-field weights.
+              Intent keywords (&ldquo;school,&rdquo; &ldquo;work&rdquo;) boost
+              matching node kinds; ties break on importance.
+            </span>
+          </span>
           <input
             ref={questionInputRef}
             value={question}
