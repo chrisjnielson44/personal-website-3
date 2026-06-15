@@ -1,0 +1,9 @@
+# Approve esbuild's postinstall. pnpm v10+ blocks unapproved native build
+# scripts and exits non-zero, which breaks `pnpm install` and every `pnpm run`.
+# `allowBuilds` is the form pnpm 11 reads/writes (via `pnpm approve-builds`);
+# `onlyBuiltDependencies` covers other pnpm versions. esbuild's binary resolves
+# via its platform package even when the script is skipped.
+allowBuilds:
+  esbuild: true
+onlyBuiltDependencies:
+  - esbuild

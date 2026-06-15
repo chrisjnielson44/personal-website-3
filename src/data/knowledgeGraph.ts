@@ -8,7 +8,8 @@ export type KnowledgeNodeKind =
   | "article"
   | "resource"
   | "personal"
-  | "course";
+  | "course"
+  | "model";
 
 export interface KnowledgeNode {
   id: string;
@@ -44,6 +45,7 @@ export const knowledgeKindLabels: Record<KnowledgeNodeKind, string> = {
   resource: "Resource",
   personal: "Personal",
   course: "Course",
+  model: "Model",
 };
 
 interface TranscriptCourse {
@@ -1578,6 +1580,134 @@ const coreKnowledgeNodes: KnowledgeNode[] = [
     tags: ["Computer Science", "Fundamentals", "Learning"],
     href: "https://medium.com/basecs",
   },
+
+  // Local LLM inference — a personal obsession that feeds the day job.
+  {
+    id: "local-llm-inference",
+    label: "Local LLM inference",
+    kind: "concept",
+    eyebrow: "What I tinker with after hours",
+    description:
+      "I run open-weight models on my own hardware — quantization, MLX and llama.cpp runtimes, KV-cache and context tricks — to see how far on-device inference can really go.",
+    details: [
+      "Local inference is where I do most of my own R&D: pulling open-weight models onto my Mac Studio, quantizing them, and measuring what actually holds up at 3B, 30B, and beyond — versus what only works because a frontier lab is paying the power bill.",
+      "It keeps me honest about everything else I build. If a workflow only works with a 400B model behind an API, I haven't engineered the context well enough yet.",
+    ],
+    tags: ["Local Inference", "Open Weights", "Quantization", "On-Device"],
+    importance: 3,
+  },
+  {
+    id: "small-models-thesis",
+    label: "Knowledge over scale",
+    kind: "concept",
+    eyebrow: "A bet I'm making",
+    description:
+      "I think knowledge systems — retrieval, graphs, and context engineering — will let small, local models match today's frontier models. The advantage moves to the context, not the parameter count.",
+    details: [
+      "My bet: most of what makes a frontier model feel smart is access to the right information at the right moment, not raw parameters. Give a 30B model a well-built knowledge system — clean retrieval, graph-structured context, scoped memory — and I think it closes most of the gap for real work.",
+      "It's the throughline between my knowledge-systems work and my local-inference habit: if it holds, the future of genuinely capable AI is private, cheap, and running on hardware you already own.",
+    ],
+    tags: ["Thesis", "Small Models", "Knowledge Systems", "Context Engineering"],
+    importance: 3,
+  },
+
+  // The local-inference stack and rig.
+  {
+    id: "ollama",
+    label: "Ollama",
+    kind: "skill",
+    eyebrow: "Local model runtime",
+    description:
+      "How I pull, quantize, and serve open-weight models on my own hardware — a rotating shelf of models I keep around for coding, vision, embeddings, and experiments.",
+    tags: ["Local Inference", "Open Weights", "GGUF", "MLX"],
+    importance: 2,
+  },
+  {
+    id: "mlx",
+    label: "MLX",
+    kind: "skill",
+    eyebrow: "Apple-silicon ML",
+    description:
+      "Apple's array framework for ML on Apple silicon. I contribute to open-source MLX work on local-LLM optimizations — squeezing more tokens-per-second and bigger context out of unified memory.",
+    tags: ["Apple Silicon", "Open Source", "Optimization", "Inference"],
+    importance: 2,
+  },
+  {
+    id: "mac-studio",
+    label: "Mac Studio M3 Ultra",
+    kind: "resource",
+    eyebrow: "My local-inference rig",
+    description:
+      "My home lab for local LLMs — an M3 Ultra with 256 GB of unified memory, which is just a polite way of saying it can hold a 70 GB model and still let me open Chrome.",
+    highlights: [
+      { label: "Chip", value: "Apple M3 Ultra (28-core)" },
+      { label: "Memory", value: "256 GB unified" },
+      { label: "Runs", value: "Ollama · MLX · local LLMs" },
+    ],
+    tags: [
+      "Apple Silicon",
+      "256 GB Unified Memory",
+      "Homelab",
+      "Local Inference",
+    ],
+    importance: 3,
+  },
+
+  // Open-weight models I currently keep on the Mac Studio (from `ollama list`).
+  {
+    id: "model-gemma4",
+    label: "Gemma 4 31B",
+    kind: "model",
+    eyebrow: "gemma4:31b-mlx · 20 GB",
+    description:
+      "My MLX-built Gemma 4 — the one I reach for first because it's tuned for Apple silicon and stays fast on the M3 Ultra.",
+    tags: ["Gemma", "MLX", "31B", "General"],
+  },
+  {
+    id: "model-qwen-coder",
+    label: "Qwen3.6 35B Coder",
+    kind: "model",
+    eyebrow: "qwen3.6:35b-a3b-coding-bf16 · 70 GB",
+    description:
+      "My heaviest local model — a bf16 MoE coder I run when I want near-frontier code completion without a single token leaving the house.",
+    tags: ["Qwen", "Coding", "MoE", "bf16"],
+  },
+  {
+    id: "model-qwen-vl",
+    label: "Qwen3-VL 32B",
+    kind: "model",
+    eyebrow: "qwen3-vl:32b · 20 GB",
+    description:
+      "My local vision-language model — for reading screenshots, diagrams, and documents without an API call.",
+    tags: ["Qwen", "Vision-Language", "Multimodal", "32B"],
+  },
+  {
+    id: "model-medgemma",
+    label: "MedGemma 27B",
+    kind: "model",
+    eyebrow: "medgemma:27b · 17 GB",
+    description:
+      "A medical-domain Gemma I keep around to probe how well a specialized open model reasons inside a narrow field.",
+    tags: ["Gemma", "Medical", "Domain-Specific", "27B"],
+  },
+  {
+    id: "model-llama32",
+    label: "Llama 3.2 3B",
+    kind: "model",
+    eyebrow: "llama3.2:3b · 2 GB",
+    description:
+      "My tiny, instant model — and my favorite proof of the thesis: with the right context, 3B parameters handle far more than they have any right to.",
+    tags: ["Llama", "3B", "Small Model", "Fast"],
+  },
+  {
+    id: "model-embeddinggemma",
+    label: "EmbeddingGemma",
+    kind: "model",
+    eyebrow: "embeddinggemma · 621 MB",
+    description:
+      "My local embedding model — it turns documents into vectors for retrieval entirely on-device, no embedding API required.",
+    tags: ["Gemma", "Embeddings", "Retrieval", "On-Device"],
+  },
 ];
 
 export const knowledgeNodes: KnowledgeNode[] = [
@@ -1867,6 +1997,33 @@ const coreKnowledgeLinks: KnowledgeLink[] = [
   { source: "neetcode", target: "big-o-cheatsheet", relation: "alongside" },
   { source: "neetcode", target: "grokking-algorithms", relation: "alongside" },
   { source: "neetcode", target: "basecs", relation: "alongside" },
+  // Local LLM inference cluster.
+  { source: "christopher", target: "local-llm-inference", relation: "tinkers with" },
+  { source: "christopher", target: "mlx", relation: "contributes to" },
+  { source: "christopher", target: "mac-studio", relation: "runs models on" },
+  { source: "local-llm-inference", target: "small-models-thesis", relation: "motivates" },
+  { source: "local-llm-inference", target: "ollama", relation: "runs with" },
+  { source: "local-llm-inference", target: "mac-studio", relation: "runs on" },
+  { source: "mlx", target: "local-llm-inference", relation: "accelerates" },
+  { source: "open-source", target: "mlx", relation: "contributes to" },
+  { source: "pc-building", target: "mac-studio", relation: "same itch as" },
+  { source: "knowledge-systems", target: "local-llm-inference", relation: "feeds" },
+  { source: "small-models-thesis", target: "knowledge-systems", relation: "builds on" },
+  { source: "small-models-thesis", target: "context-engineering", relation: "relies on" },
+  { source: "small-models-thesis", target: "graphrag", relation: "relies on" },
+  { source: "mac-studio", target: "ollama", relation: "runs" },
+  { source: "mac-studio", target: "mlx", relation: "accelerates with" },
+  // Open-weight models Ollama serves on the Mac Studio.
+  { source: "ollama", target: "model-gemma4", relation: "runs" },
+  { source: "ollama", target: "model-qwen-coder", relation: "runs" },
+  { source: "ollama", target: "model-qwen-vl", relation: "runs" },
+  { source: "ollama", target: "model-medgemma", relation: "runs" },
+  { source: "ollama", target: "model-llama32", relation: "runs" },
+  { source: "ollama", target: "model-embeddinggemma", relation: "runs" },
+  { source: "model-gemma4", target: "mlx", relation: "built with" },
+  { source: "model-embeddinggemma", target: "embeddings", relation: "powers" },
+  { source: "model-qwen-coder", target: "python", relation: "helps me write" },
+  { source: "model-llama32", target: "small-models-thesis", relation: "evidence for" },
 ];
 
 export const knowledgeLinks: KnowledgeLink[] = [

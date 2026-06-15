@@ -10,11 +10,13 @@ This is a personal portfolio website built with TanStack Start, TanStack Router,
 
 ### Development
 ```bash
-npm run dev          # Start development server (http://localhost:3000)
-npm run build        # Build for production
-npm run preview      # Preview production build
-npm run test         # Run tests with Vitest
+pnpm dev          # Start development server (http://localhost:3000)
+pnpm build        # Build for production
+pnpm preview      # Preview production build
+pnpm test         # Run tests with Vitest
 ```
+
+This project uses **pnpm** (pinned via the `packageManager` field). Run `corepack enable` once so the right pnpm version is used automatically.
 
 ## Architecture
 

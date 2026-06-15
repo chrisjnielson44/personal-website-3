@@ -115,6 +115,7 @@ const baseNodeRadius: Record<KnowledgeNodeKind, number> = {
   resource: 10,
   personal: 10,
   course: 6,
+  model: 7,
 };
 
 // Each kind gets its own region of the world so categories read as
@@ -131,6 +132,7 @@ const kindAnchors: Record<KnowledgeNodeKind, [number, number]> = {
   resource: [0.86, 0.8], // lower right
   personal: [0.13, 0.88], // bottom-left corner
   course: [0.18, 0.58], // left academic island (with FSU)
+  model: [0.6, 0.1], // local-model constellation near the skills band
 };
 
 // Singular hub nodes are pinned to exact anchors (no jitter) so the

@@ -173,7 +173,7 @@ const categoryKinds: Record<GraphCategory, KnowledgeNodeKind[]> = {
   work: ["profile", "experience", "domain", "concept"],
   projects: ["project"],
   writing: ["article"],
-  skills: ["skill"],
+  skills: ["skill", "model"],
   education: ["course"],
   personal: ["personal"],
   resources: ["resource"],
@@ -367,6 +367,33 @@ const intentRules: Array<{
     keywords: ["resume", "cv", "contact", "email", "linkedin", "github", "reach"],
     applies: (node) => node.kind === "resource",
     weight: 8,
+  },
+  {
+    reason: "local LLM inference",
+    keywords: [
+      "local",
+      "locally",
+      "ollama",
+      "mlx",
+      "inference",
+      "quantization",
+      "quantized",
+      "gguf",
+      "on-device",
+      "offline",
+      "open-weight",
+      "open-weights",
+    ],
+    applies: (node) =>
+      node.kind === "model" ||
+      [
+        "local-llm-inference",
+        "small-models-thesis",
+        "ollama",
+        "mlx",
+        "mac-studio",
+      ].includes(node.id),
+    weight: 10,
   },
 ];
 
