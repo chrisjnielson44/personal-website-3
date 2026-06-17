@@ -28,14 +28,14 @@
 }
 
 @theme {
-  --color-background: #efeee8;
-  --color-surface: #e6e5dd;
-  --color-card: #faf9f5;
-  --color-foreground: #1c1c1b;
-  --color-muted: #5c5b54;
-  --color-muted-foreground: #8a897f;
-  --color-border: #d4d2c8;
-  --color-accent: #2b4f9e;
+  --color-background: #f8fafc;
+  --color-surface: #f1f5f9;
+  --color-card: #ffffff;
+  --color-foreground: #0f172a;
+  --color-muted: #475569;
+  --color-muted-foreground: #64748b;
+  --color-border: #e2e8f0;
+  --color-accent: #3a5cc9;
   --color-accent-foreground: #ffffff;
 
   --font-sans:
@@ -56,31 +56,31 @@
 }
 
 :root {
-  --graph-canvas: #efeee8;
-  --graph-grid: #c4c2b9;
-  --graph-dot: #9e9c92;
-  --graph-link: #8a887f;
-  --graph-label: #54534b;
-  --graph-label-stroke: #efeee8;
-  --graph-node: #faf9f5;
-  --graph-node-stroke: #75736a;
-  --graph-node-soft: #dbd9cf;
-  --graph-node-medium: #5a78bd;
-  --graph-node-accent: #2b4f9e;
-  --graph-node-dark: #34383a;
-  --graph-node-warm: #9db4dd;
-  /* Categorical node palette (light) — muted, harmonious hues, one per
-     filter category, so a node's colour says what it is. */
-  --cat-work: #2b4f9e;
-  --cat-projects: #2c8a66;
-  --cat-writing: #a06f24;
-  --cat-skills: #7344be;
-  --cat-education: #2c8593;
-  --cat-personal: #b3567a;
-  --cat-resources: #69707e;
-  --inspector-background: #e6e5dd;
-  --inspector-raised: #faf9f5;
-  --inspector-hover: #edece5;
+  --graph-canvas: #f8fafc;
+  --graph-grid: #cbd5e1;
+  --graph-dot: #94a3b8;
+  --graph-link: #94a3b8;
+  --graph-label: #475569;
+  --graph-label-stroke: #f8fafc;
+  --graph-node: #ffffff;
+  --graph-node-stroke: #64748b;
+  --graph-node-soft: #cbd5e1;
+  --graph-node-medium: #6485d6;
+  --graph-node-accent: #3a5cc9;
+  --graph-node-dark: #1e293b;
+  --graph-node-warm: #93a8e0;
+  /* Categorical node palette (light) — cool, harmonious hues on the slate
+     canvas, one per filter category, so a node's colour says what it is. */
+  --cat-work: #3a5cc9;
+  --cat-projects: #2f8f63;
+  --cat-writing: #a4762a;
+  --cat-skills: #7a4fcb;
+  --cat-education: #218799;
+  --cat-personal: #c05b80;
+  --cat-resources: #647488;
+  --inspector-background: #f1f5f9;
+  --inspector-raised: #ffffff;
+  --inspector-hover: #eef2f7;
 
   /* Apple "Liquid Glass" — frosted, translucent floating chrome.
      A light-tinted glass layer over the canvas with a specular top edge
@@ -97,40 +97,40 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-background: #1a1a1b;
-    --color-surface: #212123;
-    --color-card: #27272a;
-    --color-foreground: #f1f0ea;
-    --color-muted: #b4b3ac;
-    --color-muted-foreground: #85847c;
-    --color-border: #37373a;
-    --color-accent: #7aa6ff;
-    --color-accent-foreground: #151719;
+    --color-background: #0a0e14;
+    --color-surface: #11161f;
+    --color-card: #151b25;
+    --color-foreground: #eef2f7;
+    --color-muted: #aab4c2;
+    --color-muted-foreground: #6b7686;
+    --color-border: #1e2632;
+    --color-accent: #88a8ff;
+    --color-accent-foreground: #0a0e14;
 
-    --graph-canvas: #1a1a1b;
-    --graph-grid: #37373a;
-    --graph-dot: #4c4c50;
-    --graph-link: #727276;
-    --graph-label: #bdbcb5;
-    --graph-label-stroke: #1a1a1b;
-    --graph-node: #34343a;
-    --graph-node-stroke: #9a9a96;
-    --graph-node-soft: #4b4b52;
-    --graph-node-medium: #456aae;
-    --graph-node-accent: #7aa6ff;
-    --graph-node-dark: #dad9d2;
-    --graph-node-warm: #6a93dd;
-    /* Categorical node palette (dark) — tuned brighter for the near-black canvas. */
-    --cat-work: #7aa6ff;
+    --graph-canvas: #0a0e14;
+    --graph-grid: #1c2430;
+    --graph-dot: #2b3543;
+    --graph-link: #5b6675;
+    --graph-label: #aab4c2;
+    --graph-label-stroke: #0a0e14;
+    --graph-node: #1b2230;
+    --graph-node-stroke: #8a94a4;
+    --graph-node-soft: #2e3744;
+    --graph-node-medium: #5878c8;
+    --graph-node-accent: #88a8ff;
+    --graph-node-dark: #d6dce4;
+    --graph-node-warm: #7c9bf0;
+    /* Categorical node palette (dark) — tuned brighter for the near-black slate canvas. */
+    --cat-work: #88a8ff;
     --cat-projects: #56ba8f;
     --cat-writing: #d8a65a;
     --cat-skills: #b189e8;
     --cat-education: #4fb4c6;
     --cat-personal: #e58aaa;
-    --cat-resources: #8f97a8;
-    --inspector-background: #1c1c1e;
-    --inspector-raised: #222226;
-    --inspector-hover: #2b2b2f;
+    --cat-resources: #9aa3b4;
+    --inspector-background: #0c1119;
+    --inspector-raised: #141b26;
+    --inspector-hover: #1b232f;
 
     --glass-bg: color-mix(in srgb, var(--color-card) 52%, transparent);
     --glass-bg-strong: color-mix(in srgb, var(--color-card) 70%, transparent);
@@ -1939,11 +1939,11 @@ pre code {
 .graph-welcome-cmd.is-primary {
   border-color: transparent;
   background: var(--color-accent);
-  color: #fff;
+  color: var(--color-accent-foreground);
 }
 
 .graph-welcome-cmd.is-primary svg {
-  color: #fff;
+  color: var(--color-accent-foreground);
 }
 
 .graph-welcome-cmd.is-primary:hover {
