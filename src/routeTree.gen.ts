@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as ContextEngineRouteImport } from './routes/context-engine'
 import { Route as ArticlesRouteImport } from './routes/articles'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArticlesIndexRouteImport } from './routes/articles/index'
@@ -24,6 +25,11 @@ const ResourcesRoute = ResourcesRouteImport.update({
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContextEngineRoute = ContextEngineRouteImport.update({
+  id: '/context-engine',
+  path: '/context-engine',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArticlesRoute = ArticlesRouteImport.update({
@@ -50,6 +56,7 @@ const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/articles': typeof ArticlesRouteWithChildren
+  '/context-engine': typeof ContextEngineRoute
   '/projects': typeof ProjectsRoute
   '/resources': typeof ResourcesRoute
   '/articles/$slug': typeof ArticlesSlugRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/context-engine': typeof ContextEngineRoute
   '/projects': typeof ProjectsRoute
   '/resources': typeof ResourcesRoute
   '/articles/$slug': typeof ArticlesSlugRoute
@@ -66,6 +74,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/articles': typeof ArticlesRouteWithChildren
+  '/context-engine': typeof ContextEngineRoute
   '/projects': typeof ProjectsRoute
   '/resources': typeof ResourcesRoute
   '/articles/$slug': typeof ArticlesSlugRoute
@@ -76,16 +85,24 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/articles'
+    | '/context-engine'
     | '/projects'
     | '/resources'
     | '/articles/$slug'
     | '/articles/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/projects' | '/resources' | '/articles/$slug' | '/articles'
+  to:
+    | '/'
+    | '/context-engine'
+    | '/projects'
+    | '/resources'
+    | '/articles/$slug'
+    | '/articles'
   id:
     | '__root__'
     | '/'
     | '/articles'
+    | '/context-engine'
     | '/projects'
     | '/resources'
     | '/articles/$slug'
@@ -95,6 +112,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ArticlesRoute: typeof ArticlesRouteWithChildren
+  ContextEngineRoute: typeof ContextEngineRoute
   ProjectsRoute: typeof ProjectsRoute
   ResourcesRoute: typeof ResourcesRoute
 }
@@ -113,6 +131,13 @@ declare module '@tanstack/react-router' {
       path: '/projects'
       fullPath: '/projects'
       preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/context-engine': {
+      id: '/context-engine'
+      path: '/context-engine'
+      fullPath: '/context-engine'
+      preLoaderRoute: typeof ContextEngineRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/articles': {
@@ -163,6 +188,7 @@ const ArticlesRouteWithChildren = ArticlesRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArticlesRoute: ArticlesRouteWithChildren,
+  ContextEngineRoute: ContextEngineRoute,
   ProjectsRoute: ProjectsRoute,
   ResourcesRoute: ResourcesRoute,
 }

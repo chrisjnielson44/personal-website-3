@@ -134,6 +134,9 @@ function RootComponent() {
     select: (state) => state.location.pathname,
   });
   const isGraphHome = pathname === "/";
+  // The benchmark page is a self-contained, full-bleed landing — no top chrome.
+  const isBenchmark = pathname === "/context-engine";
+  const hideHeader = isGraphHome || isBenchmark;
   const prefersReducedMotion = useReducedMotion();
 
   return (
@@ -145,13 +148,11 @@ function RootComponent() {
         {/* The graph home is full-bleed and self-identifying (welcome card +
             the central profile node), so it drops the top header. Every other
             route keeps it for branding and the link back to the graph. */}
-        {isGraphHome ? null : <Header />}
+        {hideHeader ? null : <Header />}
         <main
           className={cn(
             "page-shell flex-1",
-            isGraphHome
-              ? "min-h-dvh"
-              : "pt-10 sm:pt-16",
+            isGraphHome ? "min-h-dvh" : isBenchmark ? "" : "pt-10 sm:pt-16",
           )}
         >
           {/* The graph home self-animates (D3 + CSS), so it renders without a

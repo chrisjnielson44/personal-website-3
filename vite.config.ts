@@ -9,6 +9,9 @@ import { nitro } from "nitro/vite";
 import { fileURLToPath, URL } from "url";
 
 const config = defineConfig({
+  preview: {
+    allowedHosts: ["christophers-mac-studio.tailf9c2e3.ts.net"],
+  },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

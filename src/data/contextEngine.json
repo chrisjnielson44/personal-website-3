@@ -1,0 +1,4324 @@
+{
+  "meta": {
+    "dataset": "sanctions",
+    "sources": [
+      "OFAC SDN",
+      "UK OFSI",
+      "UN Consolidated"
+    ],
+    "costUsd": 10,
+    "note": "Chart aggregates span the full model sweep (de-errored). Demo traces are one local model running the real engine, scored by the same graph-oracle grader."
+  },
+  "charts": {
+    "modes": [
+      "none",
+      "vector",
+      "graph_rag",
+      "graph"
+    ],
+    "perModel": [
+      {
+        "model": "claude-sonnet-4.6",
+        "params_b": 0,
+        "tier": "frontier",
+        "family": "claude",
+        "backend": "openrouter",
+        "role": "ceiling",
+        "n": 22,
+        "none": 0.1744,
+        "none_n": 22,
+        "none_tokens": 463,
+        "vector": 0.4284,
+        "vector_n": 20,
+        "vector_tokens": 1465,
+        "graph_rag": 0.7219,
+        "graph_rag_n": 22,
+        "graph_rag_tokens": 1766,
+        "graph": 0.9661,
+        "graph_n": 22,
+        "graph_tokens": 9900
+      },
+      {
+        "model": "deepseek-v3.2",
+        "params_b": 0,
+        "tier": "xl",
+        "family": "deepseek",
+        "backend": "openrouter",
+        "role": "agent",
+        "n": 45,
+        "none": 0.1627,
+        "none_n": 48,
+        "none_tokens": 293,
+        "vector": 0.3768,
+        "vector_n": 45,
+        "vector_tokens": 1171,
+        "graph_rag": 0.7496,
+        "graph_rag_n": 45,
+        "graph_rag_tokens": 1719,
+        "graph": 0.9148,
+        "graph_n": 45,
+        "graph_tokens": 14242
+      },
+      {
+        "model": "deepseek-v4-flash",
+        "params_b": 0,
+        "tier": "xl",
+        "family": "deepseek",
+        "backend": "openrouter",
+        "role": "agent",
+        "n": 45,
+        "none": 0.1505,
+        "none_n": 49,
+        "none_tokens": 771,
+        "vector": 0.35,
+        "vector_n": 46,
+        "vector_tokens": 1305,
+        "graph_rag": 0.6992,
+        "graph_rag_n": 45,
+        "graph_rag_tokens": 1706,
+        "graph": 0.8772,
+        "graph_n": 45,
+        "graph_tokens": 13274
+      },
+      {
+        "model": "deepseek-v4-pro",
+        "params_b": 0,
+        "tier": "xl",
+        "family": "deepseek",
+        "backend": "openrouter",
+        "role": "agent",
+        "n": 46,
+        "none": 0.1359,
+        "none_n": 48,
+        "none_tokens": 1402,
+        "vector": 0.3538,
+        "vector_n": 46,
+        "vector_tokens": 1488,
+        "graph_rag": 0.6923,
+        "graph_rag_n": 46,
+        "graph_rag_tokens": 1819,
+        "graph": 0.947,
+        "graph_n": 46,
+        "graph_tokens": 9875
+      },
+      {
+        "model": "gemini-2.5-pro",
+        "params_b": 0,
+        "tier": "frontier",
+        "family": "gemini",
+        "backend": "openrouter",
+        "role": "ceiling",
+        "n": 22,
+        "none": 0.1781,
+        "none_n": 22,
+        "none_tokens": 1394,
+        "vector": 0.4198,
+        "vector_n": 22,
+        "vector_tokens": 1912,
+        "graph_rag": 0.6771,
+        "graph_rag_n": 22,
+        "graph_rag_tokens": 2219,
+        "graph": 0.9203,
+        "graph_n": 22,
+        "graph_tokens": 5023
+      },
+      {
+        "model": "gemma4-31b",
+        "params_b": 31,
+        "tier": "mid",
+        "family": "gemma",
+        "backend": "ollama",
+        "role": "agent",
+        "n": 8,
+        "none": 0.1846,
+        "none_n": 13,
+        "none_tokens": 1084,
+        "vector": 0.4861,
+        "vector_n": 8,
+        "vector_tokens": 1613,
+        "graph_rag": 0.75,
+        "graph_rag_n": 8,
+        "graph_rag_tokens": 1741,
+        "graph": 1.0,
+        "graph_n": 8,
+        "graph_tokens": 5666
+      },
+      {
+        "model": "glm-4.6",
+        "params_b": 0,
+        "tier": "xl",
+        "family": "glm",
+        "backend": "openrouter",
+        "role": "agent",
+        "n": 46,
+        "none": 0.1209,
+        "none_n": 48,
+        "none_tokens": 4696,
+        "vector": 0.2038,
+        "vector_n": 47,
+        "vector_tokens": 2337,
+        "graph_rag": 0.6664,
+        "graph_rag_n": 46,
+        "graph_rag_tokens": 2263,
+        "graph": 0.8507,
+        "graph_n": 47,
+        "graph_tokens": 9476
+      },
+      {
+        "model": "glm-4.7",
+        "params_b": 0,
+        "tier": "xl",
+        "family": "glm",
+        "backend": "openrouter",
+        "role": "agent",
+        "n": 45,
+        "none": 0.1466,
+        "none_n": 49,
+        "none_tokens": 2960,
+        "vector": 0.3022,
+        "vector_n": 46,
+        "vector_tokens": 2273,
+        "graph_rag": 0.4464,
+        "graph_rag_n": 45,
+        "graph_rag_tokens": 2330,
+        "graph": 0.9383,
+        "graph_n": 46,
+        "graph_tokens": 9634
+      },
+      {
+        "model": "glm-4.7-flash",
+        "params_b": 0,
+        "tier": "xl",
+        "family": "glm",
+        "backend": "openrouter",
+        "role": "agent",
+        "n": 50,
+        "none": 0.1,
+        "none_n": 50,
+        "none_tokens": 1083,
+        "vector": 0.2416,
+        "vector_n": 46,
+        "vector_tokens": 1981,
+        "graph_rag": 0.2733,
+        "graph_rag_n": 50,
+        "graph_rag_tokens": 2324,
+        "graph": 0.8123,
+        "graph_n": 45,
+        "graph_tokens": 12046
+      },
+      {
+        "model": "glm-5-turbo",
+        "params_b": 0,
+        "tier": "xl",
+        "family": "glm",
+        "backend": "openrouter",
+        "role": "agent",
+        "n": 9,
+        "none": 0.0667,
+        "none_n": 6,
+        "none_tokens": 666,
+        "vector": 0.2866,
+        "vector_n": 16,
+        "vector_tokens": 1714,
+        "graph_rag": 0.8889,
+        "graph_rag_n": 9,
+        "graph_rag_tokens": 1670,
+        "graph": null,
+        "graph_n": 0,
+        "graph_tokens": null
+      },
+      {
+        "model": "glm-5.1",
+        "params_b": 0,
+        "tier": "xl",
+        "family": "glm",
+        "backend": "openrouter",
+        "role": "agent",
+        "n": 45,
+        "none": 0.1532,
+        "none_n": 47,
+        "none_tokens": 749,
+        "vector": 0.3061,
+        "vector_n": 45,
+        "vector_tokens": 1966,
+        "graph_rag": 0.7151,
+        "graph_rag_n": 45,
+        "graph_rag_tokens": 1843,
+        "graph": 0.9537,
+        "graph_n": 45,
+        "graph_tokens": 6841
+      },
+      {
+        "model": "glm-5.2",
+        "params_b": 0,
+        "tier": "xl",
+        "family": "glm",
+        "backend": "openrouter",
+        "role": "agent",
+        "n": 46,
+        "none": 0.1281,
+        "none_n": 48,
+        "none_tokens": 774,
+        "vector": 0.3285,
+        "vector_n": 45,
+        "vector_tokens": 1435,
+        "graph_rag": 0.6995,
+        "graph_rag_n": 46,
+        "graph_rag_tokens": 1671,
+        "graph": 0.9504,
+        "graph_n": 45,
+        "graph_tokens": 6930
+      },
+      {
+        "model": "gpt-5.1",
+        "params_b": 0,
+        "tier": "frontier",
+        "family": "gpt",
+        "backend": "openrouter",
+        "role": "ceiling",
+        "n": 22,
+        "none": 0.115,
+        "none_n": 25,
+        "none_tokens": 302,
+        "vector": 0.3895,
+        "vector_n": 22,
+        "vector_tokens": 1182,
+        "graph_rag": 0.7219,
+        "graph_rag_n": 22,
+        "graph_rag_tokens": 1411,
+        "graph": 0.9092,
+        "graph_n": 22,
+        "graph_tokens": 5230
+      },
+      {
+        "model": "granite-4.1-8b",
+        "params_b": 8,
+        "tier": "small",
+        "family": "granite",
+        "backend": "openrouter",
+        "role": "agent",
+        "n": 45,
+        "none": 0.1156,
+        "none_n": 49,
+        "none_tokens": 362,
+        "vector": 0.3435,
+        "vector_n": 44,
+        "vector_tokens": 1302,
+        "graph_rag": 0.7084,
+        "graph_rag_n": 45,
+        "graph_rag_tokens": 1705,
+        "graph": 0.7785,
+        "graph_n": 45,
+        "graph_tokens": 8988
+      },
+      {
+        "model": "llama3.2-3b",
+        "params_b": 3,
+        "tier": "small",
+        "family": "llama",
+        "backend": "ollama",
+        "role": "agent",
+        "n": 22,
+        "none": 0.0,
+        "none_n": 29,
+        "none_tokens": 181,
+        "vector": 0.252,
+        "vector_n": 26,
+        "vector_tokens": 1220,
+        "graph_rag": 0.6112,
+        "graph_rag_n": 22,
+        "graph_rag_tokens": 1341,
+        "graph": 0.1357,
+        "graph_n": 28,
+        "graph_tokens": 1871
+      },
+      {
+        "model": "medgemma-27b-local",
+        "params_b": 27,
+        "tier": "mid",
+        "family": "gemma",
+        "backend": "ollama",
+        "role": "agent",
+        "n": 1,
+        "none": 0.0,
+        "none_n": 1,
+        "none_tokens": 377,
+        "vector": null,
+        "vector_n": 0,
+        "vector_tokens": null,
+        "graph_rag": null,
+        "graph_rag_n": 0,
+        "graph_rag_tokens": null,
+        "graph": null,
+        "graph_n": 0,
+        "graph_tokens": null
+      },
+      {
+        "model": "qwen3-14b",
+        "params_b": 14,
+        "tier": "mid",
+        "family": "qwen3",
+        "backend": "openrouter",
+        "role": "agent",
+        "n": 46,
+        "none": 0.127,
+        "none_n": 50,
+        "none_tokens": 700,
+        "vector": 0.3074,
+        "vector_n": 46,
+        "vector_tokens": 1624,
+        "graph_rag": 0.6689,
+        "graph_rag_n": 46,
+        "graph_rag_tokens": 1891,
+        "graph": 0.5428,
+        "graph_n": 46,
+        "graph_tokens": 6040
+      },
+      {
+        "model": "qwen3-235b",
+        "params_b": 235,
+        "tier": "xl",
+        "family": "qwen3",
+        "backend": "openrouter",
+        "role": "agent",
+        "n": 45,
+        "none": 0.1357,
+        "none_n": 50,
+        "none_tokens": 267,
+        "vector": 0.3274,
+        "vector_n": 45,
+        "vector_tokens": 1210,
+        "graph_rag": 0.7452,
+        "graph_rag_n": 45,
+        "graph_rag_tokens": 1605,
+        "graph": 0.8457,
+        "graph_n": 45,
+        "graph_tokens": 7431
+      },
+      {
+        "model": "qwen3-32b",
+        "params_b": 32,
+        "tier": "mid",
+        "family": "qwen3",
+        "backend": "openrouter",
+        "role": "agent",
+        "n": 46,
+        "none": 0.1143,
+        "none_n": 50,
+        "none_tokens": 725,
+        "vector": 0.3459,
+        "vector_n": 46,
+        "vector_tokens": 1671,
+        "graph_rag": 0.7213,
+        "graph_rag_n": 46,
+        "graph_rag_tokens": 2078,
+        "graph": 0.7271,
+        "graph_n": 46,
+        "graph_tokens": 6372
+      },
+      {
+        "model": "qwen3-8b",
+        "params_b": 8,
+        "tier": "small",
+        "family": "qwen3",
+        "backend": "openrouter",
+        "role": "agent",
+        "n": 46,
+        "none": 0.1028,
+        "none_n": 50,
+        "none_tokens": 812,
+        "vector": 0.3014,
+        "vector_n": 46,
+        "vector_tokens": 1767,
+        "graph_rag": 0.6876,
+        "graph_rag_n": 46,
+        "graph_rag_tokens": 2000,
+        "graph": 0.7653,
+        "graph_n": 46,
+        "graph_tokens": 8453
+      },
+      {
+        "model": "qwen3.6-35b-local",
+        "params_b": 35,
+        "tier": "large",
+        "family": "qwen3",
+        "backend": "ollama",
+        "role": "agent",
+        "n": 4,
+        "none": 0.0114,
+        "none_n": 16,
+        "none_tokens": 35609,
+        "vector": 0.25,
+        "vector_n": 4,
+        "vector_tokens": 2110,
+        "graph_rag": 0.6667,
+        "graph_rag_n": 4,
+        "graph_rag_tokens": 1849,
+        "graph": 1.0,
+        "graph_n": 4,
+        "graph_tokens": 9522
+      }
+    ],
+    "byMode": [
+      {
+        "mode": "none",
+        "f1_mean": 0.1251,
+        "tokens_mean": 1819,
+        "faithful_mean": 0.549,
+        "hallucination_rate": 0.451,
+        "n": 770
+      },
+      {
+        "mode": "vector",
+        "f1_mean": 0.3216,
+        "tokens_mean": 1635,
+        "faithful_mean": 0.9588,
+        "hallucination_rate": 0.0412,
+        "n": 711
+      },
+      {
+        "mode": "graph_rag",
+        "f1_mean": 0.6576,
+        "tokens_mean": 1888,
+        "faithful_mean": 0.9845,
+        "hallucination_rate": 0.0155,
+        "n": 705
+      },
+      {
+        "mode": "graph",
+        "f1_mean": 0.8218,
+        "tokens_mean": 8625,
+        "faithful_mean": 0.9536,
+        "hallucination_rate": 0.0464,
+        "n": 698
+      }
+    ],
+    "nCells": 2884,
+    "nModels": 21
+  },
+  "metaqa": {
+    "meta": {
+      "gold": "external (MetaQA held-out test answers)",
+      "nQuestions": 400,
+      "nCells": 9405,
+      "models": [
+        "qwen3-0.6b-mlx",
+        "qwen3-1.7b-mlx",
+        "llama3.2-3b-mlx",
+        "phi3.5-mini-mlx",
+        "qwen3-4b-mlx",
+        "mistral-7b-mlx",
+        "qwen2.5-7b-mlx",
+        "granite3.3-8b-mlx",
+        "llama3.1-8b-mlx",
+        "qwen3-8b-mlx",
+        "gemma2-9b-mlx",
+        "qwen3-14b-mlx",
+        "qwen3-30b-a3b-mlx"
+      ],
+      "note": "Questions and gold answers come from MetaQA, not our graph — the graph-as-oracle circularity is removed. Clean movie KB (no entity resolution / no extraction noise), so mode differences reflect context FORMAT. Local quantized MLX models, sampled at temperature 0.7; 95% CIs are a paired bootstrap over the question set. The agentic-graph arm is sampled lighter (it costs ~50s/cell on one GPU)."
+    },
+    "byHop": {
+      "2": [
+        {
+          "model": "qwen3-0.6b-mlx",
+          "params_b": 0.6,
+          "control": false,
+          "none": {
+            "f1": 0.0576,
+            "lo": 0.0083,
+            "hi": 0.1227,
+            "hits1": 0.0909,
+            "tokens": 231,
+            "latency": 1.37,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "vector": {
+            "f1": 0.1448,
+            "lo": 0.0693,
+            "hi": 0.2345,
+            "hits1": 0.1818,
+            "tokens": 667,
+            "latency": 2.59,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph_rag": {
+            "f1": 0.337,
+            "lo": 0.2221,
+            "hi": 0.4563,
+            "hits1": 0.2955,
+            "tokens": 2375,
+            "latency": 2.13,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 3549,
+            "latency": 123.95,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "qwen3-1.7b-mlx",
+          "params_b": 1.7,
+          "control": false,
+          "none": {
+            "f1": 0.0414,
+            "lo": 0.0243,
+            "hi": 0.0608,
+            "hits1": 0.06,
+            "tokens": 256,
+            "latency": 5.54,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "vector": {
+            "f1": 0.2216,
+            "lo": 0.1765,
+            "hi": 0.2671,
+            "hits1": 0.295,
+            "tokens": 528,
+            "latency": 3.24,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph_rag": {
+            "f1": 0.6497,
+            "lo": 0.5907,
+            "hi": 0.703,
+            "hits1": 0.635,
+            "tokens": 1568,
+            "latency": 5.54,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph": {
+            "f1": 0.03,
+            "lo": 0.0,
+            "hi": 0.08,
+            "hits1": 0.04,
+            "tokens": 3842,
+            "latency": 21.38,
+            "toolCalls": 0.2,
+            "n": 50
+          }
+        },
+        {
+          "model": "llama3.2-3b-mlx",
+          "params_b": 3,
+          "control": true,
+          "none": {
+            "f1": 0.0623,
+            "lo": 0.0385,
+            "hi": 0.0877,
+            "hits1": 0.08,
+            "tokens": 438,
+            "latency": 11.15,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "vector": {
+            "f1": 0.2881,
+            "lo": 0.24,
+            "hi": 0.338,
+            "hits1": 0.42,
+            "tokens": 628,
+            "latency": 10.23,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph_rag": {
+            "f1": 0.6996,
+            "lo": 0.6458,
+            "hi": 0.7536,
+            "hits1": 0.795,
+            "tokens": 1717,
+            "latency": 11.43,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph": {
+            "f1": 0.017,
+            "lo": 0.0,
+            "hi": 0.0473,
+            "hits1": 0.02,
+            "tokens": 2604,
+            "latency": 8.03,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "phi3.5-mini-mlx",
+          "params_b": 3.8,
+          "control": false,
+          "none": {
+            "f1": 0.0072,
+            "lo": 0.0,
+            "hi": 0.0163,
+            "hits1": 0.0465,
+            "tokens": 1070,
+            "latency": 24.84,
+            "toolCalls": 0.0,
+            "n": 43
+          },
+          "vector": {
+            "f1": 0.2293,
+            "lo": 0.126,
+            "hi": 0.3432,
+            "hits1": 0.2558,
+            "tokens": 730,
+            "latency": 20.05,
+            "toolCalls": 0.0,
+            "n": 43
+          },
+          "graph_rag": {
+            "f1": 0.4492,
+            "lo": 0.3231,
+            "hi": 0.5683,
+            "hits1": 0.4884,
+            "tokens": 3270,
+            "latency": 19.49,
+            "toolCalls": 0.0,
+            "n": 43
+          },
+          "graph": {
+            "f1": 0.0091,
+            "lo": 0.0013,
+            "hi": 0.0192,
+            "hits1": 0.06,
+            "tokens": 1239,
+            "latency": 13.18,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "qwen3-4b-mlx",
+          "params_b": 4,
+          "control": false,
+          "none": {
+            "f1": 0.0631,
+            "lo": 0.0401,
+            "hi": 0.0878,
+            "hits1": 0.085,
+            "tokens": 266,
+            "latency": 7.29,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "vector": {
+            "f1": 0.3491,
+            "lo": 0.2888,
+            "hi": 0.4096,
+            "hits1": 0.43,
+            "tokens": 521,
+            "latency": 5.17,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph_rag": {
+            "f1": 0.7697,
+            "lo": 0.7159,
+            "hi": 0.8229,
+            "hits1": 0.825,
+            "tokens": 1676,
+            "latency": 8.98,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph": {
+            "f1": 0.268,
+            "lo": 0.1507,
+            "hi": 0.396,
+            "hits1": 0.28,
+            "tokens": 5138,
+            "latency": 35.7,
+            "toolCalls": 1.14,
+            "n": 50
+          }
+        },
+        {
+          "model": "mistral-7b-mlx",
+          "params_b": 7,
+          "control": false,
+          "none": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 0,
+            "latency": 0.0,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "vector": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 0,
+            "latency": 0.0,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph_rag": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 0,
+            "latency": 0.0,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 1066,
+            "latency": 6.79,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "qwen2.5-7b-mlx",
+          "params_b": 7,
+          "control": false,
+          "none": {
+            "f1": 0.0926,
+            "lo": 0.035,
+            "hi": 0.1632,
+            "hits1": 0.1364,
+            "tokens": 204,
+            "latency": 2.78,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "vector": {
+            "f1": 0.356,
+            "lo": 0.2336,
+            "hi": 0.4841,
+            "hits1": 0.3636,
+            "tokens": 514,
+            "latency": 1.49,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph_rag": {
+            "f1": 0.6804,
+            "lo": 0.5689,
+            "hi": 0.7863,
+            "hits1": 0.7955,
+            "tokens": 2405,
+            "latency": 5.18,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph": {
+            "f1": 0.1348,
+            "lo": 0.0573,
+            "hi": 0.2242,
+            "hits1": 0.1633,
+            "tokens": 8116,
+            "latency": 18.15,
+            "toolCalls": 12.31,
+            "n": 49
+          }
+        },
+        {
+          "model": "granite3.3-8b-mlx",
+          "params_b": 8,
+          "control": false,
+          "none": {
+            "f1": 0.1704,
+            "lo": 0.0934,
+            "hi": 0.2588,
+            "hits1": 0.2727,
+            "tokens": 298,
+            "latency": 7.31,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "vector": {
+            "f1": 0.3434,
+            "lo": 0.2168,
+            "hi": 0.4749,
+            "hits1": 0.4091,
+            "tokens": 677,
+            "latency": 6.41,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph_rag": {
+            "f1": 0.7077,
+            "lo": 0.5877,
+            "hi": 0.8179,
+            "hits1": 0.7674,
+            "tokens": 3223,
+            "latency": 12.6,
+            "toolCalls": 0.0,
+            "n": 43
+          },
+          "graph": {
+            "f1": 0.049,
+            "lo": 0.0118,
+            "hi": 0.096,
+            "hits1": 0.06,
+            "tokens": 2067,
+            "latency": 23.14,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "llama3.1-8b-mlx",
+          "params_b": 8,
+          "control": false,
+          "none": {
+            "f1": 0.0828,
+            "lo": 0.025,
+            "hi": 0.152,
+            "hits1": 0.125,
+            "tokens": 787,
+            "latency": 130.79,
+            "toolCalls": 0.0,
+            "n": 40
+          },
+          "vector": {
+            "f1": 0.3541,
+            "lo": 0.2251,
+            "hi": 0.4894,
+            "hits1": 0.325,
+            "tokens": 907,
+            "latency": 142.53,
+            "toolCalls": 0.0,
+            "n": 40
+          },
+          "graph_rag": {
+            "f1": 0.674,
+            "lo": 0.538,
+            "hi": 0.8081,
+            "hits1": 0.641,
+            "tokens": 2870,
+            "latency": 134.16,
+            "toolCalls": 0.0,
+            "n": 39
+          },
+          "graph": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 1481,
+            "latency": 3.14,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "qwen3-8b-mlx",
+          "params_b": 8,
+          "control": false,
+          "none": {
+            "f1": 0.0724,
+            "lo": 0.0477,
+            "hi": 0.0999,
+            "hits1": 0.12,
+            "tokens": 520,
+            "latency": 52.45,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "vector": {
+            "f1": 0.3627,
+            "lo": 0.3007,
+            "hi": 0.4248,
+            "hits1": 0.435,
+            "tokens": 546,
+            "latency": 49.93,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph_rag": {
+            "f1": 0.7689,
+            "lo": 0.7141,
+            "hi": 0.8225,
+            "hits1": 0.815,
+            "tokens": 1651,
+            "latency": 50.27,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph": {
+            "f1": 0.0583,
+            "lo": 0.0053,
+            "hi": 0.1236,
+            "hits1": 0.1,
+            "tokens": 3453,
+            "latency": 34.77,
+            "toolCalls": 0.1,
+            "n": 50
+          }
+        },
+        {
+          "model": "gemma2-9b-mlx",
+          "params_b": 9,
+          "control": false,
+          "none": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 0,
+            "latency": 0.0,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "vector": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 0,
+            "latency": 0.0,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph_rag": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 0,
+            "latency": 0.0,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 0,
+            "latency": 0.0,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "qwen3-14b-mlx",
+          "params_b": 14,
+          "control": false,
+          "none": {
+            "f1": 0.1103,
+            "lo": 0.0782,
+            "hi": 0.1464,
+            "hits1": 0.15,
+            "tokens": 335,
+            "latency": 21.35,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "vector": {
+            "f1": 0.392,
+            "lo": 0.3291,
+            "hi": 0.4542,
+            "hits1": 0.47,
+            "tokens": 504,
+            "latency": 19.49,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph_rag": {
+            "f1": 0.8049,
+            "lo": 0.7531,
+            "hi": 0.8514,
+            "hits1": 0.86,
+            "tokens": 1561,
+            "latency": 19.81,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph": {
+            "f1": 0.3888,
+            "lo": 0.2567,
+            "hi": 0.5263,
+            "hits1": 0.4,
+            "tokens": 5302,
+            "latency": 71.31,
+            "toolCalls": 1.48,
+            "n": 50
+          }
+        },
+        {
+          "model": "qwen3-30b-a3b-mlx",
+          "params_b": 30,
+          "control": false,
+          "none": {
+            "f1": 0.0988,
+            "lo": 0.0684,
+            "hi": 0.1328,
+            "hits1": 0.14,
+            "tokens": 205,
+            "latency": 18.79,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "vector": {
+            "f1": 0.3843,
+            "lo": 0.3257,
+            "hi": 0.445,
+            "hits1": 0.455,
+            "tokens": 509,
+            "latency": 17.5,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph_rag": {
+            "f1": 0.7862,
+            "lo": 0.731,
+            "hi": 0.8375,
+            "hits1": 0.825,
+            "tokens": 1641,
+            "latency": 20.73,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph": {
+            "f1": 0.3146,
+            "lo": 0.194,
+            "hi": 0.4421,
+            "hits1": 0.34,
+            "tokens": 4577,
+            "latency": 377.19,
+            "toolCalls": 1.26,
+            "n": 50
+          }
+        }
+      ],
+      "3": [
+        {
+          "model": "qwen3-0.6b-mlx",
+          "params_b": 0.6,
+          "control": false,
+          "none": null,
+          "vector": null,
+          "graph_rag": null,
+          "graph": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 3572,
+            "latency": 117.87,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "qwen3-1.7b-mlx",
+          "params_b": 1.7,
+          "control": false,
+          "none": {
+            "f1": 0.0385,
+            "lo": 0.0229,
+            "hi": 0.0567,
+            "hits1": 0.06,
+            "tokens": 291,
+            "latency": 7.09,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "vector": {
+            "f1": 0.1487,
+            "lo": 0.1177,
+            "hi": 0.18,
+            "hits1": 0.325,
+            "tokens": 585,
+            "latency": 3.19,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph_rag": {
+            "f1": 0.4023,
+            "lo": 0.3522,
+            "hi": 0.4525,
+            "hits1": 0.51,
+            "tokens": 2763,
+            "latency": 4.38,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph": {
+            "f1": 0.044,
+            "lo": 0.0067,
+            "hi": 0.0933,
+            "hits1": 0.08,
+            "tokens": 3537,
+            "latency": 17.45,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "llama3.2-3b-mlx",
+          "params_b": 3,
+          "control": true,
+          "none": {
+            "f1": 0.1002,
+            "lo": 0.0753,
+            "hi": 0.1273,
+            "hits1": 0.185,
+            "tokens": 493,
+            "latency": 16.87,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "vector": {
+            "f1": 0.18,
+            "lo": 0.1473,
+            "hi": 0.2133,
+            "hits1": 0.34,
+            "tokens": 759,
+            "latency": 15.29,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph_rag": {
+            "f1": 0.4114,
+            "lo": 0.3569,
+            "hi": 0.4637,
+            "hits1": 0.47,
+            "tokens": 3073,
+            "latency": 19.8,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph": {
+            "f1": 0.0759,
+            "lo": 0.0283,
+            "hi": 0.1379,
+            "hits1": 0.14,
+            "tokens": 2687,
+            "latency": 7.41,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "phi3.5-mini-mlx",
+          "params_b": 3.8,
+          "control": false,
+          "none": null,
+          "vector": null,
+          "graph_rag": null,
+          "graph": {
+            "f1": 0.09,
+            "lo": 0.0514,
+            "hi": 0.1337,
+            "hits1": 0.14,
+            "tokens": 1249,
+            "latency": 10.81,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "qwen3-4b-mlx",
+          "params_b": 4,
+          "control": false,
+          "none": {
+            "f1": 0.0574,
+            "lo": 0.0368,
+            "hi": 0.0805,
+            "hits1": 0.135,
+            "tokens": 244,
+            "latency": 10.3,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "vector": {
+            "f1": 0.1579,
+            "lo": 0.1242,
+            "hi": 0.1954,
+            "hits1": 0.355,
+            "tokens": 647,
+            "latency": 7.03,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph_rag": {
+            "f1": 0.5304,
+            "lo": 0.4709,
+            "hi": 0.5889,
+            "hits1": 0.54,
+            "tokens": 2985,
+            "latency": 18.12,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph": {
+            "f1": 0.0164,
+            "lo": 0.0,
+            "hi": 0.0443,
+            "hits1": 0.04,
+            "tokens": 3715,
+            "latency": 28.76,
+            "toolCalls": 0.08,
+            "n": 50
+          }
+        },
+        {
+          "model": "mistral-7b-mlx",
+          "params_b": 7,
+          "control": false,
+          "none": null,
+          "vector": null,
+          "graph_rag": null,
+          "graph": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 1089,
+            "latency": 7.86,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "qwen2.5-7b-mlx",
+          "params_b": 7,
+          "control": false,
+          "none": null,
+          "vector": null,
+          "graph_rag": null,
+          "graph": {
+            "f1": 0.089,
+            "lo": 0.0347,
+            "hi": 0.1528,
+            "hits1": 0.1837,
+            "tokens": 9257,
+            "latency": 31.52,
+            "toolCalls": 15.06,
+            "n": 49
+          }
+        },
+        {
+          "model": "granite3.3-8b-mlx",
+          "params_b": 8,
+          "control": false,
+          "none": null,
+          "vector": null,
+          "graph_rag": null,
+          "graph": {
+            "f1": 0.0904,
+            "lo": 0.0454,
+            "hi": 0.1431,
+            "hits1": 0.1,
+            "tokens": 2102,
+            "latency": 16.3,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "llama3.1-8b-mlx",
+          "params_b": 8,
+          "control": false,
+          "none": null,
+          "vector": null,
+          "graph_rag": null,
+          "graph": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 1485,
+            "latency": 1.36,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "qwen3-8b-mlx",
+          "params_b": 8,
+          "control": false,
+          "none": {
+            "f1": 0.0857,
+            "lo": 0.06,
+            "hi": 0.1135,
+            "hits1": 0.18,
+            "tokens": 452,
+            "latency": 66.11,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "vector": {
+            "f1": 0.0961,
+            "lo": 0.0669,
+            "hi": 0.1264,
+            "hits1": 0.195,
+            "tokens": 656,
+            "latency": 62.05,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph_rag": {
+            "f1": 0.5001,
+            "lo": 0.4371,
+            "hi": 0.5624,
+            "hits1": 0.52,
+            "tokens": 3032,
+            "latency": 69.58,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph": {
+            "f1": 0.0895,
+            "lo": 0.0467,
+            "hi": 0.1347,
+            "hits1": 0.18,
+            "tokens": 3304,
+            "latency": 29.75,
+            "toolCalls": 0.02,
+            "n": 50
+          }
+        },
+        {
+          "model": "gemma2-9b-mlx",
+          "params_b": 9,
+          "control": false,
+          "none": null,
+          "vector": null,
+          "graph_rag": null,
+          "graph": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 0,
+            "latency": 0.0,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "qwen3-14b-mlx",
+          "params_b": 14,
+          "control": false,
+          "none": {
+            "f1": 0.1438,
+            "lo": 0.1116,
+            "hi": 0.1785,
+            "hits1": 0.3,
+            "tokens": 210,
+            "latency": 8.46,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "vector": {
+            "f1": 0.1648,
+            "lo": 0.131,
+            "hi": 0.2002,
+            "hits1": 0.39,
+            "tokens": 572,
+            "latency": 6.43,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph_rag": {
+            "f1": 0.5662,
+            "lo": 0.508,
+            "hi": 0.6232,
+            "hits1": 0.54,
+            "tokens": 2740,
+            "latency": 14.91,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph": {
+            "f1": 0.0825,
+            "lo": 0.0361,
+            "hi": 0.1383,
+            "hits1": 0.2,
+            "tokens": 4656,
+            "latency": 52.49,
+            "toolCalls": 0.72,
+            "n": 50
+          }
+        },
+        {
+          "model": "qwen3-30b-a3b-mlx",
+          "params_b": 30,
+          "control": false,
+          "none": {
+            "f1": 0.1284,
+            "lo": 0.0985,
+            "hi": 0.1599,
+            "hits1": 0.26,
+            "tokens": 239,
+            "latency": 65.85,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "vector": {
+            "f1": 0.1969,
+            "lo": 0.159,
+            "hi": 0.2379,
+            "hits1": 0.41,
+            "tokens": 577,
+            "latency": 59.72,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph_rag": {
+            "f1": 0.6117,
+            "lo": 0.552,
+            "hi": 0.6705,
+            "hits1": 0.635,
+            "tokens": 2960,
+            "latency": 71.1,
+            "toolCalls": 0.0,
+            "n": 200
+          },
+          "graph": {
+            "f1": 0.1177,
+            "lo": 0.0569,
+            "hi": 0.1866,
+            "hits1": 0.2,
+            "tokens": 4413,
+            "latency": 393.6,
+            "toolCalls": 0.66,
+            "n": 50
+          }
+        }
+      ],
+      "pooled": [
+        {
+          "model": "qwen3-0.6b-mlx",
+          "params_b": 0.6,
+          "control": false,
+          "none": {
+            "f1": 0.0576,
+            "lo": 0.0083,
+            "hi": 0.1212,
+            "hits1": 0.0909,
+            "tokens": 231,
+            "latency": 1.37,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "vector": {
+            "f1": 0.1448,
+            "lo": 0.0687,
+            "hi": 0.2327,
+            "hits1": 0.1818,
+            "tokens": 667,
+            "latency": 2.59,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph_rag": {
+            "f1": 0.337,
+            "lo": 0.2177,
+            "hi": 0.4576,
+            "hits1": 0.2955,
+            "tokens": 2375,
+            "latency": 2.13,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 3561,
+            "latency": 120.91,
+            "toolCalls": 0.0,
+            "n": 100
+          }
+        },
+        {
+          "model": "qwen3-1.7b-mlx",
+          "params_b": 1.7,
+          "control": false,
+          "none": {
+            "f1": 0.04,
+            "lo": 0.0281,
+            "hi": 0.0531,
+            "hits1": 0.06,
+            "tokens": 273,
+            "latency": 6.31,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "vector": {
+            "f1": 0.1851,
+            "lo": 0.1574,
+            "hi": 0.2132,
+            "hits1": 0.31,
+            "tokens": 557,
+            "latency": 3.21,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "graph_rag": {
+            "f1": 0.526,
+            "lo": 0.4842,
+            "hi": 0.5656,
+            "hits1": 0.5725,
+            "tokens": 2166,
+            "latency": 4.96,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "graph": {
+            "f1": 0.037,
+            "lo": 0.01,
+            "hi": 0.0703,
+            "hits1": 0.06,
+            "tokens": 3690,
+            "latency": 19.42,
+            "toolCalls": 0.1,
+            "n": 100
+          }
+        },
+        {
+          "model": "llama3.2-3b-mlx",
+          "params_b": 3,
+          "control": true,
+          "none": {
+            "f1": 0.0812,
+            "lo": 0.0637,
+            "hi": 0.0997,
+            "hits1": 0.1325,
+            "tokens": 465,
+            "latency": 14.01,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "vector": {
+            "f1": 0.2341,
+            "lo": 0.2044,
+            "hi": 0.2639,
+            "hits1": 0.38,
+            "tokens": 693,
+            "latency": 12.76,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "graph_rag": {
+            "f1": 0.5555,
+            "lo": 0.5149,
+            "hi": 0.5941,
+            "hits1": 0.6325,
+            "tokens": 2395,
+            "latency": 15.61,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "graph": {
+            "f1": 0.0464,
+            "lo": 0.0192,
+            "hi": 0.0782,
+            "hits1": 0.08,
+            "tokens": 2646,
+            "latency": 7.72,
+            "toolCalls": 0.0,
+            "n": 100
+          }
+        },
+        {
+          "model": "phi3.5-mini-mlx",
+          "params_b": 3.8,
+          "control": false,
+          "none": {
+            "f1": 0.0072,
+            "lo": 0.0,
+            "hi": 0.0163,
+            "hits1": 0.0465,
+            "tokens": 1070,
+            "latency": 24.84,
+            "toolCalls": 0.0,
+            "n": 43
+          },
+          "vector": {
+            "f1": 0.2293,
+            "lo": 0.126,
+            "hi": 0.3402,
+            "hits1": 0.2558,
+            "tokens": 730,
+            "latency": 20.05,
+            "toolCalls": 0.0,
+            "n": 43
+          },
+          "graph_rag": {
+            "f1": 0.4492,
+            "lo": 0.3256,
+            "hi": 0.5732,
+            "hits1": 0.4884,
+            "tokens": 3270,
+            "latency": 19.49,
+            "toolCalls": 0.0,
+            "n": 43
+          },
+          "graph": {
+            "f1": 0.0495,
+            "lo": 0.0276,
+            "hi": 0.0731,
+            "hits1": 0.1,
+            "tokens": 1244,
+            "latency": 11.99,
+            "toolCalls": 0.0,
+            "n": 100
+          }
+        },
+        {
+          "model": "qwen3-4b-mlx",
+          "params_b": 4,
+          "control": false,
+          "none": {
+            "f1": 0.0603,
+            "lo": 0.0439,
+            "hi": 0.077,
+            "hits1": 0.11,
+            "tokens": 255,
+            "latency": 8.8,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "vector": {
+            "f1": 0.2535,
+            "lo": 0.2182,
+            "hi": 0.2879,
+            "hits1": 0.3925,
+            "tokens": 584,
+            "latency": 6.1,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "graph_rag": {
+            "f1": 0.6501,
+            "lo": 0.6094,
+            "hi": 0.6936,
+            "hits1": 0.6825,
+            "tokens": 2331,
+            "latency": 13.55,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "graph": {
+            "f1": 0.1422,
+            "lo": 0.0805,
+            "hi": 0.209,
+            "hits1": 0.16,
+            "tokens": 4426,
+            "latency": 32.23,
+            "toolCalls": 0.61,
+            "n": 100
+          }
+        },
+        {
+          "model": "mistral-7b-mlx",
+          "params_b": 7,
+          "control": false,
+          "none": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 0,
+            "latency": 0.0,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "vector": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 0,
+            "latency": 0.0,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph_rag": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 0,
+            "latency": 0.0,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 1078,
+            "latency": 7.32,
+            "toolCalls": 0.0,
+            "n": 100
+          }
+        },
+        {
+          "model": "qwen2.5-7b-mlx",
+          "params_b": 7,
+          "control": false,
+          "none": {
+            "f1": 0.0926,
+            "lo": 0.0339,
+            "hi": 0.1611,
+            "hits1": 0.1364,
+            "tokens": 204,
+            "latency": 2.78,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "vector": {
+            "f1": 0.356,
+            "lo": 0.2358,
+            "hi": 0.4886,
+            "hits1": 0.3636,
+            "tokens": 514,
+            "latency": 1.49,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph_rag": {
+            "f1": 0.6804,
+            "lo": 0.568,
+            "hi": 0.7888,
+            "hits1": 0.7955,
+            "tokens": 2405,
+            "latency": 5.18,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph": {
+            "f1": 0.1119,
+            "lo": 0.0623,
+            "hi": 0.1656,
+            "hits1": 0.1735,
+            "tokens": 8687,
+            "latency": 24.83,
+            "toolCalls": 13.68,
+            "n": 98
+          }
+        },
+        {
+          "model": "granite3.3-8b-mlx",
+          "params_b": 8,
+          "control": false,
+          "none": {
+            "f1": 0.1704,
+            "lo": 0.0924,
+            "hi": 0.253,
+            "hits1": 0.2727,
+            "tokens": 298,
+            "latency": 7.31,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "vector": {
+            "f1": 0.3434,
+            "lo": 0.2203,
+            "hi": 0.4755,
+            "hits1": 0.4091,
+            "tokens": 677,
+            "latency": 6.41,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph_rag": {
+            "f1": 0.7077,
+            "lo": 0.5963,
+            "hi": 0.8175,
+            "hits1": 0.7674,
+            "tokens": 3223,
+            "latency": 12.6,
+            "toolCalls": 0.0,
+            "n": 43
+          },
+          "graph": {
+            "f1": 0.0697,
+            "lo": 0.039,
+            "hi": 0.1048,
+            "hits1": 0.08,
+            "tokens": 2085,
+            "latency": 19.72,
+            "toolCalls": 0.0,
+            "n": 100
+          }
+        },
+        {
+          "model": "llama3.1-8b-mlx",
+          "params_b": 8,
+          "control": false,
+          "none": {
+            "f1": 0.0828,
+            "lo": 0.0262,
+            "hi": 0.1519,
+            "hits1": 0.125,
+            "tokens": 787,
+            "latency": 130.79,
+            "toolCalls": 0.0,
+            "n": 40
+          },
+          "vector": {
+            "f1": 0.3541,
+            "lo": 0.2246,
+            "hi": 0.4914,
+            "hits1": 0.325,
+            "tokens": 907,
+            "latency": 142.53,
+            "toolCalls": 0.0,
+            "n": 40
+          },
+          "graph_rag": {
+            "f1": 0.674,
+            "lo": 0.5317,
+            "hi": 0.8002,
+            "hits1": 0.641,
+            "tokens": 2870,
+            "latency": 134.16,
+            "toolCalls": 0.0,
+            "n": 39
+          },
+          "graph": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 1483,
+            "latency": 2.25,
+            "toolCalls": 0.0,
+            "n": 100
+          }
+        },
+        {
+          "model": "qwen3-8b-mlx",
+          "params_b": 8,
+          "control": false,
+          "none": {
+            "f1": 0.079,
+            "lo": 0.0607,
+            "hi": 0.0986,
+            "hits1": 0.15,
+            "tokens": 486,
+            "latency": 59.28,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "vector": {
+            "f1": 0.2294,
+            "lo": 0.1916,
+            "hi": 0.2651,
+            "hits1": 0.315,
+            "tokens": 601,
+            "latency": 55.99,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "graph_rag": {
+            "f1": 0.6345,
+            "lo": 0.5907,
+            "hi": 0.6772,
+            "hits1": 0.6675,
+            "tokens": 2341,
+            "latency": 59.92,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "graph": {
+            "f1": 0.0739,
+            "lo": 0.0398,
+            "hi": 0.1146,
+            "hits1": 0.14,
+            "tokens": 3379,
+            "latency": 32.26,
+            "toolCalls": 0.06,
+            "n": 100
+          }
+        },
+        {
+          "model": "gemma2-9b-mlx",
+          "params_b": 9,
+          "control": false,
+          "none": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 0,
+            "latency": 0.0,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "vector": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 0,
+            "latency": 0.0,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph_rag": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 0,
+            "latency": 0.0,
+            "toolCalls": 0.0,
+            "n": 44
+          },
+          "graph": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 0,
+            "latency": 0.0,
+            "toolCalls": 0.0,
+            "n": 100
+          }
+        },
+        {
+          "model": "qwen3-14b-mlx",
+          "params_b": 14,
+          "control": false,
+          "none": {
+            "f1": 0.1271,
+            "lo": 0.1039,
+            "hi": 0.152,
+            "hits1": 0.225,
+            "tokens": 273,
+            "latency": 14.9,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "vector": {
+            "f1": 0.2784,
+            "lo": 0.2413,
+            "hi": 0.3171,
+            "hits1": 0.43,
+            "tokens": 538,
+            "latency": 12.96,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "graph_rag": {
+            "f1": 0.6856,
+            "lo": 0.6474,
+            "hi": 0.7237,
+            "hits1": 0.7,
+            "tokens": 2150,
+            "latency": 17.36,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "graph": {
+            "f1": 0.2357,
+            "lo": 0.1604,
+            "hi": 0.316,
+            "hits1": 0.3,
+            "tokens": 4979,
+            "latency": 61.9,
+            "toolCalls": 1.1,
+            "n": 100
+          }
+        },
+        {
+          "model": "qwen3-30b-a3b-mlx",
+          "params_b": 30,
+          "control": false,
+          "none": {
+            "f1": 0.1136,
+            "lo": 0.0926,
+            "hi": 0.1367,
+            "hits1": 0.2,
+            "tokens": 222,
+            "latency": 42.32,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "vector": {
+            "f1": 0.2906,
+            "lo": 0.253,
+            "hi": 0.3283,
+            "hits1": 0.4325,
+            "tokens": 543,
+            "latency": 38.61,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "graph_rag": {
+            "f1": 0.6989,
+            "lo": 0.6559,
+            "hi": 0.7388,
+            "hits1": 0.73,
+            "tokens": 2300,
+            "latency": 45.92,
+            "toolCalls": 0.0,
+            "n": 400
+          },
+          "graph": {
+            "f1": 0.2161,
+            "lo": 0.1444,
+            "hi": 0.2903,
+            "hits1": 0.27,
+            "tokens": 4495,
+            "latency": 385.39,
+            "toolCalls": 0.96,
+            "n": 100
+          }
+        }
+      ]
+    },
+    "contrasts": [
+      {
+        "model": "gemma2-9b-mlx",
+        "pair": "graph-vector",
+        "delta": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "sig": false
+      },
+      {
+        "model": "gemma2-9b-mlx",
+        "pair": "graph_rag-graph",
+        "delta": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "sig": false
+      },
+      {
+        "model": "gemma2-9b-mlx",
+        "pair": "graph_rag-vector",
+        "delta": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "sig": false
+      },
+      {
+        "model": "granite3.3-8b-mlx",
+        "pair": "graph-vector",
+        "delta": -0.2877,
+        "lo": -0.4053,
+        "hi": -0.1817,
+        "sig": true
+      },
+      {
+        "model": "granite3.3-8b-mlx",
+        "pair": "graph_rag-graph",
+        "delta": 0.6507,
+        "lo": 0.5322,
+        "hi": 0.7608,
+        "sig": true
+      },
+      {
+        "model": "granite3.3-8b-mlx",
+        "pair": "graph_rag-vector",
+        "delta": 0.3563,
+        "lo": 0.2158,
+        "hi": 0.4965,
+        "sig": true
+      },
+      {
+        "model": "llama3.1-8b-mlx",
+        "pair": "graph-vector",
+        "delta": -0.3541,
+        "lo": -0.4935,
+        "hi": -0.2258,
+        "sig": true
+      },
+      {
+        "model": "llama3.1-8b-mlx",
+        "pair": "graph_rag-graph",
+        "delta": 0.674,
+        "lo": 0.5336,
+        "hi": 0.8033,
+        "sig": true
+      },
+      {
+        "model": "llama3.1-8b-mlx",
+        "pair": "graph_rag-vector",
+        "delta": 0.3108,
+        "lo": 0.1412,
+        "hi": 0.4864,
+        "sig": true
+      },
+      {
+        "model": "llama3.2-3b-mlx",
+        "pair": "graph-vector",
+        "delta": -0.2205,
+        "lo": -0.2897,
+        "hi": -0.1536,
+        "sig": true
+      },
+      {
+        "model": "llama3.2-3b-mlx",
+        "pair": "graph_rag-graph",
+        "delta": 0.5228,
+        "lo": 0.4396,
+        "hi": 0.6044,
+        "sig": true
+      },
+      {
+        "model": "llama3.2-3b-mlx",
+        "pair": "graph_rag-vector",
+        "delta": 0.3214,
+        "lo": 0.2797,
+        "hi": 0.3646,
+        "sig": true
+      },
+      {
+        "model": "mistral-7b-mlx",
+        "pair": "graph-vector",
+        "delta": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "sig": false
+      },
+      {
+        "model": "mistral-7b-mlx",
+        "pair": "graph_rag-graph",
+        "delta": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "sig": false
+      },
+      {
+        "model": "mistral-7b-mlx",
+        "pair": "graph_rag-vector",
+        "delta": 0.0,
+        "lo": 0.0,
+        "hi": 0.0,
+        "sig": false
+      },
+      {
+        "model": "phi3.5-mini-mlx",
+        "pair": "graph-vector",
+        "delta": -0.2192,
+        "lo": -0.3258,
+        "hi": -0.1178,
+        "sig": true
+      },
+      {
+        "model": "phi3.5-mini-mlx",
+        "pair": "graph_rag-graph",
+        "delta": 0.4391,
+        "lo": 0.3168,
+        "hi": 0.5665,
+        "sig": true
+      },
+      {
+        "model": "phi3.5-mini-mlx",
+        "pair": "graph_rag-vector",
+        "delta": 0.2198,
+        "lo": 0.1005,
+        "hi": 0.3456,
+        "sig": true
+      },
+      {
+        "model": "qwen2.5-7b-mlx",
+        "pair": "graph-vector",
+        "delta": -0.2339,
+        "lo": -0.3805,
+        "hi": -0.0926,
+        "sig": true
+      },
+      {
+        "model": "qwen2.5-7b-mlx",
+        "pair": "graph_rag-graph",
+        "delta": 0.5427,
+        "lo": 0.3737,
+        "hi": 0.695,
+        "sig": true
+      },
+      {
+        "model": "qwen2.5-7b-mlx",
+        "pair": "graph_rag-vector",
+        "delta": 0.3244,
+        "lo": 0.1725,
+        "hi": 0.479,
+        "sig": true
+      },
+      {
+        "model": "qwen3-0.6b-mlx",
+        "pair": "graph-vector",
+        "delta": -0.1448,
+        "lo": -0.2349,
+        "hi": -0.069,
+        "sig": true
+      },
+      {
+        "model": "qwen3-0.6b-mlx",
+        "pair": "graph_rag-graph",
+        "delta": 0.337,
+        "lo": 0.2227,
+        "hi": 0.4527,
+        "sig": true
+      },
+      {
+        "model": "qwen3-0.6b-mlx",
+        "pair": "graph_rag-vector",
+        "delta": 0.1922,
+        "lo": 0.0645,
+        "hi": 0.3199,
+        "sig": true
+      },
+      {
+        "model": "qwen3-1.7b-mlx",
+        "pair": "graph-vector",
+        "delta": -0.1507,
+        "lo": -0.2132,
+        "hi": -0.0907,
+        "sig": true
+      },
+      {
+        "model": "qwen3-1.7b-mlx",
+        "pair": "graph_rag-graph",
+        "delta": 0.4792,
+        "lo": 0.4018,
+        "hi": 0.5632,
+        "sig": true
+      },
+      {
+        "model": "qwen3-1.7b-mlx",
+        "pair": "graph_rag-vector",
+        "delta": 0.3409,
+        "lo": 0.3036,
+        "hi": 0.3792,
+        "sig": true
+      },
+      {
+        "model": "qwen3-14b-mlx",
+        "pair": "graph-vector",
+        "delta": -0.055,
+        "lo": -0.1524,
+        "hi": 0.0461,
+        "sig": false
+      },
+      {
+        "model": "qwen3-14b-mlx",
+        "pair": "graph_rag-graph",
+        "delta": 0.4689,
+        "lo": 0.3626,
+        "hi": 0.571,
+        "sig": true
+      },
+      {
+        "model": "qwen3-14b-mlx",
+        "pair": "graph_rag-vector",
+        "delta": 0.4072,
+        "lo": 0.3631,
+        "hi": 0.4516,
+        "sig": true
+      },
+      {
+        "model": "qwen3-30b-a3b-mlx",
+        "pair": "graph-vector",
+        "delta": -0.0993,
+        "lo": -0.184,
+        "hi": -0.0132,
+        "sig": true
+      },
+      {
+        "model": "qwen3-30b-a3b-mlx",
+        "pair": "graph_rag-graph",
+        "delta": 0.4864,
+        "lo": 0.3832,
+        "hi": 0.5853,
+        "sig": true
+      },
+      {
+        "model": "qwen3-30b-a3b-mlx",
+        "pair": "graph_rag-vector",
+        "delta": 0.4083,
+        "lo": 0.3623,
+        "hi": 0.4529,
+        "sig": true
+      },
+      {
+        "model": "qwen3-4b-mlx",
+        "pair": "graph-vector",
+        "delta": -0.1298,
+        "lo": -0.219,
+        "hi": -0.045,
+        "sig": true
+      },
+      {
+        "model": "qwen3-4b-mlx",
+        "pair": "graph_rag-graph",
+        "delta": 0.5054,
+        "lo": 0.4168,
+        "hi": 0.598,
+        "sig": true
+      },
+      {
+        "model": "qwen3-4b-mlx",
+        "pair": "graph_rag-vector",
+        "delta": 0.3965,
+        "lo": 0.3533,
+        "hi": 0.4405,
+        "sig": true
+      },
+      {
+        "model": "qwen3-8b-mlx",
+        "pair": "graph-vector",
+        "delta": -0.1785,
+        "lo": -0.2593,
+        "hi": -0.097,
+        "sig": true
+      },
+      {
+        "model": "qwen3-8b-mlx",
+        "pair": "graph_rag-graph",
+        "delta": 0.538,
+        "lo": 0.4408,
+        "hi": 0.6292,
+        "sig": true
+      },
+      {
+        "model": "qwen3-8b-mlx",
+        "pair": "graph_rag-vector",
+        "delta": 0.4052,
+        "lo": 0.3572,
+        "hi": 0.4535,
+        "sig": true
+      }
+    ]
+  },
+  "techniques": null,
+  "domains": {
+    "datasets": [
+      {
+        "key": "sanctions",
+        "title": "Global sanctions lists",
+        "tag": "national security",
+        "edge": "LINKED_TO",
+        "byMode": {
+          "none": 0.0,
+          "vector": 0.3665,
+          "graph_rag": 0.7013,
+          "graph": 0.4333
+        },
+        "n": {
+          "none": 50,
+          "vector": 50,
+          "graph_rag": 50,
+          "graph": 10
+        }
+      },
+      {
+        "key": "clinicaltrials",
+        "title": "ClinicalTrials.gov",
+        "tag": "health",
+        "edge": "SPONSORED_BY",
+        "byMode": {
+          "none": 0.1018,
+          "vector": 0.3799,
+          "graph_rag": 0.637,
+          "graph": 0.5524
+        },
+        "n": {
+          "none": 50,
+          "vector": 50,
+          "graph_rag": 50,
+          "graph": 10
+        }
+      },
+      {
+        "key": "cordis",
+        "title": "CORDIS EU research grants",
+        "tag": "research funding",
+        "edge": "PARTICIPATES_IN",
+        "byMode": {
+          "none": 0.0086,
+          "vector": 0.4443,
+          "graph_rag": 0.5792,
+          "graph": 0.5
+        },
+        "n": {
+          "none": 50,
+          "vector": 50,
+          "graph_rag": 50,
+          "graph": 10
+        }
+      },
+      {
+        "key": "sec_edgar",
+        "title": "SEC EDGAR insider networks",
+        "tag": "finance",
+        "edge": "INSIDER_OF",
+        "byMode": {
+          "none": 0.0503,
+          "vector": 0.3925,
+          "graph_rag": 0.4741,
+          "graph": 0.5966
+        },
+        "n": {
+          "none": 50,
+          "vector": 50,
+          "graph_rag": 50,
+          "graph": 10
+        }
+      },
+      {
+        "key": "gleif",
+        "title": "GLEIF corporate ownership",
+        "tag": "corporate ownership",
+        "edge": "PARENT_OF",
+        "byMode": {
+          "none": 0.0019,
+          "vector": 0.3423,
+          "graph_rag": 0.4433,
+          "graph": 0.3
+        },
+        "n": {
+          "none": 50,
+          "vector": 50,
+          "graph_rag": 50,
+          "graph": 10
+        }
+      }
+    ],
+    "bySize": [
+      {
+        "model": "llama3.2-3b",
+        "label": "llama-3.2-3b",
+        "params_b": 3,
+        "control": true,
+        "none": 0.0387,
+        "vector": 0.4093,
+        "graph_rag": 0.6255
+      },
+      {
+        "model": "qwen3-4b-local",
+        "label": "qwen3-4b",
+        "params_b": 4,
+        "control": false,
+        "none": 0.0165,
+        "vector": 0.2234,
+        "graph_rag": 0.3822
+      },
+      {
+        "model": "qwen3-8b-local",
+        "label": "qwen3-8b",
+        "params_b": 8,
+        "control": false,
+        "none": 0.0273,
+        "vector": 0.4342,
+        "graph_rag": 0.6419
+      },
+      {
+        "model": "qwen3-14b-local",
+        "label": "qwen3-14b",
+        "params_b": 14,
+        "control": false,
+        "none": 0.0482,
+        "vector": 0.4705,
+        "graph_rag": 0.7084
+      }
+    ],
+    "nDomains": 5,
+    "nQuestionsPerDomain": 10,
+    "models": [
+      "llama3.2-3b",
+      "qwen3-14b-local",
+      "qwen3-30b-a3b-local",
+      "qwen3-4b-local",
+      "qwen3-8b-local"
+    ],
+    "note": "Same engine, zero per-domain benchmark code — each graph's schema is introspected at query time. Local Qwen3 size sweep + llama-3.2-3b control, 10 questions per domain, $0."
+  },
+  "er": {
+    "baseline": {
+      "precision": 0.8796,
+      "recall": 0.9223,
+      "f1": 0.9005
+    },
+    "learned": {
+      "precision": 0.8491,
+      "recall": 0.8738,
+      "f1": 0.8612
+    },
+    "winner": "baseline",
+    "threshold": 0.9462,
+    "records": 25202,
+    "entities": 21992,
+    "multiSource": 2558,
+    "maxCluster": 5,
+    "seconds": 14.98,
+    "guards": {
+      "conflictVeto": 464,
+      "numberedVeto": 130,
+      "uncorroborated": 418
+    },
+    "falseMerges": [
+      {
+        "a": "ANSAR AL CHARIA DERNA",
+        "b": "ANSAR AL CHARIA BENGHAZI",
+        "why": "separate UN/UK designations",
+        "trigger": "shared support-network address"
+      },
+      {
+        "a": "ARTA SHIPPING",
+        "b": "ARASH SHIPPING",
+        "why": "distinct OFAC SDN entries",
+        "trigger": "shared Cyprus address"
+      },
+      {
+        "a": "LNG BETA SHIPPING",
+        "b": "LNG DELTA SHIPPING",
+        "why": "codeword Beta vs Delta",
+        "trigger": "shared Singapore address"
+      }
+    ]
+  },
+  "demo": {
+    "model": {
+      "name": "gemma4-31b",
+      "modelId": "gemma4:31b-mlx",
+      "backend": "ollama",
+      "paramsB": 31,
+      "tier": "mid"
+    },
+    "questions": [
+      {
+        "qid": "shared_program-01",
+        "question": "Which other entities are sanctioned under at least one of the same programs as \"AUF, Awad Ibn\" (also known as \"AUF, Mohammed Ahmed Awad Ibn\")?",
+        "hops": 2,
+        "template": "shared_program",
+        "answerType": "entity_set",
+        "gold": [
+          "ent:ofac:10119",
+          "ent:ofac:10154",
+          "ent:ofac:10369",
+          "ent:ofac:9608",
+          "ent:ofac:9613",
+          "ent:ofac:9620",
+          "ent:ofac:9621"
+        ],
+        "goldCitations": [
+          {
+            "entityId": "ent:ofac:10119",
+            "name": "TAHA, Khalil Ibrahim Mohamed Achar Foudail",
+            "type": "INDIVIDUAL",
+            "sources": [
+              "ofac"
+            ]
+          },
+          {
+            "entityId": "ent:ofac:10154",
+            "name": "HARUN, Ahmad Muhammed",
+            "type": "INDIVIDUAL",
+            "sources": [
+              "ofac"
+            ]
+          },
+          {
+            "entityId": "ent:ofac:10369",
+            "name": "AZZA AIR TRANSPORT COMPANY LTD.",
+            "type": "ENTITY",
+            "sources": [
+              "ofac"
+            ]
+          },
+          {
+            "entityId": "ent:ofac:9608",
+            "name": "HILAL, Musa",
+            "type": "INDIVIDUAL",
+            "sources": [
+              "ofac"
+            ]
+          },
+          {
+            "entityId": "ent:ofac:9613",
+            "name": "BADRI, Gabril Abdul Kareem",
+            "type": "INDIVIDUAL",
+            "sources": [
+              "ofac"
+            ]
+          },
+          {
+            "entityId": "ent:ofac:9620",
+            "name": "EL HASSAN, Gaffar Mohmed",
+            "type": "INDIVIDUAL",
+            "sources": [
+              "ofac"
+            ]
+          },
+          {
+            "entityId": "ent:ofac:9621",
+            "name": "SHANT, Adam Yacub",
+            "type": "INDIVIDUAL",
+            "sources": [
+              "ofac"
+            ]
+          }
+        ],
+        "modes": {
+          "vector": {
+            "answerText": "[]\nANSWER: []",
+            "predicted": [],
+            "f1": 0.0,
+            "precision": 1.0,
+            "recall": 0.0,
+            "faithful": null,
+            "promptTokens": 1048,
+            "completionTokens": 459,
+            "latencyS": 51.14,
+            "nToolCalls": 0,
+            "retrieved": [
+              {
+                "name": "AUF, Awad Ibn",
+                "doc": "AUF, Awad Ibn | Type: INDIVIDUAL | Also known as: AUF, Mohammed Ahmed Awad Ibn; AUF, Awad Muhammad Ibn; NAUF, Awad Mohammed Ahmed Ebni; OUF, Awad Mohamed Ahmed Ibn; AWF, Awad Ahmad Ibn; OAF, Awad Mohamed Ahmed Ibn; AWF, Awad Ibn | Sources: ",
+                "score": 0.655
+              },
+              {
+                "name": "AWDA, Abd Al Aziz",
+                "doc": "AWDA, Abd Al Aziz | Type: INDIVIDUAL | Sources: ofac | Programs: SDGT",
+                "score": 0.526
+              },
+              {
+                "name": "BIN LADEN, Sa'ad",
+                "doc": "BIN LADEN, Sa'ad | Type: INDIVIDUAL | Also known as: BIN LADEN, Sad; ABUD, Sa'ad Muhammad Awad; AWAD, Muhammad; ADBUD, Muhammad 'Awad; BAABOOD, Sa'ad Muhammad; ABBUD, Bin Muhammad Awad | Sources: ofac | Programs: SDGT | Countries: Saudi Ara",
+                "score": 0.518
+              },
+              {
+                "name": "AWADD, Mohamed Sherif Mohamed Mohamed",
+                "doc": "AWADD, Mohamed Sherif Mohamed Mohamed | Type: INDIVIDUAL | Also known as: AWAAD, Muhammad Sharif Muhammad Muhammad; AWAAD, Mohamedsherif Mohamed Mohamed | Sources: ofac | Programs: SDGT | Countries: Egypt, Syria | Addresses: Brazil",
+                "score": 0.491
+              },
+              {
+                "name": "HARAKAT ANSAR ALLAH AL-AWFIYA",
+                "doc": "HARAKAT ANSAR ALLAH AL-AWFIYA | Type: ENTITY | Also known as: HARAKAT ANSAR ALLAH AL AWFIYA FI SOURIYA; ANSAR ALAH ALOFIA; KAYAN AL-SADIQ WA AL-ATAA; HARAKAT AL-SADIQ WA AL-ATAA | Sources: ofac | Programs: FTO, SDGT | Addresses: Iraq; Syria",
+                "score": 0.476
+              },
+              {
+                "name": "AL-SHARIKH, Abdul Mohsen Abdullah Ibrahim",
+                "doc": "AL-SHARIKH, Abdul Mohsen Abdullah Ibrahim | Type: INDIVIDUAL | Also known as: AL CHAREKH, Abdul Mohsen Abdallah Ibrahim; ALSHAREKH, Abdul Mohsen Abdullah Ibrahim; AL-SHARIKH, Abd-al-Muhsin Abdallah; AL-NAJDI, Abd-al-Latif; AL-NASR, Sanafi; ",
+                "score": 0.476
+              },
+              {
+                "name": "AVON",
+                "doc": "AVON | Type: VESSEL | Sources: ofac | Programs: IRAN-EO13902 | Linked to: AAYAT SHIP MANAGEMENT PRIVATE LIMITED",
+                "score": 0.474
+              },
+              {
+                "name": "AL-AWADI, Hussein Qaid",
+                "doc": "AL-AWADI, Hussein Qaid | Type: INDIVIDUAL | Sources: ofac | Programs: IRAQ2 | Countries: Iraq",
+                "score": 0.473
+              }
+            ]
+          },
+          "graph_rag": {
+            "answerText": "To find the entities sanctioned under at least one of the same programs as \"AUF, Awad Ibn\", we first identify the program(s) associated with him:\n- \"AUF, Awad Ibn\" is SANCTIONED_UNDER DARFUR.\n\nNext, we list all other entities that are also SANCTIONED_UNDER DARFUR:\n- \"TAHA, Khalil Ibrahim Mohamed Achar Foudail\"\n- \"HARUN, Ahmad Muhammed\"\n- \"AZZA AIR TRANSPORT COMPANY LTD.\"\n- \"HILAL, Musa\"\n- \"BADRI, Gabril Abdul Kareem\"\n- \"EL HASSAN, Gaffar Mohmed\"\n- \"SHANT, Adam Yacub\"\n\nANSWER: [\"TAHA, Khalil Ibrahim Mohamed Achar Foudail\", \"HARUN, Ahmad Muhammed\", \"AZZA AIR TRANSPORT COMPANY LTD.\", \"HILAL, Musa\", \"BADRI, Gabril Abdul Kareem\", \"EL HASSAN, Gaffar Mohmed\", \"SHANT, Adam Yacub\"]",
+            "predicted": [
+              "TAHA, Khalil Ibrahim Mohamed Achar Foudail",
+              "HARUN, Ahmad Muhammed",
+              "AZZA AIR TRANSPORT COMPANY LTD.",
+              "HILAL, Musa",
+              "BADRI, Gabril Abdul Kareem",
+              "EL HASSAN, Gaffar Mohmed",
+              "SHANT, Adam Yacub"
+            ],
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "faithful": 1.0,
+            "promptTokens": 1294,
+            "completionTokens": 538,
+            "latencyS": 31.76,
+            "nToolCalls": 0,
+            "factsHeader": "Graph facts about: \"AUF, Awad Ibn\"",
+            "facts": [
+              "\"AUF, Awad Ibn\" SANCTIONED_UNDER DARFUR",
+              "\"AUF, Awad Ibn\" NATIONAL_OF Sudan",
+              "\"TAHA, Khalil Ibrahim Mohamed Achar Foudail\" SANCTIONED_UNDER DARFUR",
+              "\"HARUN, Ahmad Muhammed\" SANCTIONED_UNDER DARFUR",
+              "\"AZZA AIR TRANSPORT COMPANY LTD.\" SANCTIONED_UNDER DARFUR",
+              "\"HILAL, Musa\" SANCTIONED_UNDER DARFUR",
+              "\"BADRI, Gabril Abdul Kareem\" SANCTIONED_UNDER DARFUR",
+              "\"EL HASSAN, Gaffar Mohmed\" SANCTIONED_UNDER DARFUR",
+              "\"SHANT, Adam Yacub\" SANCTIONED_UNDER DARFUR",
+              "\"TAHA, Khalil Ibrahim Mohamed Achar Foudail\" NATIONAL_OF Sudan",
+              "\"HARUN, Ahmad Muhammed\" NATIONAL_OF Sudan",
+              "\"AL-SENUSSI, Abdullah\" NATIONAL_OF Sudan",
+              "\"ABD EL-RAHMAN, Suhayl Salim\" NATIONAL_OF Sudan",
+              "\"HAMAD, Abdelbasit Alhaj Alhassan Haj\" NATIONAL_OF Sudan",
+              "\"MOHAMED, Mohamed Makawi Ibrahim\" NATIONAL_OF Sudan",
+              "\"MOHAMED HAMZA, Abd Al-Ra'Ouf Abu Zaid\" NATIONAL_OF Sudan",
+              "\"ADAM, Noureddine\" NATIONAL_OF Sudan",
+              "\"WOL, Santino Deng\" NATIONAL_OF Sudan",
+              "\"GABRIEL JOK RIAK MAKOL\" NATIONAL_OF Sudan",
+              "\"DUAL, Simon Gatwech\" NATIONAL_OF Sudan",
+              "\"YOUNOUS, Oumar\" NATIONAL_OF Sudan",
+              "\"AWAN, Paul Malong\" NATIONAL_OF Sudan",
+              "\"LUETH, Michael Makuei\" NATIONAL_OF Sudan",
+              "\"ELSHEIKH, El Shafee\" NATIONAL_OF Sudan",
+              "\"HATARI, Musa\" NATIONAL_OF Sudan",
+              "\"BOL MEL, Benjamin\" NATIONAL_OF Sudan",
+              "\"FITWI, Abd al-Razzak\" NATIONAL_OF Sudan",
+              "\"LOMURO, Martin Elia\" NATIONAL_OF Sudan",
+              "\"AL-CARDINAL, Ashraf Seed Ahmed\" NATIONAL_OF Sudan",
+              "\"MANDEL, Andrei Sergeevich\" NATIONAL_OF Sudan"
+            ],
+            "factsTotal": 59
+          },
+          "graph": {
+            "answerText": "Based on the knowledge graph, AUF, Awad Ibn (also known as AUF, Mohammed Ahmed Awad Ibn) is sanctioned under the DARFUR program. Other entities sanctioned under this same program include:\n\n- TAHA, Khalil Ibrahim Mohamed Achar Foudail\n- HARUN, Ahmad Muhammed\n- AZZA AIR TRANSPORT COMPANY LTD.\n- HILAL, Musa\n- BADRI, Gabril Abdul Kareem\n- EL HASSAN, Gaffar Mohmed\n- SHANT, Adam Yacub\n\nANSWER: [\"TAHA, Khalil Ibrahim Mohamed Achar Foudail\", \"HARUN, Ahmad Muhammed\", \"AZZA AIR TRANSPORT COMPANY LTD.\", \"HILAL, Musa\", \"BADRI, Gabril Abdul Kareem\", \"EL HASSAN, Gaffar Mohmed\", \"SHANT, Adam Yacub\"]",
+            "predicted": [
+              "TAHA, Khalil Ibrahim Mohamed Achar Foudail",
+              "HARUN, Ahmad Muhammed",
+              "AZZA AIR TRANSPORT COMPANY LTD.",
+              "HILAL, Musa",
+              "BADRI, Gabril Abdul Kareem",
+              "EL HASSAN, Gaffar Mohmed",
+              "SHANT, Adam Yacub"
+            ],
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "faithful": 1.0,
+            "promptTokens": 5868,
+            "completionTokens": 731,
+            "latencyS": 41.71,
+            "nToolCalls": 3,
+            "steps": [
+              {
+                "round": 0,
+                "tool": "get_entity",
+                "args": {
+                  "query": "AUF, Awad Ibn"
+                },
+                "result": {
+                  "kind": "entity",
+                  "rows": [
+                    {
+                      "entityId": "ent:ofac:10155",
+                      "name": "AUF, Awad Ibn",
+                      "type": "INDIVIDUAL",
+                      "score": 100.0
+                    }
+                  ],
+                  "total": 1
+                }
+              },
+              {
+                "round": 1,
+                "tool": "neighbors",
+                "args": {
+                  "entity": "ent:ofac:10155",
+                  "rel_type": "SANCTIONED_UNDER"
+                },
+                "result": {
+                  "kind": "rows",
+                  "rows": [
+                    {
+                      "entityId": "DARFUR",
+                      "name": "DARFUR",
+                      "type": "Program",
+                      "relType": "SANCTIONED_UNDER",
+                      "hops": null
+                    }
+                  ],
+                  "total": 1
+                }
+              },
+              {
+                "round": 2,
+                "tool": "entities_with_attribute",
+                "args": {
+                  "attr_type": "program",
+                  "value": "DARFUR"
+                },
+                "result": {
+                  "kind": "rows",
+                  "rows": [
+                    {
+                      "entityId": "ent:ofac:10119",
+                      "name": "TAHA, Khalil Ibrahim Mohamed Achar Foudail",
+                      "type": "INDIVIDUAL",
+                      "relType": null,
+                      "hops": null
+                    },
+                    {
+                      "entityId": "ent:ofac:10154",
+                      "name": "HARUN, Ahmad Muhammed",
+                      "type": "INDIVIDUAL",
+                      "relType": null,
+                      "hops": null
+                    },
+                    {
+                      "entityId": "ent:ofac:10155",
+                      "name": "AUF, Awad Ibn",
+                      "type": "INDIVIDUAL",
+                      "relType": null,
+                      "hops": null
+                    },
+                    {
+                      "entityId": "ent:ofac:10369",
+                      "name": "AZZA AIR TRANSPORT COMPANY LTD.",
+                      "type": "ENTITY",
+                      "relType": null,
+                      "hops": null
+                    },
+                    {
+                      "entityId": "ent:ofac:9608",
+                      "name": "HILAL, Musa",
+                      "type": "INDIVIDUAL",
+                      "relType": null,
+                      "hops": null
+                    },
+                    {
+                      "entityId": "ent:ofac:9613",
+                      "name": "BADRI, Gabril Abdul Kareem",
+                      "type": "INDIVIDUAL",
+                      "relType": null,
+                      "hops": null
+                    }
+                  ],
+                  "total": 8
+                }
+              }
+            ],
+            "citations": [
+              {
+                "entityId": "ent:ofac:10119",
+                "name": "TAHA, Khalil Ibrahim Mohamed Achar Foudail",
+                "type": "INDIVIDUAL",
+                "sources": [
+                  "ofac"
+                ]
+              },
+              {
+                "entityId": "ent:ofac:10154",
+                "name": "HARUN, Ahmad Muhammed",
+                "type": "INDIVIDUAL",
+                "sources": [
+                  "ofac"
+                ]
+              },
+              {
+                "entityId": "ent:ofac:10369",
+                "name": "AZZA AIR TRANSPORT COMPANY LTD.",
+                "type": "ENTITY",
+                "sources": [
+                  "ofac"
+                ]
+              },
+              {
+                "entityId": "ent:ofac:9608",
+                "name": "HILAL, Musa",
+                "type": "INDIVIDUAL",
+                "sources": [
+                  "ofac"
+                ]
+              },
+              {
+                "entityId": "ent:ofac:9613",
+                "name": "BADRI, Gabril Abdul Kareem",
+                "type": "INDIVIDUAL",
+                "sources": [
+                  "ofac"
+                ]
+              },
+              {
+                "entityId": "ent:ofac:9620",
+                "name": "EL HASSAN, Gaffar Mohmed",
+                "type": "INDIVIDUAL",
+                "sources": [
+                  "ofac"
+                ]
+              },
+              {
+                "entityId": "ent:ofac:9621",
+                "name": "SHANT, Adam Yacub",
+                "type": "INDIVIDUAL",
+                "sources": [
+                  "ofac"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "qid": "shared_address-03",
+        "question": "Which other entities share a registered address with \"LIMITED LIABILITY COMPANY AHD SOUTH PORT\"?",
+        "hops": 2,
+        "template": "shared_address",
+        "answerType": "entity_set",
+        "gold": [
+          "ent:ofac:46031",
+          "ent:ofac:46035"
+        ],
+        "goldCitations": [
+          {
+            "entityId": "ent:ofac:46031",
+            "name": "LLC AEON DEVELOPMENT",
+            "type": "ENTITY",
+            "sources": [
+              "ofac"
+            ]
+          },
+          {
+            "entityId": "ent:ofac:46035",
+            "name": "LIMITED LIABILITY COMPANY AHD KUTUZOVSKIY TOWERS",
+            "type": "ENTITY",
+            "sources": [
+              "ofac"
+            ]
+          }
+        ],
+        "modes": {
+          "vector": {
+            "answerText": "[]\nANSWER: []",
+            "predicted": [],
+            "f1": 0.0,
+            "precision": 1.0,
+            "recall": 0.0,
+            "faithful": null,
+            "promptTokens": 1238,
+            "completionTokens": 602,
+            "latencyS": 32.14,
+            "nToolCalls": 0,
+            "retrieved": [
+              {
+                "name": "LIMITED LIABILITY COMPANY AHD SOUTH PORT",
+                "doc": "LIMITED LIABILITY COMPANY AHD SOUTH PORT | Type: ENTITY | Sources: ofac | Programs: RUSSIA-EO14024 | Addresses: d. 3A str. 4, ul, 1-Ya Frunzenskaya, Moscow 119146, Russia | Linked to: LLC AEON HOLDING DEVELOPMENT",
+                "score": 0.624
+              },
+              {
+                "name": "LIMITED LIABILITY COMPANY SSK PORT",
+                "doc": "LIMITED LIABILITY COMPANY SSK PORT | Type: ENTITY | Also known as: OOO SSK PORT | Sources: ofac | Programs: RUSSIA-EO14024 | Addresses: 23A Admiral Fadeyev St., Office 17, Sevastopol 299057, Ukraine",
+                "score": 0.539
+              },
+              {
+                "name": "LIMITED LIABILITY COMPANY MORSKOI PORT SUKHODOL",
+                "doc": "LIMITED LIABILITY COMPANY MORSKOI PORT SUKHODOL | Type: ENTITY | Also known as: LLC SUKHODOL SEAPORT | Sources: ofac | Programs: RUSSIA-EO14024 | Addresses: 56 Leninskaya St., Romanovka 692821, Russia; 24 Okeansky Avenue, Vladivostok 690091",
+                "score": 0.521
+              },
+              {
+                "name": "LIMITED LIABILITY COMPANY AURORA SEA PORT",
+                "doc": "LIMITED LIABILITY COMPANY AURORA SEA PORT | Type: ENTITY | Sources: ofac | Programs: RUSSIA-EO14024 | Addresses: Suite 10, 2 Postnikova Street, Fokino 692880, Russia",
+                "score": 0.515
+              },
+              {
+                "name": "LIMITED LIABILITY COMPANY RASSVET",
+                "doc": "LIMITED LIABILITY COMPANY RASSVET | Type: ENTITY | Sources: ofac | Programs: RUSSIA-EO14024 | Addresses: d. 5 k. 3 kv. 233, ul. Kakhovka, Moscow 117303, Russia | Linked to: LIMITED LIABILITY COMPANY AHD SOUTH PORT",
+                "score": 0.512
+              },
+              {
+                "name": "LIMITED LIABILITY COMPANY ADVANTA M SPB",
+                "doc": "LIMITED LIABILITY COMPANY ADVANTA M SPB | Type: ENTITY | Sources: ofac | Programs: RUSSIA-EO14024 | Addresses: Ul. Samoilovoi D. 5, Lit. S, Office 10, Pom. 21N-12, Saint Petersburg 192102, Region: Russia",
+                "score": 0.509
+              },
+              {
+                "name": "SOUTHERN HERITAGE LIMITED",
+                "doc": "SOUTHERN HERITAGE LIMITED | Type: ENTITY | Sources: ofac | Programs: TCO | Addresses: Phnom Penh, Cambodia | Linked to: CHEN, Zhi",
+                "score": 0.507
+              },
+              {
+                "name": "LIMITED LIABILITY COMPANY COMPANY SCAN",
+                "doc": "LIMITED LIABILITY COMPANY COMPANY SCAN | Type: ENTITY | Sources: ofac | Programs: RUSSIA-EO14024 | Addresses: UL Zoi I Aleksandra Kosmodemyanskikh, D. 26/21, Str. 1, Pom. 1/4, Moscow, 125130, Russia; Leningradskoe sh., d. 4, corp. 1, 1 et.,",
+                "score": 0.506
+              }
+            ]
+          },
+          "graph_rag": {
+            "answerText": "To find entities that share a registered address with \"LIMITED LIABILITY COMPANY AHD SOUTH PORT\", we first identify its address from the provided facts:\n- \"LIMITED LIABILITY COMPANY AHD SOUTH PORT\" LOCATED_AT d. 3A str. 4, ul, 1-Ya Frunzenskaya, Moscow 119146, Russia\n\nNext, we search for other entities with this same address:\n- \"LLC AEON DEVELOPMENT\" LOCATED_AT d. 3A str. 4, ul, 1-Ya Frunzenskaya, Moscow 119146, Russia\n- \"LIMITED LIABILITY COMPANY AHD KUTUZOVSKIY TOWERS\" LOCATED_AT d. 3A str. 4, ul, 1-Ya Frunzenskaya, Moscow 119146, Russia\n\nOther entities listed with addresses (such as \"LLC AEON HOLDING DEVELOPMENT\" and \"LIMITED LIABILITY COMPANY RASSVET\") have different address values.\n\nANSWER: [\"LLC AEON DEVELOPMENT\", \"LIMITED LIABILITY COMPANY AHD KUTUZOVSKIY TOWERS\"]",
+            "predicted": [
+              "LLC AEON DEVELOPMENT",
+              "LIMITED LIABILITY COMPANY AHD KUTUZOVSKIY TOWERS"
+            ],
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "faithful": 1.0,
+            "promptTokens": 2098,
+            "completionTokens": 608,
+            "latencyS": 35.52,
+            "nToolCalls": 0,
+            "factsHeader": "Graph facts about: \"LIMITED LIABILITY COMPANY AHD SOUTH PORT\"",
+            "facts": [
+              "\"LIMITED LIABILITY COMPANY AHD SOUTH PORT\" LOCATED_AT d. 3A str. 4, ul, 1-Ya Frunzenskaya, Moscow 119146, Russia",
+              "\"LIMITED LIABILITY COMPANY AHD SOUTH PORT\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"LIMITED LIABILITY COMPANY AHD SOUTH PORT\" LINKED_TO \"LLC AEON HOLDING DEVELOPMENT\"",
+              "\"LIMITED LIABILITY COMPANY AHD SOUTH PORT\" LINKED_TO \"LIMITED LIABILITY COMPANY RASSVET\"",
+              "\"LLC AEON HOLDING DEVELOPMENT\" LOCATED_AT d. 3A str. 6, etazh 1 pom. 29, ul. 1-Ya Frunzenskaya, Moscow 119146, Russia",
+              "\"LLC AEON HOLDING DEVELOPMENT\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"LIMITED LIABILITY COMPANY RASSVET\" LOCATED_AT d. 5 k. 3 kv. 233, ul. Kakhovka, Moscow 117303, Russia",
+              "\"LIMITED LIABILITY COMPANY RASSVET\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"LLC AEON DEVELOPMENT\" LOCATED_AT d. 3A str. 4, ul, 1-Ya Frunzenskaya, Moscow 119146, Russia",
+              "\"LIMITED LIABILITY COMPANY AHD KUTUZOVSKIY TOWERS\" LOCATED_AT d. 3A str. 4, ul, 1-Ya Frunzenskaya, Moscow 119146, Russia",
+              "\"MINISTRY OF DEFENSE AND ARMED FORCES LOGISTICS\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"ISLAMIC REVOLUTIONARY GUARD CORPS AIR FORCE\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"PROKOPENKO, Ivan Pavlovitch\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"QODS AERONAUTICS INDUSTRIES (QAI)\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"KLISHAS, Andrey Aleksandrovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"MATVIYENKO, Valentina Ivanovna\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"MIZULINA, Yelena Borisovna\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"SLUTSKY, Leonid Eduardovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"DZHABAROV, Vladimir Mikhailovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"TIMCHENKO, Gennady Nikolayevich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"ROTENBERG, Arkady Romanovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"MIRONOV, Sergey Mikhailovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"ROTENBERG, Boris Romanovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"RYZHKOV, Nikolai Ivanovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"KOZHIN, Vladimir Igorevich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"Yuriy Valentinovich KOVALCHUK\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"CHEMEZOV, Sergei\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"IVANOV, Sergei Borisovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"NARYSHKIN, Sergey Yevgenyevich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"SECHIN, Igor Ivanovich\" SANCTIONED_UNDER RUSSIA-EO14024"
+            ],
+            "factsTotal": 60
+          },
+          "graph": {
+            "answerText": "ANSWER: [\"LLC AEON DEVELOPMENT\", \"LIMITED LIABILITY COMPANY AHD KUTUZOVSKIY TOWERS\"]",
+            "predicted": [
+              "LLC AEON DEVELOPMENT",
+              "LIMITED LIABILITY COMPANY AHD KUTUZOVSKIY TOWERS"
+            ],
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "faithful": 1.0,
+            "promptTokens": 5120,
+            "completionTokens": 779,
+            "latencyS": 40.58,
+            "nToolCalls": 3,
+            "steps": [
+              {
+                "round": 0,
+                "tool": "get_entity",
+                "args": {
+                  "query": "LIMITED LIABILITY COMPANY AHD SOUTH PORT"
+                },
+                "result": {
+                  "kind": "entity",
+                  "rows": [
+                    {
+                      "entityId": "ent:ofac:46032",
+                      "name": "LIMITED LIABILITY COMPANY AHD SOUTH PORT",
+                      "type": "ENTITY",
+                      "score": 100.0
+                    }
+                  ],
+                  "total": 1
+                }
+              },
+              {
+                "round": 1,
+                "tool": "neighbors",
+                "args": {
+                  "entity": "ent:ofac:46032",
+                  "rel_type": "LOCATED_AT"
+                },
+                "result": {
+                  "kind": "rows",
+                  "rows": [
+                    {
+                      "entityId": "d. 3A str. 4, ul, 1-Ya Frunzenskaya, Moscow 119146, Russia",
+                      "name": "d. 3A str. 4, ul, 1-Ya Frunzenskaya, Moscow 119146, Russia",
+                      "type": "Address",
+                      "relType": "LOCATED_AT",
+                      "hops": null
+                    }
+                  ],
+                  "total": 1
+                }
+              },
+              {
+                "round": 2,
+                "tool": "entities_with_attribute",
+                "args": {
+                  "attr_type": "address",
+                  "value": "d. 3A str. 4, ul, 1-Ya Frunzenskaya, Moscow 119146, Russia"
+                },
+                "result": {
+                  "kind": "rows",
+                  "rows": [
+                    {
+                      "entityId": "ent:ofac:46031",
+                      "name": "LLC AEON DEVELOPMENT",
+                      "type": "ENTITY",
+                      "relType": null,
+                      "hops": null
+                    },
+                    {
+                      "entityId": "ent:ofac:46032",
+                      "name": "LIMITED LIABILITY COMPANY AHD SOUTH PORT",
+                      "type": "ENTITY",
+                      "relType": null,
+                      "hops": null
+                    },
+                    {
+                      "entityId": "ent:ofac:46035",
+                      "name": "LIMITED LIABILITY COMPANY AHD KUTUZOVSKIY TOWERS",
+                      "type": "ENTITY",
+                      "relType": null,
+                      "hops": null
+                    }
+                  ],
+                  "total": 3
+                }
+              }
+            ],
+            "citations": [
+              {
+                "entityId": "ent:ofac:46031",
+                "name": "LLC AEON DEVELOPMENT",
+                "type": "ENTITY",
+                "sources": [
+                  "ofac"
+                ]
+              },
+              {
+                "entityId": "ent:ofac:46035",
+                "name": "LIMITED LIABILITY COMPANY AHD KUTUZOVSKIY TOWERS",
+                "type": "ENTITY",
+                "sources": [
+                  "ofac"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "qid": "linked_national-01",
+        "question": "Among the entities directly linked to \"CHEMEZOV, Sergei\" (also known as \"CHEMEZOV, Sergey Victorovich\"), which ones are nationals of Russia?",
+        "hops": 3,
+        "template": "linked_national",
+        "answerType": "entity_set",
+        "gold": [
+          "ent:ofac:35304",
+          "ent:ofac:35306",
+          "ent:ofac:35307",
+          "ent:ofac:35310",
+          "ent:ofac:35312"
+        ],
+        "goldCitations": [
+          {
+            "entityId": "ent:ofac:35304",
+            "name": "IGNATOVA, Yekaterina Sergeyevna",
+            "type": "INDIVIDUAL",
+            "sources": [
+              "ofac"
+            ]
+          },
+          {
+            "entityId": "ent:ofac:35306",
+            "name": "CHEMEZOV, Stanislav Sergeyevich",
+            "type": "INDIVIDUAL",
+            "sources": [
+              "ofac",
+              "uk_ofsi"
+            ]
+          },
+          {
+            "entityId": "ent:ofac:35307",
+            "name": "CHEMEZOV, Alexander Sergeevich",
+            "type": "INDIVIDUAL",
+            "sources": [
+              "ofac",
+              "uk_ofsi"
+            ]
+          },
+          {
+            "entityId": "ent:ofac:35310",
+            "name": "CHEMEZOV, Sergey Sergeevich",
+            "type": "INDIVIDUAL",
+            "sources": [
+              "ofac",
+              "uk_ofsi"
+            ]
+          },
+          {
+            "entityId": "ent:ofac:35312",
+            "name": "IGNATOVA, Anastasia",
+            "type": "INDIVIDUAL",
+            "sources": [
+              "ofac"
+            ]
+          }
+        ],
+        "modes": {
+          "vector": {
+            "answerText": "[\"CHEMEZOV, Sergey Sergeevich\", \"CHEMEZOV, Alexander Sergeevich\", \"CHEMEZOV, Stanislav Sergeyevich\", \"IGNATOVA, Anastasia\"]\n\nANSWER: [\"CHEMEZOV, Sergey Sergeevich\", \"CHEMEZOV, Alexander Sergeevich\", \"CHEMEZOV, Stanislav Sergeyevich\", \"IGNATOVA, Anastasia\"]",
+            "predicted": [
+              "CHEMEZOV, Sergey Sergeevich",
+              "CHEMEZOV, Alexander Sergeevich",
+              "CHEMEZOV, Stanislav Sergeyevich",
+              "IGNATOVA, Anastasia"
+            ],
+            "f1": 0.889,
+            "precision": 1.0,
+            "recall": 0.8,
+            "faithful": 1.0,
+            "promptTokens": 982,
+            "completionTokens": 528,
+            "latencyS": 27.66,
+            "nToolCalls": 0,
+            "retrieved": [
+              {
+                "name": "CHEMEZOV, Sergei",
+                "doc": "CHEMEZOV, Sergei | Type: INDIVIDUAL | Also known as: CHEMEZOV, Sergey Victorovich; CHEMEZOV, Sergey | Sources: ofac | Programs: UKRAINE-EO13661, RUSSIA-EO14024 | Countries: Russia | Addresses: 21 Gogolevskiy Bulvar, Moscow, Russia",
+                "score": 0.697
+              },
+              {
+                "name": "CHEMEZOV, Sergey Sergeevich",
+                "doc": "CHEMEZOV, Sergey Sergeevich | Type: INDIVIDUAL | Sources: ofac, uk_ofsi | Programs: RUSSIA-EO14024, Russia | Countries: Russia | Addresses: Russia | Linked to: CHEMEZOV, Sergei",
+                "score": 0.686
+              },
+              {
+                "name": "Sergey Viktorovich CHEMEZOV",
+                "doc": "Sergey Viktorovich CHEMEZOV | Type: INDIVIDUAL | Sources: uk_ofsi | Programs: Russia | Countries: Russia",
+                "score": 0.681
+              },
+              {
+                "name": "CHEMEZOV, Alexander Sergeevich",
+                "doc": "CHEMEZOV, Alexander Sergeevich | Type: INDIVIDUAL | Also known as: CHEMEZOV, Alexander; Alexander Sergeyevich CHEMEZOV | Sources: ofac, uk_ofsi | Programs: RUSSIA-EO14024, Russia | Countries: Russia | Addresses: Russia; 3 Shvedskiy Tupik, M",
+                "score": 0.642
+              },
+              {
+                "name": "CHEMEZOV, Stanislav Sergeyevich",
+                "doc": "CHEMEZOV, Stanislav Sergeyevich | Type: INDIVIDUAL | Also known as: CHEMEZOV, Stanislav; Stanislav Sergeyevich CHEMEZOV | Sources: ofac, uk_ofsi | Programs: RUSSIA-EO14024, Russia | Countries: Russia | Addresses: 36 Yuzhnoye Highway, Tolyat",
+                "score": 0.601
+              },
+              {
+                "name": "Serhiy Mikolayovich CHEREVKO",
+                "doc": "Serhiy Mikolayovich CHEREVKO | Type: INDIVIDUAL | Also known as: Sergei CHEREVKO; Sergey CHEREVKO | Sources: uk_ofsi | Programs: Russia | Countries: Ukraine",
+                "score": 0.601
+              },
+              {
+                "name": "IGNATOVA, Anastasia",
+                "doc": "IGNATOVA, Anastasia | Type: INDIVIDUAL | Also known as: IGNATOVA, Anastasia Mikhailovna; CHEMEZOV, Anastasia | Sources: ofac | Programs: RUSSIA-EO14024 | Countries: Russia | Addresses: Russia | Linked to: CHEMEZOV, Sergei",
+                "score": 0.593
+              },
+              {
+                "name": "CHIZHOV, Sergey Viktorovich",
+                "doc": "CHIZHOV, Sergey Viktorovich | Type: INDIVIDUAL | Sources: ofac, uk_ofsi | Programs: RUSSIA-EO14024, Russia | Countries: Russia | Addresses: Russia; 1 Okhotny Ryad str, 103265, Russia",
+                "score": 0.568
+              }
+            ]
+          },
+          "graph_rag": {
+            "answerText": "To identify the entities directly linked to \"CHEMEZOV, Sergei\" who are nationals of Russia, we first list all entities linked to him:\n1. \"IGNATOVA, Yekaterina Sergeyevna\"\n2. \"CHEMEZOV, Stanislav Sergeyevich\"\n3. \"CHEMEZOV, Alexander Sergeevich\"\n4. \"CHEMEZOV, Sergey Sergeevich\"\n5. \"IGNATOVA, Anastasia\"\n\nNext, we check the `NATIONAL_OF` attribute for each of these entities:\n- \"IGNATOVA, Yekaterina Sergeyevna\": NATIONAL_OF Russia (Match)\n- \"CHEMEZOV, Stanislav Sergeyevich\": NATIONAL_OF Russia (Match)\n- \"CHEMEZOV, Alexander Sergeevich\": NATIONAL_OF Russia (Match)\n- \"CHEMEZOV, Sergey Sergeevich\": NATIONAL_OF Russia (Match)\n- \"IGNATOVA, Anastasia\": NATIONAL_OF Russia (Match)\n\nAll linked entities are nationals of Russia.\n\nANSWER: [\"IGNATOVA, Yekaterina Sergeyevna\", \"CHEMEZOV, Stanislav Sergeyevich\", \"CHEMEZOV, Alexander Sergeevich\", \"CHEMEZOV, Sergey Sergeevich\", \"IGNATOVA, Anastasia\"]",
+            "predicted": [
+              "IGNATOVA, Yekaterina Sergeyevna",
+              "CHEMEZOV, Stanislav Sergeyevich",
+              "CHEMEZOV, Alexander Sergeevich",
+              "CHEMEZOV, Sergey Sergeevich",
+              "IGNATOVA, Anastasia"
+            ],
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "faithful": 1.0,
+            "promptTokens": 1860,
+            "completionTokens": 613,
+            "latencyS": 35.56,
+            "nToolCalls": 0,
+            "factsHeader": "Graph facts about: \"CHEMEZOV, Sergei\"",
+            "facts": [
+              "\"CHEMEZOV, Sergei\" LOCATED_AT 21 Gogolevskiy Bulvar, Moscow, Russia",
+              "\"CHEMEZOV, Sergei\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"CHEMEZOV, Sergei\" SANCTIONED_UNDER UKRAINE-EO13661",
+              "\"CHEMEZOV, Sergei\" NATIONAL_OF Russia",
+              "\"CHEMEZOV, Sergei\" LINKED_TO \"IGNATOVA, Yekaterina Sergeyevna\"",
+              "\"CHEMEZOV, Sergei\" LINKED_TO \"CHEMEZOV, Stanislav Sergeyevich\"",
+              "\"CHEMEZOV, Sergei\" LINKED_TO \"CHEMEZOV, Alexander Sergeevich\"",
+              "\"CHEMEZOV, Sergei\" LINKED_TO \"CHEMEZOV, Sergey Sergeevich\"",
+              "\"CHEMEZOV, Sergei\" LINKED_TO \"IGNATOVA, Anastasia\"",
+              "\"IGNATOVA, Yekaterina Sergeyevna\" LOCATED_AT 10 Presnenskaya Naberezhnaya, Moscow 123112, Russia",
+              "\"IGNATOVA, Yekaterina Sergeyevna\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"IGNATOVA, Yekaterina Sergeyevna\" NATIONAL_OF Russia",
+              "\"CHEMEZOV, Stanislav Sergeyevich\" LOCATED_AT 36 Yuzhnoye Highway, Tolyatti, Samara 445024, Russia",
+              "\"CHEMEZOV, Stanislav Sergeyevich\" LOCATED_AT 36 Yuzhnoye Highway; Tolyatti, Samara, Russia",
+              "\"CHEMEZOV, Stanislav Sergeyevich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"CHEMEZOV, Stanislav Sergeyevich\" SANCTIONED_UNDER Russia",
+              "\"CHEMEZOV, Stanislav Sergeyevich\" NATIONAL_OF Russia",
+              "\"CHEMEZOV, Alexander Sergeevich\" LOCATED_AT 3 Shvedskiy Tupik, Moscow, Russia",
+              "\"CHEMEZOV, Alexander Sergeevich\" LOCATED_AT Russia",
+              "\"CHEMEZOV, Alexander Sergeevich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"CHEMEZOV, Alexander Sergeevich\" SANCTIONED_UNDER Russia",
+              "\"CHEMEZOV, Alexander Sergeevich\" NATIONAL_OF Russia",
+              "\"CHEMEZOV, Sergey Sergeevich\" LOCATED_AT Russia",
+              "\"CHEMEZOV, Sergey Sergeevich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"CHEMEZOV, Sergey Sergeevich\" SANCTIONED_UNDER Russia",
+              "\"CHEMEZOV, Sergey Sergeevich\" NATIONAL_OF Russia",
+              "\"IGNATOVA, Anastasia\" LOCATED_AT Russia",
+              "\"IGNATOVA, Anastasia\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"IGNATOVA, Anastasia\" NATIONAL_OF Russia",
+              "\"MINISTRY OF DEFENSE AND ARMED FORCES LOGISTICS\" SANCTIONED_UNDER RUSSIA-EO14024"
+            ],
+            "factsTotal": 61
+          },
+          "graph": {
+            "answerText": "ANSWER: [\"IGNATOVA, Yekaterina Sergeyevna\", \"CHEMEZOV, Stanislav Sergeyevich\", \"CHEMEZOV, Alexander Sergeevich\", \"CHEMEZOV, Sergey Sergeevich\", \"IGNATOVA, Anastasia\"]",
+            "predicted": [
+              "IGNATOVA, Yekaterina Sergeyevna",
+              "CHEMEZOV, Stanislav Sergeyevich",
+              "CHEMEZOV, Alexander Sergeevich",
+              "CHEMEZOV, Sergey Sergeevich",
+              "IGNATOVA, Anastasia"
+            ],
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "faithful": 1.0,
+            "promptTokens": 5871,
+            "completionTokens": 967,
+            "latencyS": 50.2,
+            "nToolCalls": 7,
+            "steps": [
+              {
+                "round": 0,
+                "tool": "get_entity",
+                "args": {
+                  "query": "CHEMEZOV, Sergei"
+                },
+                "result": {
+                  "kind": "entity",
+                  "rows": [
+                    {
+                      "entityId": "ent:ofac:16685",
+                      "name": "CHEMEZOV, Sergei",
+                      "type": "INDIVIDUAL",
+                      "score": 100.0
+                    }
+                  ],
+                  "total": 1
+                }
+              },
+              {
+                "round": 1,
+                "tool": "neighbors",
+                "args": {
+                  "entity": "ent:ofac:16685",
+                  "rel_type": "LINKED_TO"
+                },
+                "result": {
+                  "kind": "rows",
+                  "rows": [
+                    {
+                      "entityId": "ent:ofac:35304",
+                      "name": "IGNATOVA, Yekaterina Sergeyevna",
+                      "type": "Entity",
+                      "relType": "LINKED_TO",
+                      "hops": null
+                    },
+                    {
+                      "entityId": "ent:ofac:35306",
+                      "name": "CHEMEZOV, Stanislav Sergeyevich",
+                      "type": "Entity",
+                      "relType": "LINKED_TO",
+                      "hops": null
+                    },
+                    {
+                      "entityId": "ent:ofac:35307",
+                      "name": "CHEMEZOV, Alexander Sergeevich",
+                      "type": "Entity",
+                      "relType": "LINKED_TO",
+                      "hops": null
+                    },
+                    {
+                      "entityId": "ent:ofac:35310",
+                      "name": "CHEMEZOV, Sergey Sergeevich",
+                      "type": "Entity",
+                      "relType": "LINKED_TO",
+                      "hops": null
+                    },
+                    {
+                      "entityId": "ent:ofac:35312",
+                      "name": "IGNATOVA, Anastasia",
+                      "type": "Entity",
+                      "relType": "LINKED_TO",
+                      "hops": null
+                    }
+                  ],
+                  "total": 5
+                }
+              },
+              {
+                "round": 2,
+                "tool": "neighbors",
+                "args": {
+                  "entity": "ent:ofac:35304",
+                  "rel_type": "NATIONAL_OF"
+                },
+                "result": {
+                  "kind": "rows",
+                  "rows": [
+                    {
+                      "entityId": "Russia",
+                      "name": "Russia",
+                      "type": "Country",
+                      "relType": "NATIONAL_OF",
+                      "hops": null
+                    }
+                  ],
+                  "total": 1
+                }
+              },
+              {
+                "round": 2,
+                "tool": "neighbors",
+                "args": {
+                  "entity": "ent:ofac:35306",
+                  "rel_type": "NATIONAL_OF"
+                },
+                "result": {
+                  "kind": "rows",
+                  "rows": [
+                    {
+                      "entityId": "Russia",
+                      "name": "Russia",
+                      "type": "Country",
+                      "relType": "NATIONAL_OF",
+                      "hops": null
+                    }
+                  ],
+                  "total": 1
+                }
+              },
+              {
+                "round": 2,
+                "tool": "neighbors",
+                "args": {
+                  "entity": "ent:ofac:35307",
+                  "rel_type": "NATIONAL_OF"
+                },
+                "result": {
+                  "kind": "rows",
+                  "rows": [
+                    {
+                      "entityId": "Russia",
+                      "name": "Russia",
+                      "type": "Country",
+                      "relType": "NATIONAL_OF",
+                      "hops": null
+                    }
+                  ],
+                  "total": 1
+                }
+              },
+              {
+                "round": 2,
+                "tool": "neighbors",
+                "args": {
+                  "entity": "ent:ofac:35310",
+                  "rel_type": "NATIONAL_OF"
+                },
+                "result": {
+                  "kind": "rows",
+                  "rows": [
+                    {
+                      "entityId": "Russia",
+                      "name": "Russia",
+                      "type": "Country",
+                      "relType": "NATIONAL_OF",
+                      "hops": null
+                    }
+                  ],
+                  "total": 1
+                }
+              },
+              {
+                "round": 2,
+                "tool": "neighbors",
+                "args": {
+                  "entity": "ent:ofac:35312",
+                  "rel_type": "NATIONAL_OF"
+                },
+                "result": {
+                  "kind": "rows",
+                  "rows": [
+                    {
+                      "entityId": "Russia",
+                      "name": "Russia",
+                      "type": "Country",
+                      "relType": "NATIONAL_OF",
+                      "hops": null
+                    }
+                  ],
+                  "total": 1
+                }
+              }
+            ],
+            "citations": [
+              {
+                "entityId": "ent:ofac:35304",
+                "name": "IGNATOVA, Yekaterina Sergeyevna",
+                "type": "INDIVIDUAL",
+                "sources": [
+                  "ofac"
+                ]
+              },
+              {
+                "entityId": "ent:ofac:35306",
+                "name": "CHEMEZOV, Stanislav Sergeyevich",
+                "type": "INDIVIDUAL",
+                "sources": [
+                  "ofac",
+                  "uk_ofsi"
+                ]
+              },
+              {
+                "entityId": "ent:ofac:35307",
+                "name": "CHEMEZOV, Alexander Sergeevich",
+                "type": "INDIVIDUAL",
+                "sources": [
+                  "ofac",
+                  "uk_ofsi"
+                ]
+              },
+              {
+                "entityId": "ent:ofac:35310",
+                "name": "CHEMEZOV, Sergey Sergeevich",
+                "type": "INDIVIDUAL",
+                "sources": [
+                  "ofac",
+                  "uk_ofsi"
+                ]
+              },
+              {
+                "entityId": "ent:ofac:35312",
+                "name": "IGNATOVA, Anastasia",
+                "type": "INDIVIDUAL",
+                "sources": [
+                  "ofac"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "qid": "linked_program-06",
+        "question": "Among the entities directly linked to \"PRIBYSHIN, Taras Kirillovich\", which ones are sanctioned under the CYBER2 program?",
+        "hops": 3,
+        "template": "linked_program",
+        "answerType": "entity_set",
+        "gold": [
+          "ent:ofac:21171",
+          "ent:ofac:23943"
+        ],
+        "goldCitations": [
+          {
+            "entityId": "ent:ofac:21171",
+            "name": "PRIGOZHIN, Yevgeniy Viktorovich",
+            "type": "INDIVIDUAL",
+            "sources": [
+              "ofac",
+              "uk_ofsi"
+            ]
+          },
+          {
+            "entityId": "ent:ofac:23943",
+            "name": "INTERNET RESEARCH AGENCY LLC",
+            "type": "ENTITY",
+            "sources": [
+              "ofac"
+            ]
+          }
+        ],
+        "modes": {
+          "vector": {
+            "answerText": "Based on the provided records, PRIBYSHIN, Taras Kirillovich is linked to PRIGOZHIN, Yevgeniy Viktorovich and INTERNET RESEARCH AGENCY LLC. Among these, only PRIGOZHIN, Yevgeniy Viktorovich has a record confirming he is sanctioned under the CYBER2 program.\n\nANSWER: [\"PRIGOZHIN, Yevgeniy Viktorovich\"]",
+            "predicted": [
+              "PRIGOZHIN, Yevgeniy Viktorovich"
+            ],
+            "f1": 0.667,
+            "precision": 1.0,
+            "recall": 0.5,
+            "faithful": 1.0,
+            "promptTokens": 888,
+            "completionTokens": 598,
+            "latencyS": 29.77,
+            "nToolCalls": 0,
+            "retrieved": [
+              {
+                "name": "PRIBYSHIN, Taras Kirillovich",
+                "doc": "PRIBYSHIN, Taras Kirillovich | Type: INDIVIDUAL | Sources: ofac | Programs: UKRAINE-EO13661, CYBER2, ELECTION-EO13848 | Countries: Russia | Addresses: St. Petersburg, Russia | Linked to: PRIGOZHIN, Yevgeniy Viktorovich, INTERNET RESEARCH AG",
+                "score": 0.685
+              },
+              {
+                "name": "ASSOCIATION FOR FREE RESEARCH AND INTERNATIONAL COOPERATION",
+                "doc": "ASSOCIATION FOR FREE RESEARCH AND INTERNATIONAL COOPERATION | Type: ENTITY | Sources: ofac | Programs: UKRAINE-EO13661, CYBER2, ELECTION-EO13848 | Addresses: Russia | Linked to: PRIGOZHIN, Yevgeniy Viktorovich",
+                "score": 0.586
+              },
+              {
+                "name": "INTERNATIONAL ANTICRISIS CENTER",
+                "doc": "INTERNATIONAL ANTICRISIS CENTER | Type: ENTITY | Sources: ofac | Programs: UKRAINE-EO13661, CYBER2, ELECTION-EO13848 | Addresses: Russia | Linked to: PRIGOZHIN, Yevgeniy Viktorovich",
+                "score": 0.571
+              },
+              {
+                "name": "PRIGOZHIN, Yevgeniy Viktorovich",
+                "doc": "PRIGOZHIN, Yevgeniy Viktorovich | Type: INDIVIDUAL | Also known as: PRIGOZHIN, Evgeny; Evgeny PRIGOZHIN; Yevgeny PRIGOZHIN | Sources: ofac, uk_ofsi | Programs: UKRAINE-EO13661, CYBER2, ELECTION-EO13848, RUSSIA-EO14024, Libya | Countries: Ru",
+                "score": 0.553
+              },
+              {
+                "name": "BYSTROV, Mikhail Ivanovich",
+                "doc": "BYSTROV, Mikhail Ivanovich | Type: INDIVIDUAL | Sources: ofac | Programs: CYBER2 | Addresses: Russia | Linked to: INTERNET RESEARCH AGENCY LLC",
+                "score": 0.549
+              },
+              {
+                "name": "YAKUBETS, Artem Viktorovich",
+                "doc": "YAKUBETS, Artem Viktorovich | Type: INDIVIDUAL | Sources: ofac, uk_ofsi | Programs: CYBER2, Cyber | Countries: Ukraine, Russia | Addresses: Moscow, Russia | Linked to: EVIL CORP",
+                "score": 0.53
+              },
+              {
+                "name": "TUCHKOV, Ivan Dmitriyevich",
+                "doc": "TUCHKOV, Ivan Dmitriyevich | Type: INDIVIDUAL | Sources: ofac, uk_ofsi | Programs: CYBER2, Cyber | Countries: Russia | Addresses: Russia | Linked to: EVIL CORP",
+                "score": 0.527
+              },
+              {
+                "name": "SLOBODSKOY, Kirill Alekseyevich",
+                "doc": "SLOBODSKOY, Kirill Alekseyevich | Type: INDIVIDUAL | Sources: ofac, uk_ofsi | Programs: CYBER2, Cyber | Countries: Russia | Addresses: Moscow, Russia | Linked to: EVIL CORP",
+                "score": 0.525
+              }
+            ]
+          },
+          "graph_rag": {
+            "answerText": "To find the entities directly linked to \"PRIBYSHIN, Taras Kirillovich\" that are also sanctioned under the CYBER2 program, we first identify all entities linked to him:\n1. \"PRIGOZHIN, Yevgeniy Viktorovich\"\n2. \"INTERNET RESEARCH AGENCY LLC\"\n\nNext, we check if these entities are sanctioned under the CYBER2 program based on the provided facts:\n- \"PRIGOZHIN, Yevgeniy Viktorovich\" SANCTIONED_UNDER CYBER2 (True)\n- \"INTERNET RESEARCH AGENCY LLC\" SANCTIONED_UNDER CYBER2 (True)\n\nBoth linked entities meet the criteria.\n\nANSWER: [\"PRIGOZHIN, Yevgeniy Viktorovich\", \"INTERNET RESEARCH AGENCY LLC\"]",
+            "predicted": [
+              "PRIGOZHIN, Yevgeniy Viktorovich",
+              "INTERNET RESEARCH AGENCY LLC"
+            ],
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "faithful": 1.0,
+            "promptTokens": 1762,
+            "completionTokens": 388,
+            "latencyS": 26.64,
+            "nToolCalls": 0,
+            "factsHeader": "Graph facts about: \"PRIBYSHIN, Taras Kirillovich\"",
+            "facts": [
+              "\"PRIBYSHIN, Taras Kirillovich\" LOCATED_AT St. Petersburg, Russia",
+              "\"PRIBYSHIN, Taras Kirillovich\" SANCTIONED_UNDER CYBER2",
+              "\"PRIBYSHIN, Taras Kirillovich\" SANCTIONED_UNDER ELECTION-EO13848",
+              "\"PRIBYSHIN, Taras Kirillovich\" SANCTIONED_UNDER UKRAINE-EO13661",
+              "\"PRIBYSHIN, Taras Kirillovich\" NATIONAL_OF Russia",
+              "\"PRIBYSHIN, Taras Kirillovich\" LINKED_TO \"PRIGOZHIN, Yevgeniy Viktorovich\"",
+              "\"PRIBYSHIN, Taras Kirillovich\" LINKED_TO \"INTERNET RESEARCH AGENCY LLC\"",
+              "\"PRIGOZHIN, Yevgeniy Viktorovich\" LOCATED_AT Russia",
+              "\"PRIGOZHIN, Yevgeniy Viktorovich\" SANCTIONED_UNDER CYBER2",
+              "\"PRIGOZHIN, Yevgeniy Viktorovich\" SANCTIONED_UNDER ELECTION-EO13848",
+              "\"PRIGOZHIN, Yevgeniy Viktorovich\" SANCTIONED_UNDER Libya",
+              "\"PRIGOZHIN, Yevgeniy Viktorovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"PRIGOZHIN, Yevgeniy Viktorovich\" SANCTIONED_UNDER UKRAINE-EO13661",
+              "\"PRIGOZHIN, Yevgeniy Viktorovich\" NATIONAL_OF Russia",
+              "\"INTERNET RESEARCH AGENCY LLC\" LOCATED_AT 4 Optikov Street, Building 3, St. Petersburg, Russia",
+              "\"INTERNET RESEARCH AGENCY LLC\" LOCATED_AT 55 Savushkina Street, St. Petersburg, Russia",
+              "\"INTERNET RESEARCH AGENCY LLC\" LOCATED_AT d. 4 korp. 3 litera A pom. 9-N, ofis 238, ul. Optikov, St. Petersburg, Russia",
+              "\"INTERNET RESEARCH AGENCY LLC\" LOCATED_AT d. 4 litera B pom. 22-N, ul. Starobelskaya, St. Petersburg, Russia",
+              "\"INTERNET RESEARCH AGENCY LLC\" LOCATED_AT d. 79 litera A. pom 1-N, ul. Planernaya, St. Petersburg, Russia",
+              "\"INTERNET RESEARCH AGENCY LLC\" SANCTIONED_UNDER CYBER2",
+              "\"INTERNET RESEARCH AGENCY LLC\" SANCTIONED_UNDER ELECTION-EO13848",
+              "\"SOUTHEAST TRADING OY\" LOCATED_AT St. Petersburg, Russia",
+              "\"ABRAMOV, Valeri Vyacheslavovich\" LOCATED_AT St. Petersburg, Russia",
+              "\"PEREVALOV, Viktor Pavlovich\" LOCATED_AT St. Petersburg, Russia",
+              "\"PENTYA, Aleksandr Yevgenyevich\" LOCATED_AT St. Petersburg, Russia",
+              "\"KVANT SCIENTIFIC RESEARCH INSTITUTE\" LOCATED_AT St. Petersburg, Russia",
+              "\"KHUSYAYNOVA, Elena Alekseevna\" LOCATED_AT St. Petersburg, Russia",
+              "\"USA REALLY\" LOCATED_AT St. Petersburg, Russia",
+              "\"MALKEVICH, Alexander Aleksandrovich\" LOCATED_AT St. Petersburg, Russia",
+              "\"MANDEL, Andrei Sergeevich\" LOCATED_AT St. Petersburg, Russia"
+            ],
+            "factsTotal": 61
+          },
+          "graph": {
+            "answerText": "ANSWER: [\"PRIGOZHIN, Yevgeniy Viktorovich\", \"INTERNET RESEARCH AGENCY LLC\"]",
+            "predicted": [
+              "PRIGOZHIN, Yevgeniy Viktorovich",
+              "INTERNET RESEARCH AGENCY LLC"
+            ],
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "faithful": 1.0,
+            "promptTokens": 5468,
+            "completionTokens": 872,
+            "latencyS": 45.87,
+            "nToolCalls": 4,
+            "steps": [
+              {
+                "round": 0,
+                "tool": "get_entity",
+                "args": {
+                  "query": "PRIBYSHIN, Taras Kirillovich"
+                },
+                "result": {
+                  "kind": "entity",
+                  "rows": [
+                    {
+                      "entityId": "ent:ofac:31293",
+                      "name": "PRIBYSHIN, Taras Kirillovich",
+                      "type": "INDIVIDUAL",
+                      "score": 100.0
+                    }
+                  ],
+                  "total": 1
+                }
+              },
+              {
+                "round": 1,
+                "tool": "neighbors",
+                "args": {
+                  "entity": "ent:ofac:31293",
+                  "rel_type": "LINKED_TO"
+                },
+                "result": {
+                  "kind": "rows",
+                  "rows": [
+                    {
+                      "entityId": "ent:ofac:21171",
+                      "name": "PRIGOZHIN, Yevgeniy Viktorovich",
+                      "type": "Entity",
+                      "relType": "LINKED_TO",
+                      "hops": null
+                    },
+                    {
+                      "entityId": "ent:ofac:23943",
+                      "name": "INTERNET RESEARCH AGENCY LLC",
+                      "type": "Entity",
+                      "relType": "LINKED_TO",
+                      "hops": null
+                    }
+                  ],
+                  "total": 2
+                }
+              },
+              {
+                "round": 2,
+                "tool": "neighbors",
+                "args": {
+                  "entity": "ent:ofac:21171",
+                  "rel_type": "SANCTIONED_UNDER"
+                },
+                "result": {
+                  "kind": "rows",
+                  "rows": [
+                    {
+                      "entityId": "CYBER2",
+                      "name": "CYBER2",
+                      "type": "Program",
+                      "relType": "SANCTIONED_UNDER",
+                      "hops": null
+                    },
+                    {
+                      "entityId": "ELECTION-EO13848",
+                      "name": "ELECTION-EO13848",
+                      "type": "Program",
+                      "relType": "SANCTIONED_UNDER",
+                      "hops": null
+                    },
+                    {
+                      "entityId": "Libya",
+                      "name": "Libya",
+                      "type": "Program",
+                      "relType": "SANCTIONED_UNDER",
+                      "hops": null
+                    },
+                    {
+                      "entityId": "RUSSIA-EO14024",
+                      "name": "RUSSIA-EO14024",
+                      "type": "Program",
+                      "relType": "SANCTIONED_UNDER",
+                      "hops": null
+                    },
+                    {
+                      "entityId": "UKRAINE-EO13661",
+                      "name": "UKRAINE-EO13661",
+                      "type": "Program",
+                      "relType": "SANCTIONED_UNDER",
+                      "hops": null
+                    }
+                  ],
+                  "total": 5
+                }
+              },
+              {
+                "round": 2,
+                "tool": "neighbors",
+                "args": {
+                  "entity": "ent:ofac:23943",
+                  "rel_type": "SANCTIONED_UNDER"
+                },
+                "result": {
+                  "kind": "rows",
+                  "rows": [
+                    {
+                      "entityId": "CYBER2",
+                      "name": "CYBER2",
+                      "type": "Program",
+                      "relType": "SANCTIONED_UNDER",
+                      "hops": null
+                    },
+                    {
+                      "entityId": "ELECTION-EO13848",
+                      "name": "ELECTION-EO13848",
+                      "type": "Program",
+                      "relType": "SANCTIONED_UNDER",
+                      "hops": null
+                    }
+                  ],
+                  "total": 2
+                }
+              }
+            ],
+            "citations": [
+              {
+                "entityId": "ent:ofac:21171",
+                "name": "PRIGOZHIN, Yevgeniy Viktorovich",
+                "type": "INDIVIDUAL",
+                "sources": [
+                  "ofac",
+                  "uk_ofsi"
+                ]
+              },
+              {
+                "entityId": "ent:ofac:23943",
+                "name": "INTERNET RESEARCH AGENCY LLC",
+                "type": "ENTITY",
+                "sources": [
+                  "ofac"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "qid": "linked-00",
+        "question": "Which entities are directly linked to \"ATLAS SHIP MANAGEMENT\" (also known as \"ATLAS SHIPS MANAGEMENT\")?",
+        "hops": 1,
+        "template": "linked",
+        "answerType": "entity_set",
+        "gold": [
+          "ent:ofac:15117",
+          "ent:ofac:15119"
+        ],
+        "goldCitations": [
+          {
+            "entityId": "ent:ofac:15117",
+            "name": "NATIONAL IRANIAN TANKER COMPANY",
+            "type": "ENTITY",
+            "sources": [
+              "ofac",
+              "uk_ofsi"
+            ]
+          },
+          {
+            "entityId": "ent:ofac:15119",
+            "name": "N.I.T.C. REPRESENTATIVE OFFICE",
+            "type": "ENTITY",
+            "sources": [
+              "ofac"
+            ]
+          }
+        ],
+        "modes": {
+          "vector": {
+            "answerText": "The entity directly linked to ATLAS SHIP MANAGEMENT (also known as ATLAS SHIPS MANAGEMENT) is NATIONAL IRANIAN TANKER COMPANY.\n\nANSWER: [\"NATIONAL IRANIAN TANKER COMPANY\"]",
+            "predicted": [
+              "NATIONAL IRANIAN TANKER COMPANY"
+            ],
+            "f1": 0.667,
+            "precision": 1.0,
+            "recall": 0.5,
+            "faithful": 1.0,
+            "promptTokens": 1193,
+            "completionTokens": 195,
+            "latencyS": 17.03,
+            "nToolCalls": 0,
+            "retrieved": [
+              {
+                "name": "ATLAS SHIP MANAGEMENT",
+                "doc": "ATLAS SHIP MANAGEMENT | Type: ENTITY | Also known as: ATLAS SHIPS MANAGEMENT | Sources: ofac | Programs: SDGT, IFSR | Addresses: Fujairah, United Arab Emirates | Linked to: NATIONAL IRANIAN TANKER COMPANY",
+                "score": 0.62
+              },
+              {
+                "name": "ATLANTIC SHIP MANAGEMENT COMPANY",
+                "doc": "ATLANTIC SHIP MANAGEMENT COMPANY | Type: ENTITY | Also known as: ATLANTIC SHIP MANAGEMENT LLC | Sources: ofac | Programs: SDGT, IFSR | Addresses: Office Number 3803, Churchill Tower, 38 Floor, Business Bay, Bur Dubai, Burj Khalifa, Dubai, U",
+                "score": 0.57
+              },
+              {
+                "name": "ATLAS",
+                "doc": "ATLAS | Type: VESSEL | Sources: ofac | Programs: UKRAINE-EO13662, RUSSIA-EO14024 | Linked to: STREAM SHIP MANAGEMENT FZCO",
+                "score": 0.537
+              },
+              {
+                "name": "HS ATLANTICA",
+                "doc": "HS ATLANTICA | Type: VESSEL | Sources: ofac | Programs: RUSSIA-EO14024 | Linked to: HS ATLANTICA LIMITED, HENNESEA HOLDINGS LIMITED",
+                "score": 0.516
+              },
+              {
+                "name": "FOURTEEN STAR SHIPPING MANAGEMENT",
+                "doc": "FOURTEEN STAR SHIPPING MANAGEMENT | Type: ENTITY | Also known as: 14 STAR SHIPPING MANAGEMENT | Sources: ofac | Programs: SDGT | Addresses: United Arab Emirates | Linked to: MEHDI GROUP",
+                "score": 0.51
+              },
+              {
+                "name": "BARCO SHIP MANAGEMENT INC",
+                "doc": "BARCO SHIP MANAGEMENT INC | Type: ENTITY | Sources: ofac | Programs: SDGT | Addresses: Trust Company Complex, Ajeltake Road, Ajeltake Island, Majuro MH96960, Marshall Islands; Office 201, Art Thamani Tower, Al-Asayel Street, Dubai, United A",
+                "score": 0.507
+              },
+              {
+                "name": "ATLAS KIAN QESHM",
+                "doc": "ATLAS KIAN QESHM | Type: ENTITY | Also known as: ATLAS SHIPPING; ATLAS SHIPPING COMPANY | Sources: ofac | Programs: IRAN | Addresses: No. 44, East Atefi Ave., Nelsonmandella Blvd., Tehran, Iran | Linked to: NATIONAL IRANIAN TANKER COMPANY",
+                "score": 0.506
+              },
+              {
+                "name": "NOBEL M",
+                "doc": "NOBEL M | Type: VESSEL | Sources: ofac | Programs: SDGT | Linked to: MT TEVEL INCORPORATED, TYBA SHIP MANAGEMENT DMCC",
+                "score": 0.506
+              }
+            ]
+          },
+          "graph_rag": {
+            "answerText": "To find the entities directly linked to \"ATLAS SHIP MANAGEMENT\", we look for facts where \"ATLAS SHIP MANAGEMENT\" is the subject of a `LINKED_TO` relationship:\n\n1.  \"ATLAS SHIP MANAGEMENT\" LINKED_TO \"NATIONAL IRANIAN TANKER COMPANY\"\n2.  \"ATLAS SHIP MANAGEMENT\" LINKED_TO \"N.I.T.C. REPRESENTATIVE OFFICE\"\n\nANSWER: [\"NATIONAL IRANIAN TANKER COMPANY\", \"N.I.T.C. REPRESENTATIVE OFFICE\"]",
+            "predicted": [
+              "NATIONAL IRANIAN TANKER COMPANY",
+              "N.I.T.C. REPRESENTATIVE OFFICE"
+            ],
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "faithful": 1.0,
+            "promptTokens": 1509,
+            "completionTokens": 341,
+            "latencyS": 22.98,
+            "nToolCalls": 0,
+            "factsHeader": "Graph facts about: \"ATLAS SHIP MANAGEMENT\"",
+            "facts": [
+              "\"ATLAS SHIP MANAGEMENT\" LOCATED_AT Fujairah, United Arab Emirates",
+              "\"ATLAS SHIP MANAGEMENT\" SANCTIONED_UNDER IFSR",
+              "\"ATLAS SHIP MANAGEMENT\" SANCTIONED_UNDER SDGT",
+              "\"ATLAS SHIP MANAGEMENT\" LINKED_TO \"NATIONAL IRANIAN TANKER COMPANY\"",
+              "\"ATLAS SHIP MANAGEMENT\" LINKED_TO \"N.I.T.C. REPRESENTATIVE OFFICE\"",
+              "\"NATIONAL IRANIAN TANKER COMPANY\" LOCATED_AT NITC Building, 67-88, Shahid Atefi Street, Africa Avenue, Tehran, Iran",
+              "\"NATIONAL IRANIAN TANKER COMPANY\" LOCATED_AT No 65 & 67, Shahid Atefi Street, Africa Blvd, Tehran, Iran",
+              "\"NATIONAL IRANIAN TANKER COMPANY\" LOCATED_AT No. 65 and 67 Shahid Atefi Street, Africa Blvd, Tehran, Iran",
+              "\"NATIONAL IRANIAN TANKER COMPANY\" SANCTIONED_UNDER IFCA",
+              "\"NATIONAL IRANIAN TANKER COMPANY\" SANCTIONED_UNDER IFSR",
+              "\"NATIONAL IRANIAN TANKER COMPANY\" SANCTIONED_UNDER IRAN",
+              "\"NATIONAL IRANIAN TANKER COMPANY\" SANCTIONED_UNDER Iran (Nuclear)",
+              "\"NATIONAL IRANIAN TANKER COMPANY\" SANCTIONED_UNDER SDGT",
+              "\"NATIONAL IRANIAN TANKER COMPANY\" NATIONAL_OF Iran",
+              "\"N.I.T.C. REPRESENTATIVE OFFICE\" LOCATED_AT Droogdokweg 71, Rotterdam 3089 JN, Netherlands",
+              "\"N.I.T.C. REPRESENTATIVE OFFICE\" SANCTIONED_UNDER IRAN",
+              "\"HURIYA PRIVATE FZE LLE\" LOCATED_AT Fujairah, United Arab Emirates",
+              "\"KALAYE ELECTRIC COMPANY\" SANCTIONED_UNDER IFSR",
+              "\"DEFENSE INDUSTRIES ORGANIZATION\" SANCTIONED_UNDER IFSR",
+              "\"BANK SADERAT IRAN\" SANCTIONED_UNDER IFSR",
+              "\"FARAYAND TECHNIQUE\" SANCTIONED_UNDER IFSR",
+              "\"FAJR INDUSTRIAL GROUP\" SANCTIONED_UNDER IFSR",
+              "\"MIZAN MACHINE MANUFACTURING GROUP\" SANCTIONED_UNDER IFSR",
+              "\"ISLAMIC REVOLUTIONARY GUARD CORPS (IRGC)-QODS FORCE\" SANCTIONED_UNDER IFSR",
+              "\"MINISTRY OF DEFENSE AND ARMED FORCES LOGISTICS\" SANCTIONED_UNDER IFSR",
+              "\"MARTYRS FOUNDATION\" SANCTIONED_UNDER IFSR",
+              "\"REZAIE, Morteza\" SANCTIONED_UNDER IFSR",
+              "\"AHMADIAN, Ali Akbar\" SANCTIONED_UNDER IFSR",
+              "\"SOLEIMANI, Qasem\" SANCTIONED_UNDER IFSR",
+              "\"HEJAZI, Mohammad\" SANCTIONED_UNDER IFSR"
+            ],
+            "factsTotal": 61
+          },
+          "graph": {
+            "answerText": "ANSWER: [\"NATIONAL IRANIAN TANKER COMPANY\", \"N.I.T.C. REPRESENTATIVE OFFICE\"]",
+            "predicted": [
+              "NATIONAL IRANIAN TANKER COMPANY",
+              "N.I.T.C. REPRESENTATIVE OFFICE"
+            ],
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "faithful": 1.0,
+            "promptTokens": 3547,
+            "completionTokens": 353,
+            "latencyS": 21.29,
+            "nToolCalls": 2,
+            "steps": [
+              {
+                "round": 0,
+                "tool": "get_entity",
+                "args": {
+                  "query": "ATLAS SHIP MANAGEMENT"
+                },
+                "result": {
+                  "kind": "entity",
+                  "rows": [
+                    {
+                      "entityId": "ent:ofac:29853",
+                      "name": "ATLAS SHIP MANAGEMENT",
+                      "type": "ENTITY",
+                      "score": 100.0
+                    }
+                  ],
+                  "total": 1
+                }
+              },
+              {
+                "round": 1,
+                "tool": "neighbors",
+                "args": {
+                  "entity": "ent:ofac:29853",
+                  "rel_type": "LINKED_TO"
+                },
+                "result": {
+                  "kind": "rows",
+                  "rows": [
+                    {
+                      "entityId": "ent:ofac:15117",
+                      "name": "NATIONAL IRANIAN TANKER COMPANY",
+                      "type": "Entity",
+                      "relType": "LINKED_TO",
+                      "hops": null
+                    },
+                    {
+                      "entityId": "ent:ofac:15119",
+                      "name": "N.I.T.C. REPRESENTATIVE OFFICE",
+                      "type": "Entity",
+                      "relType": "LINKED_TO",
+                      "hops": null
+                    }
+                  ],
+                  "total": 2
+                }
+              }
+            ],
+            "citations": [
+              {
+                "entityId": "ent:ofac:15117",
+                "name": "NATIONAL IRANIAN TANKER COMPANY",
+                "type": "ENTITY",
+                "sources": [
+                  "ofac",
+                  "uk_ofsi"
+                ]
+              },
+              {
+                "entityId": "ent:ofac:15119",
+                "name": "N.I.T.C. REPRESENTATIVE OFFICE",
+                "type": "ENTITY",
+                "sources": [
+                  "ofac"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "qid": "programs-00",
+        "question": "Under which sanctions programs is \"EVROFINANCE MOSNARBANK\" (also known as \"BANK EVROFINANCE\") designated? List the program codes.",
+        "hops": 1,
+        "template": "programs",
+        "answerType": "entity_set",
+        "gold": [
+          "RUSSIA-EO14024",
+          "VENEZUELA-EO13850"
+        ],
+        "goldCitations": [],
+        "modes": {
+          "vector": {
+            "answerText": "The entity EVROFINANCE MOSNARBANK (also known as BANK EVROFINANCE) is designated under the following sanctions programs: VENEZUELA-EO13850 and RUSSIA-EO14024.\n\nANSWER: [\"VENEZUELA-EO13850\", \"RUSSIA-EO14024\"]",
+            "predicted": [
+              "VENEZUELA-EO13850",
+              "RUSSIA-EO14024"
+            ],
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "faithful": null,
+            "promptTokens": 1498,
+            "completionTokens": 184,
+            "latencyS": 15.66,
+            "nToolCalls": 0,
+            "retrieved": [
+              {
+                "name": "EVROFINANCE MOSNARBANK",
+                "doc": "EVROFINANCE MOSNARBANK | Type: ENTITY | Also known as: BANK EVROFINANCE | Sources: ofac | Programs: VENEZUELA-EO13850, RUSSIA-EO14024 | Addresses: 29, ul. Novy Arbat, Moscow 121099, Russia | Linked to: PETROLEOS DE VENEZUELA, S.A",
+                "score": 0.626
+              },
+              {
+                "name": "LLC INFRASTRUCTURE MOLZHANINOVO",
+                "doc": "LLC INFRASTRUCTURE MOLZHANINOVO | Type: ENTITY | Also known as: LLC RESAD; RESAD LLC; INFRASTRUKTURA MOLZHANINOVO | Sources: ofac | Programs: UKRAINE-EO13662, RUSSIA-EO14024 | Addresses: ul. Bryanskaya D. 5, et 4 pom. I kom 25, Moscow 12105",
+                "score": 0.526
+              },
+              {
+                "name": "M FINANS",
+                "doc": "M FINANS | Type: ENTITY | Also known as: M-FINANCE LLC; OBSHCHESTVO S OGRANICHENNOI OTVETSTVENNOSTYU 'M-FINANS'; M-FINANS, OOO | Sources: ofac | Programs: UKRAINE-EO13661, CYBER2, ELECTION-EO13848 | Addresses: d. 138 korp. 1 litera V pom. 5",
+                "score": 0.516
+              },
+              {
+                "name": "MOSKOVSKY PROSPECT",
+                "doc": "MOSKOVSKY PROSPECT | Type: VESSEL | Sources: ofac | Programs: UKRAINE-EO13662, RUSSIA-EO14024 | Linked to: JOINT STOCK COMPANY SOVCOMFLOT",
+                "score": 0.496
+              },
+              {
+                "name": "TSMRBANK, OOO",
+                "doc": "TSMRBANK, OOO | Type: ENTITY | Also known as: BANK TSENTR MEZHDUNARODNYKH RASCHETOV OBSHCHESTVO S OGRANICHENNOI OTVETSTVENNOSTYU; LLC TSMRBANK; BANK CENTER FOR INTERNATIONAL SETTLEMENTS LLC | Sources: ofac | Programs: UKRAINE-EO13660, DPRK3",
+                "score": 0.493
+              },
+              {
+                "name": "LIMITED LIABILITY COMPANY BANK ROUND",
+                "doc": "LIMITED LIABILITY COMPANY BANK ROUND | Type: ENTITY | Also known as: FERROBANK LLC; SEVERO VOSTOCHNY INVESTICIONNY BANK | Sources: ofac | Programs: RUSSIA-EO14024 | Addresses: Shosse Rublevskoe 28, Moscow 121609, Russia",
+                "score": 0.492
+              },
+              {
+                "name": "MRB BANK",
+                "doc": "MRB BANK | Type: ENTITY | Also known as: INTERNATIONAL SETTLEMENT BANK LLC; MEZHDUNARODNYI RASCHETNYI BANK | Sources: ofac | Programs: DPRK3, RUSSIA-EO14024 | Addresses: Stalin Street 20, Tskhinvali, South Ossetia, Georgia",
+                "score": 0.49
+              },
+              {
+                "name": "INRESBANK OOO",
+                "doc": "INRESBANK OOO | Type: ENTITY | Also known as: INVESTITSIONNY RESPUBLIKANSKI BANK OBSHCHESTVO S OGRANICHENNOI OTVETSTVENNOSTYU; INVESTMENT REPUBLIC BANK LLC; INRESBANK LTD; OOO KBK BANK | Sources: ofac | Programs: UKRAINE-EO13661 | Addresses",
+                "score": 0.489
+              }
+            ]
+          },
+          "graph_rag": {
+            "answerText": "To find the sanctions programs under which \"EVROFINANCE MOSNARBANK\" is designated, we look for facts where \"EVROFINANCE MOSNARBANK\" is the subject of the `SANCTIONED_UNDER` relationship.\n\nThe provided facts are:\n- \"EVROFINANCE MOSNARBANK\" SANCTIONED_UNDER RUSSIA-EO14024\n- \"EVROFINANCE MOSNARBANK\" SANCTIONED_UNDER VENEZUELA-EO13850\n\nANSWER: [\"RUSSIA-EO14024\", \"VENEZUELA-EO13850\"]",
+            "predicted": [
+              "RUSSIA-EO14024",
+              "VENEZUELA-EO13850"
+            ],
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "faithful": null,
+            "promptTokens": 2097,
+            "completionTokens": 250,
+            "latencyS": 20.99,
+            "nToolCalls": 0,
+            "factsHeader": "Graph facts about: \"EVROFINANCE MOSNARBANK\"",
+            "facts": [
+              "\"EVROFINANCE MOSNARBANK\" LOCATED_AT 29, ul. Novy Arbat, Moscow 121099, Russia",
+              "\"EVROFINANCE MOSNARBANK\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"EVROFINANCE MOSNARBANK\" SANCTIONED_UNDER VENEZUELA-EO13850",
+              "\"EVROFINANCE MOSNARBANK\" LINKED_TO \"PETROLEOS DE VENEZUELA, S.A.\"",
+              "\"PETROLEOS DE VENEZUELA, S.A.\" LOCATED_AT Edificio Petroleos De Venezuela, Torre Este, Piso 9, Avenida Libertador con calle El Empalme, La Campina, Caracas 1010, Venezuela",
+              "\"PETROLEOS DE VENEZUELA, S.A.\" LOCATED_AT Torre Este Piso 9, Edif Petroleos de Venezuela, Avenida Libertador, Urb La Campina, Caracas, Distrito Federal, Venezuela",
+              "\"PETROLEOS DE VENEZUELA, S.A.\" SANCTIONED_UNDER VENEZUELA-EO13850",
+              "\"MINISTRY OF DEFENSE AND ARMED FORCES LOGISTICS\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"ISLAMIC REVOLUTIONARY GUARD CORPS AIR FORCE\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"PROKOPENKO, Ivan Pavlovitch\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"QODS AERONAUTICS INDUSTRIES (QAI)\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"KLISHAS, Andrey Aleksandrovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"MATVIYENKO, Valentina Ivanovna\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"MIZULINA, Yelena Borisovna\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"SLUTSKY, Leonid Eduardovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"DZHABAROV, Vladimir Mikhailovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"TIMCHENKO, Gennady Nikolayevich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"ROTENBERG, Arkady Romanovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"MIRONOV, Sergey Mikhailovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"ROTENBERG, Boris Romanovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"RYZHKOV, Nikolai Ivanovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"KOZHIN, Vladimir Igorevich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"Yuriy Valentinovich KOVALCHUK\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"CHEMEZOV, Sergei\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"IVANOV, Sergei Borisovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"NARYSHKIN, Sergey Yevgenyevich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"SECHIN, Igor Ivanovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"BABAKOV, Alexander Mikhailovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"SKOCH, Andrei Vladimirovich\" SANCTIONED_UNDER RUSSIA-EO14024",
+              "\"PUSHKOV, Alexei Konstantinovich\" SANCTIONED_UNDER RUSSIA-EO14024"
+            ],
+            "factsTotal": 61
+          },
+          "graph": {
+            "answerText": "The entity \"EVROFINANCE MOSNARBANK\" (also known as \"BANK EVROFINANCE\") is designated under the sanctions programs RUSSIA-EO14024 and VENEZUELA-EO13850.\n\nANSWER: [\"RUSSIA-EO14024\", \"VENEZUELA-EO13850\"]",
+            "predicted": [
+              "RUSSIA-EO14024",
+              "VENEZUELA-EO13850"
+            ],
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "faithful": null,
+            "promptTokens": 3558,
+            "completionTokens": 313,
+            "latencyS": 19.25,
+            "nToolCalls": 2,
+            "steps": [
+              {
+                "round": 0,
+                "tool": "get_entity",
+                "args": {
+                  "query": "EVROFINANCE MOSNARBANK"
+                },
+                "result": {
+                  "kind": "entity",
+                  "rows": [
+                    {
+                      "entityId": "ent:ofac:26503",
+                      "name": "EVROFINANCE MOSNARBANK",
+                      "type": "ENTITY",
+                      "score": 100.0
+                    }
+                  ],
+                  "total": 1
+                }
+              },
+              {
+                "round": 1,
+                "tool": "neighbors",
+                "args": {
+                  "entity": "ent:ofac:26503",
+                  "rel_type": "SANCTIONED_UNDER"
+                },
+                "result": {
+                  "kind": "rows",
+                  "rows": [
+                    {
+                      "entityId": "RUSSIA-EO14024",
+                      "name": "RUSSIA-EO14024",
+                      "type": "Program",
+                      "relType": "SANCTIONED_UNDER",
+                      "hops": null
+                    },
+                    {
+                      "entityId": "VENEZUELA-EO13850",
+                      "name": "VENEZUELA-EO13850",
+                      "type": "Program",
+                      "relType": "SANCTIONED_UNDER",
+                      "hops": null
+                    }
+                  ],
+                  "total": 2
+                }
+              }
+            ],
+            "citations": []
+          }
+        }
+      }
+    ]
+  }
+}

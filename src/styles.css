@@ -1537,12 +1537,43 @@ pre code {
   right: 0;
 }
 
+/* On standalone content pages there's no graph behind the bar, so the
+   ultra-transparent overlay glass reads as weak. Ground it as a solid
+   surface that tracks the theme while keeping a hint of modern blur. */
+.site-header:not(.is-overlay) {
+  background: color-mix(in srgb, var(--color-background) 82%, transparent);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: none;
+}
+
 .site-header-inner {
   display: flex;
   height: 100%;
   align-items: center;
   justify-content: space-between;
   padding: 0 1rem;
+}
+
+/* Line the wordmark and actions up with the page body + footer, which are
+   centered in the content container. The overlay keeps its edge padding so
+   controls sit near the corners over the graph. */
+.site-header:not(.is-overlay) .site-header-inner {
+  width: 100%;
+  max-width: var(--spacing-content);
+  margin-inline: auto;
+  padding: 0 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .site-header:not(.is-overlay) .site-header-inner {
+    padding: 0 1.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .site-header:not(.is-overlay) .site-header-inner {
+    padding: 0 2.5rem;
+  }
 }
 
 .site-wordmark,
@@ -2753,5 +2784,132 @@ pre code {
   .graph-welcome-body {
     gap: 0.7rem;
     padding: 0.9rem 0.95rem;
+  }
+}
+
+/* ===========================================================================
+   Context-engine benchmark page — glass surfaces, scroll visuals, benchmark UI
+   Reuses the existing --glass-* / --color-* tokens so it tracks light/dark.
+   =========================================================================== */
+
+/* Frosted glass panel — the page's primary surface. */
+.glass-panel {
+  position: relative;
+  border: 1px solid var(--glass-border);
+  border-radius: 1rem;
+  background: var(--glass-bg);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-highlight);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.glass-panel-strong {
+  background: var(--glass-bg-strong);
+}
+
+/* Specular top edge that reads as a light catching the glass. */
+.glass-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding-top: 1px;
+  background: linear-gradient(
+    180deg,
+    var(--glass-highlight),
+    transparent 18%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Hero ambience: blueprint grid + drifting accent glows behind the fold. */
+.ce-hero {
+  position: relative;
+  isolation: isolate;
+}
+
+.ce-hero-grid {
+  position: absolute;
+  inset: -10% -5% 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-border) 55%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-border) 55%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 46px 46px;
+  mask-image: radial-gradient(120% 70% at 50% 0%, #000 0%, transparent 72%);
+  -webkit-mask-image: radial-gradient(120% 70% at 50% 0%, #000 0%, transparent 72%);
+  opacity: 0.5;
+}
+
+.ce-hero-glow {
+  position: absolute;
+  z-index: -1;
+  border-radius: 9999px;
+  filter: blur(60px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+@keyframes ce-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(2.5rem, 1.25rem, 0) scale(1.12); }
+}
+
+.ce-hero-glow--a {
+  top: -6rem;
+  left: 8%;
+  width: 26rem;
+  height: 26rem;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 45%, transparent), transparent 68%);
+  animation: ce-drift 18s ease-in-out infinite;
+}
+
+.ce-hero-glow--b {
+  top: -2rem;
+  right: 6%;
+  width: 22rem;
+  height: 22rem;
+  background: radial-gradient(circle, color-mix(in srgb, var(--cat-projects) 38%, transparent), transparent 68%);
+  animation: ce-drift 22s ease-in-out infinite reverse;
+}
+
+/* Animated count-up / shimmer wrapper for hero numerals. */
+.ce-numeral {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Soft section rule. */
+.ce-rule {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in srgb, var(--color-border) 80%, transparent) 18%,
+    color-mix(in srgb, var(--color-border) 80%, transparent) 82%,
+    transparent
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ce-hero-glow--a,
+  .ce-hero-glow--b {
+    animation: none;
   }
 }
