@@ -9,7 +9,7 @@ import {
   frontierMean,
   qwenSweep,
   sizedModels,
-  type Mode,
+  type LegacyMode,
 } from "@/data/contextEngine";
 
 /**
@@ -19,7 +19,7 @@ import {
  * The story is the flat `graph_rag` line, glowing, sitting at the frontier ceiling.
  */
 
-const MODES: Mode[] = ["graph", "graph_rag", "vector", "none"];
+const MODES: LegacyMode[] = ["graph", "graph_rag", "vector", "none"];
 const W = 720;
 const H = 440;
 const M = { top: 28, right: 132, bottom: 52, left: 52 };
@@ -42,7 +42,7 @@ function linePath(pts: { x: number; y: number }[]) {
 
 interface Focus {
   model: string;
-  mode: Mode;
+  mode: LegacyMode;
   x: number;
   y: number;
   f1: number;
@@ -53,14 +53,14 @@ export function GapCollapseChart() {
   const inView = useInView(ref, { once: true, amount: 0.2 });
   const reduced = useReducedMotion();
   const show = inView || reduced;
-  const [hover, setHover] = useState<Mode | null>(null);
+  const [hover, setHover] = useState<LegacyMode | null>(null);
   const [focus, setFocus] = useState<Focus | null>(null);
 
   const sweep = qwenSweep();
   const sized = sizedModels();
   const control = sized.find((m) => m.model === "llama3.2-3b");
   const frontierGraphRag = frontierMean("graph_rag");
-  const dim = (mode: Mode) => (hover && hover !== mode ? 0.12 : 1);
+  const dim = (mode: LegacyMode) => (hover && hover !== mode ? 0.12 : 1);
 
   return (
     <figure ref={ref} className="not-prose my-2">

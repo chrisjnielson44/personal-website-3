@@ -18,6 +18,7 @@ const pos = (f: number) => (Math.min(f, AXIS_MAX) / AXIS_MAX) * 100;
 function Row({ d, i, show }: { d: DomainRow; i: number; show: boolean }) {
   const none = d.byMode.none ?? 0;
   const vec = d.byMode.vector ?? 0;
+  const vmatched = d.byMode.vector_matched ?? null;
   const gr = d.byMode.graph_rag ?? 0;
   const lift = gr - vec;
   return (
@@ -38,6 +39,14 @@ function Row({ d, i, show }: { d: DomainRow; i: number; show: boolean }) {
           style={{ left: `${pos(none)}%`, backgroundColor: MODE_COLORS.none }}
           title={`closed-book ${none.toFixed(2)}`}
         />
+        {/* vector_matched tick — controls for context volume; sits ≈ vector */}
+        {vmatched != null && (
+          <div
+            className="absolute top-1/2 h-2.5 w-px -translate-y-1/2"
+            style={{ left: `${pos(vmatched)}%`, backgroundColor: MODE_COLORS.vector_matched }}
+            title={`vector (budget-matched) ${vmatched.toFixed(2)}`}
+          />
+        )}
         {/* connecting lift bar (vector → graph_rag), grows on view */}
         <motion.div
           className="absolute top-1/2 h-[3px] -translate-y-1/2 rounded-full"
@@ -105,11 +114,15 @@ export function DomainReplication() {
           Graph context
         </span>
         <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+          <span className="h-2.5 w-px" style={{ backgroundColor: MODE_COLORS.vector_matched }} />
+          vector (budget-matched)
+        </span>
+        <span className="inline-flex items-center gap-1.5 text-muted-foreground">
           <span className="h-2.5 w-px" style={{ backgroundColor: MODE_COLORS.none }} />
           closed-book
         </span>
         <span className="ml-auto font-mono text-[11px] text-muted-foreground">
-          mean F1 · {domains.nQuestionsPerDomain} q/domain · local models · $0
+          mean F1 · full question bank · local models · $0
         </span>
       </div>
 

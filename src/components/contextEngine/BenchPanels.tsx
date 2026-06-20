@@ -1,9 +1,9 @@
 "use client";
 
-import { MODE_COLORS, MODE_LABELS, byMode, ce, type Mode } from "@/data/contextEngine";
+import { MODE_COLORS, MODE_LABELS, byMode, ce, type LegacyMode } from "@/data/contextEngine";
 import { AnimatedBar, CountUp, SpotlightCard } from "./primitives";
 
-const ALL_MODES: Mode[] = ["none", "vector", "graph_rag", "graph"];
+const ALL_MODES: LegacyMode[] = ["none", "vector", "graph_rag", "graph"];
 
 // ── hero stat grid ─────────────────────────────────────────────────────────────
 function Stat({

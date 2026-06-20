@@ -5,8 +5,14 @@ import { FadeInView, ReadingProgress } from "@/components/Motion";
 import { GapCollapseChart } from "@/components/contextEngine/GapCollapseChart";
 import { CostAccuracyScatter } from "@/components/contextEngine/CostAccuracyScatter";
 import { DomainReplication } from "@/components/contextEngine/DomainReplication";
-import { MetaqaCrossover, MetaqaContrasts } from "@/components/contextEngine/MetaqaCrossover";
-import { MetaqaTechniques } from "@/components/contextEngine/MetaqaTechniques";
+import {
+  MetaqaCrossover,
+  MetaqaContrasts,
+  MetaqaTable,
+} from "@/components/contextEngine/MetaqaCrossover";
+import { ConfoundControl } from "@/components/contextEngine/ConfoundControl";
+import { ToolProfile } from "@/components/contextEngine/ToolProfile";
+import { ContrastsTable } from "@/components/contextEngine/ContrastsTable";
 import { ModeExplainer } from "@/components/contextEngine/ModeExplainer";
 import { StatGrid, ModeEconomics, ErPanel } from "@/components/contextEngine/BenchPanels";
 import { Leaderboard } from "@/components/contextEngine/Leaderboard";
@@ -24,7 +30,17 @@ import {
   TableOfContents,
   type TocItem,
 } from "@/components/contextEngine/academic";
-import { byMode, ce, qwenSweep } from "@/data/contextEngine";
+import {
+  byMode,
+  ce,
+  contrastDeltaRange,
+  contrastsFor,
+  dzRange,
+  metaqaRange,
+  metaqaRows,
+  sigCount,
+  sigNegCount,
+} from "@/data/contextEngine";
 
 export const Route = createFileRoute("/context-engine")({
   component: ContextEnginePage,
@@ -129,14 +145,33 @@ function GraphSchemaCard() {
 }
 
 function ContextEnginePage() {
+  // Legacy sanctions sweep — still backs the cost/faithfulness economics panels.
   const n0 = byMode("none")!;
   const gr = byMode("graph_rag")!;
   const g = byMode("graph")!;
-  const sweep = qwenSweep();
-  const grSweep = sweep.map((s) => s.graph_rag as number);
-  const grMin = Math.min(...grSweep);
-  const grMax = Math.max(...grSweep);
   const tokenRatio = g.tokens_mean && gr.tokens_mean ? g.tokens_mean / gr.tokens_mean : 0;
+
+  // MetaQA headline figures (external gold, pooled).
+  const grRange = metaqaRange("graph_rag") ?? { lo: 0.41, hi: 0.69 };
+  const vecRange = metaqaRange("vector") ?? { lo: 0.06, hi: 0.36 };
+  const noneRange = metaqaRange("none") ?? { lo: 0.01, hi: 0.15 };
+  const grSpan = grRange.hi - grRange.lo;
+  const grVsVec = sigCount("graph_rag-vector");
+  const grVsGraph = sigCount("graph_rag-graph");
+  const gvDelta = contrastDeltaRange("graph_rag-vector") ?? { lo: 0.15, hi: 0.35 };
+  const ggDelta = contrastDeltaRange("graph_rag-graph") ?? { lo: 0.29, hi: 0.49 };
+  const grVsTriple = sigCount("graph_rag-triple_rag");
+  const grVsVecMatchedN = sigCount("graph_rag-vector_matched").sig;
+  const graphVsVec = sigNegCount("graph-vector");
+  const oracleVsGr = ce.metaqa ? contrastsFor("oracle-graph_rag") : [];
+  const oracleSig = oracleVsGr.filter((c) => c.sig).length;
+  // smallest graph_rag vs largest vector — the substitution.
+  const mqRows = metaqaRows("pooled");
+  const small = mqRows.length ? [...mqRows].sort((a, b) => a.params_b - b.params_b)[0] : null;
+  const big = mqRows.length ? [...mqRows].sort((a, b) => b.params_b - a.params_b)[0] : null;
+  const smallGr = small?.graph_rag?.f1 ?? 0.52;
+  const bigVec = big?.vector?.f1 ?? 0.36;
+  const bigParams = big?.params_b ?? 30;
 
   const deltas = (ce.domains?.datasets ?? []).map((d) => ({
     title: d.title,
@@ -176,8 +211,9 @@ function ContextEnginePage() {
                 <span>June 2026</span>
                 <span>·</span>
                 <span>
-                  {ce.charts.nModels} models · {ce.domains?.nDomains ?? 1} domains ·{" "}
-                  {ce.charts.nCells.toLocaleString()} graded answers
+                  {ce.metaqa?.meta.models.length ?? 10} models ·{" "}
+                  {(ce.domains?.nDomains ?? 5) + 1} domains ·{" "}
+                  {(ce.metaqa?.meta.nCells ?? 9000).toLocaleString()} graded answers · $0
                 </span>
               </div>
             </FadeInView>
@@ -187,17 +223,25 @@ function ContextEnginePage() {
                 When a small, locally-deployable LLM fails a multi-hop question, is the deficit{" "}
                 <em>capacity</em> (too few parameters) or <em>context</em> (the wrong delivery of
                 the facts)? We separate the two by holding the evidence fixed and varying only how
-                it is delivered. On <strong>MetaQA</strong> — an external multi-hop benchmark whose
-                gold answers are independent of any graph we build — we sweep a 4-bit quantized
-                Qwen3 size ladder (0.6B–30B) plus a cross-family panel, all served on-device via
-                MLX. Passive graph context (a pre-retrieved subgraph handed to the model) beats a
-                tuned, reranked vector-RAG baseline at every size, and beats letting the model{" "}
-                <em>drive</em> graph-traversal tools agentically — small quantized models read a
-                subgraph better than they pilot one. Pooled F1 for graph context rises only from
-                ≈0.53 to ≈0.70 across an ~18× parameter range, so a 1.7B model reading a subgraph
-                outscores a 30B model with vector RAG. Much of a small model's multi-hop deficit is
-                a context problem, not a capacity one — and the whole pipeline runs air-gapped, on
-                local hardware, for $0.
+                it is delivered. This is a <strong>pre-registered, fully-local</strong> study: ten
+                4-bit MLX models (1.7B–30B), deterministic greedy decoding, and a{" "}
+                <em>strong</em> baseline — a multilingual <strong>bge-m3</strong> retriever with
+                cross-encoder rerank, served on-device, no Ollama and no network at inference, for
+                $0. On <strong>MetaQA</strong> — external multi-hop gold, independent of any graph
+                we build — passive graph context (a pre-retrieved subgraph handed to the model)
+                beats that tuned vector baseline by{" "}
+                <strong>+{gvDelta.lo.toFixed(2)} to +{gvDelta.hi.toFixed(2)} F1</strong> ({grVsVec.sig}/
+                {grVsVec.total} models, Holm-corrected), and beats letting the model <em>drive</em>{" "}
+                graph-traversal tools by{" "}
+                <strong>+{ggDelta.lo.toFixed(2)} to +{ggDelta.hi.toFixed(2)} F1</strong> ({grVsGraph.sig}/
+                {grVsGraph.total}). For
+                most small models agentic graph access is even worse than vector RAG. The win is
+                structure: it survives a budget-matched vector arm and the same facts flattened to
+                triples, while an answer-bearing oracle barely tops it ({oracleSig}/
+                {oracleVsGr.length} significant) — so the residual error is reading, not retrieval.
+                Pooled graph-context F1 rises only ≈{grRange.lo.toFixed(2)}→{grRange.hi.toFixed(2)}{" "}
+                across the ladder, so a {small?.params_b ?? 1.7}B model reading a subgraph (
+                {smallGr.toFixed(2)}) outscores a {bigParams}B doing vector RAG ({bigVec.toFixed(2)}).
               </Abstract>
             </FadeInView>
 
@@ -205,11 +249,11 @@ function ContextEnginePage() {
               <Contributions
                 items={[
                   {
-                    stat: "≈0",
+                    stat: `${grVsVec.sig}/${grVsVec.total}`,
                     text: (
                       <>
-                        size-dependence of accuracy once the graph is delivered as context (Δ{" "}
-                        {(grMax - grMin).toFixed(2)} across the sweep)
+                        models where passive graph context significantly beats a{" "}
+                        <em>strong</em> bge-m3 vector baseline (Holm-corrected)
                       </>
                     ),
                   },
@@ -217,18 +261,28 @@ function ContextEnginePage() {
                     stat: "passive ≫ agentic",
                     text: (
                       <>
-                        the novel crossover: small models read a subgraph better than they drive
-                        one
+                        the crossover, {grVsGraph.sig}/{grVsGraph.total} models: small/quantized
+                        models read a subgraph better than they drive one
                       </>
                     ),
                   },
                   {
-                    stat: pct(n0.hallucination_rate),
-                    text: <>closed-book hallucination, vs {pct(gr.hallucination_rate)} with graph context</>,
+                    stat: `${grVsTriple.sig}/${grVsTriple.total}`,
+                    text: (
+                      <>
+                        it's <em>structure</em>: graph context beats the same facts flattened to
+                        triples
+                      </>
+                    ),
                   },
                   {
-                    stat: `${tokenRatio.toFixed(1)}×`,
-                    text: <>fewer tokens than the agentic loop, for most of the accuracy</>,
+                    stat: `${small?.params_b ?? 1.7}B ≻ ${bigParams}B`,
+                    text: (
+                      <>
+                        context substitutes for capacity: a {small?.params_b ?? 1.7}B reading a
+                        subgraph beats a {bigParams}B doing vector RAG
+                      </>
+                    ),
                   },
                 ]}
               />
@@ -353,7 +407,7 @@ function ContextEnginePage() {
 
           <h3 className="mt-8 text-base font-semibold text-foreground">3.1 Datasets</h3>
 
-          <P>Our headline benchmark is <strong>MetaQA</strong>, a movie-domain knowledge-base question-answering dataset built on a clean knowledge base of <strong>134,741 triples</strong> spanning <strong>9 relation types</strong> and approximately <strong>43,000 entities</strong>. We use the multi-hop splits — <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">2-hop</code> and <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">3-hop</code> — and sample <strong>200 questions per hop</strong>. The gold answer set for each question is fixed by the benchmark and is therefore <em>external to our graph</em>: it does not depend on our construction choices, removing a major source of circularity.</P>
+          <P>Our headline benchmark is <strong>MetaQA</strong>, a movie-domain knowledge-base question-answering dataset built on a clean knowledge base of <strong>134,741 triples</strong> spanning <strong>9 relation types</strong> and approximately <strong>43,000 entities</strong>. We use the multi-hop splits — <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">2-hop</code> and <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">3-hop</code> — over a fixed, pre-registered set of <strong>{ce.metaqa?.meta.nQuestions ?? 100} questions</strong>, scored across {ce.metaqa?.meta.models.length ?? 10} models and 9 modes ({(ce.metaqa?.meta.nCells ?? 9000).toLocaleString()} graded cells). The gold answer set for each question is fixed by the benchmark and is therefore <em>external to our graph</em>: it does not depend on our construction choices, removing a major source of circularity.</P>
 
           <MethodNote title="Why MetaQA is the headline">Because we build the graph directly from the clean KB, there is <strong>no entity resolution</strong> and <strong>no information-extraction noise</strong> anywhere in the pipeline. Every retrieval mode draws from the same verified facts, so observed differences cannot be attributed to one mode retrieving more or cleaner evidence than another. This isolates context <em>format</em> as the sole explanatory variable.</MethodNote>
 
@@ -375,7 +429,8 @@ function ContextEnginePage() {
 
           <ul className="my-3 ml-5 list-disc space-y-1 text-muted">
           <li><code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">none</code> — closed-book. The model answers from parametric memory alone, establishing a per-model <strong>capacity floor</strong>.</li>
-          <li><code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">vector</code> — a <strong>tuned RAG baseline</strong>, deliberately not a strawman: dense retrieval with <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">embeddinggemma</code> over per-entity documents, followed by a cross-encoder reranker (<code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">ms-marco-MiniLM</code>).</li>
+          <li><code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">vector</code> — a <strong>tuned RAG baseline</strong>, deliberately not a strawman: dense retrieval with a strong multilingual <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">bge-m3</code> embedder over per-entity documents, followed by a cross-encoder reranker — all served locally, no Ollama.</li>
+          <li><code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">vector_matched</code> — the same retriever given the <strong>graph-context token budget</strong>, so any graph win can't be dismissed as simply seeing more context.</li>
           <li><code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">rag_iter</code> — iterative multi-hop RAG in the <em>IRCoT / self-ask</em> style: retrieve, reason, emit a follow-up sub-query, and retrieve again, for up to <em>N</em> rounds.</li>
           <li><code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">triple_rag</code> — dense retrieval over individual KB triples as <strong>flat facts</strong>. This delivers the <em>same evidence atoms</em> as the graph modes but with <strong>no structure</strong>, isolating whether structure per se is what helps.</li>
           <li><code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">graph_rag</code> — the relevant subgraph, retrieved <strong>deterministically</strong> by a relation-guided bounded <em>k</em>-hop BFS that expands along the relations the question names, then serialized and handed to the model as <strong>passive structured facts</strong>.</li>
@@ -396,15 +451,15 @@ function ContextEnginePage() {
 
           <h3 className="mt-8 text-base font-semibold text-foreground">3.5 Statistics</h3>
 
-          <P>We report <strong>mean F1</strong> with <strong>paired bootstrap 95% confidence intervals computed over the question set</strong>. Because the same questions are evaluated across every mode and model, comparisons are <em>paired</em>, and the bootstrap resamples questions to capture the dominant source of variance. We report <em>n</em> (the number of questions per condition) alongside every estimate. Decoding is near-greedy at low temperature, so run-to-run sampling variance is negligible relative to the question-set variance the intervals capture.</P>
+          <P>The study is <strong>pre-registered</strong> (the mode set, model roster, question set, and contrast family were fixed before the run). We report <strong>mean F1</strong> with <strong>paired bootstrap 95% confidence intervals</strong> over the shared question set. Every headline contrast is also tested with a <strong>paired Wilcoxon signed-rank test</strong>, corrected for multiple comparisons with <strong>Holm–Bonferroni</strong> across the contrast family, and reported with a paired effect size (<strong>Cohen's d_z</strong>). Decoding is <strong>deterministic greedy</strong>, so run-to-run sampling variance is effectively zero and the intervals capture the dominant source — which questions you happen to ask.</P>
 
           <h3 className="mt-8 text-base font-semibold text-foreground">3.6 Models and serving</h3>
 
-          <P>To separate the effect of model <em>size</em> from architecture, our primary axis is a <strong>quantized size ladder</strong> of the Qwen3 family — <strong>0.6B, 1.7B, 4B, 8B, 14B, and 30B-a3b</strong> — supplemented by a <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">llama-3.2-3B</code> weak-tool-caller control to probe tool-use failures specifically. A <strong>cross-family</strong> set (<code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">Qwen2.5-7B</code>, <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">Llama-3.1-8B</code>, <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">Mistral-7B</code>, <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">Gemma-2-9B</code>, <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">Granite-3.3-8B</code>, <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">Phi-3.5-mini</code>) tests generality beyond a single lineage.</P>
+          <P>The MetaQA arm uses a lean <strong>{ce.metaqa?.meta.models.length ?? 10}-model</strong> roster spanning a <strong>{small?.params_b ?? 1.7}B–{bigParams}B</strong> size range: a Qwen3 size ladder (1.7B / 4B / 8B / 14B / 30B-a3b) for the size axis, plus cross-family models (<code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">llama-3.1-8B</code>, <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">llama-3.2-3B</code>, <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">gemma2-9B</code>, <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">granite-3.3-8B</code>, <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">hermes3-llama3.1-8B</code>) chosen to span tool-training profiles and to check that effects are not a single-lineage artifact.</P>
 
-          <MethodNote title="Quantization held constant">All models are served at <strong>4-bit quantization</strong>. Holding the quant level fixed across the ladder ensures that model <strong>size</strong> is the only thing varying along that axis, rather than a confound between size and precision.</MethodNote>
+          <MethodNote title="Quantization held constant">All MetaQA models are served at <strong>4-bit quantization</strong>. Holding the quant level fixed across the ladder ensures that model <strong>size</strong> is the only thing varying along that axis, rather than a confound between size and precision. The flip side is a limitation: the agentic arm has no unquantized / frontier ceiling, so its low score is a <em>floor</em> for this regime, not a verdict on agentic RAG in general.</MethodNote>
 
-          <P>Inference runs entirely <strong>on-device</strong> on a single Apple <strong>M3 Ultra (256 GB)</strong> via per-model <strong>MLX</strong> servers run concurrently — fully local and at <strong>$0</strong> marginal cost, which is what makes an experiment of this combinatorial size (modes × models × hops × domains) tractable. Frontier models (Claude, GPT, Gemini) are reserved as a <strong>reference ceiling</strong> only and are pending.</P>
+          <P>Inference runs entirely <strong>on-device</strong> via per-model <strong>MLX</strong> servers — fully local, no Ollama, <strong>no network at inference</strong>, at <strong>$0</strong> marginal cost, which is what makes an experiment of this combinatorial size (modes × models × hops × domains) tractable. There is no frontier API anywhere in the pipeline.</P>
 
         </Section>
 
@@ -419,91 +474,121 @@ function ContextEnginePage() {
             <MetaqaCrossover />
           </FadeInView>
           <Caption n={1}>
-            MetaQA mean F1 by model × retrieval mode, with paired-bootstrap 95% CIs over the
-            question set; toggle 2-hop / 3-hop / pooled. Gold is external to our graph, so a
-            graph-mode win here is not an artifact of the scorer.
+            MetaQA mean F1 vs. model size (log x), one line per key mode, with paired-bootstrap 95%
+            CI bands. Lines trace the Qwen3 ladder; faint dots are the cross-family models. Gold is
+            external to our graph, so a graph-mode win here is not an artifact of the scorer — and
+            the smallest model reading a subgraph clears the largest doing vector RAG.
           </Caption>
           <FadeInView className="mt-6">
             <MetaqaContrasts />
           </FadeInView>
+          <FadeInView className="mt-6">
+            <MetaqaTable />
+          </FadeInView>
+          <Caption n={2} kind="Table">
+            Per-model F1 [95% CI] across the modes, hop-toggled. graph_rag is emphasized; the
+            confound-control modes (vector_matched, triple_rag, graph_rag_blind, oracle) sit
+            alongside it.
+          </Caption>
 
           <h3 className="mt-12 text-base font-semibold text-foreground">Q1: Graph context versus a strong text-RAG baseline</h3>
 
-          <P>On the MetaQA split scored against <em>external</em> gold answers, supplying the model with passive graph context (<strong className="text-foreground">graph_rag</strong>) outperforms a reranked dense-vector baseline at every model size we tested, by <strong className="text-foreground">+0.32 to +0.41 F1</strong>. Pooled across the sweep, graph context climbs from roughly <strong className="text-foreground">0.53 to 0.70 F1</strong> over the 1.7B→30B range, while the reranked vector baseline moves only from about <strong className="text-foreground">0.19 to 0.29</strong>; closed-book inference trails far below both (≈0.04→0.13), confirming that the task genuinely demands retrieved evidence rather than parametric recall. Every paired-bootstrap confidence interval on the graph-versus-vector contrast excludes zero, so the advantage is not an artifact of a favorable model or seed.</P>
+          <P>On MetaQA scored against <em>external</em> gold, passive graph context (<strong className="text-foreground">graph_rag</strong>) outperforms the tuned vector baseline by <strong className="text-foreground">+{gvDelta.lo.toFixed(2)} to +{gvDelta.hi.toFixed(2)} F1</strong>, significant in <strong className="text-foreground">{grVsVec.sig} of {grVsVec.total}</strong> models after Holm–Bonferroni correction (paired Cohen's d_z {(dzRange("graph_rag-vector")?.lo ?? 0.32).toFixed(2)}–{(dzRange("graph_rag-vector")?.hi ?? 0.78).toFixed(2)}). Pooled across the ladder, graph context climbs from <strong className="text-foreground">{grRange.lo.toFixed(2)} to {grRange.hi.toFixed(2)} F1</strong>, while the vector baseline moves only from about <strong className="text-foreground">{vecRange.lo.toFixed(2)} to {vecRange.hi.toFixed(2)}</strong>; closed-book trails far below (≈{noneRange.lo.toFixed(2)}→{noneRange.hi.toFixed(2)}), confirming the task genuinely demands retrieved evidence rather than parametric recall. Crucially the baseline is not a strawman: it is a <em>multilingual bge-m3</em> retriever with cross-encoder rerank, served on-device — so this is graph structure beating a strong, tuned text RAG.</P>
 
           <P>The magnitude of the gap is itself the interesting result. Both conditions retrieve from the same underlying knowledge; what differs is the <em>shape</em> of the evidence handed to the model. The vector baseline returns a bag of passages — locally relevant but unstructured — whereas graph context delivers a traversable subgraph in which the entities and relations needed to chain an answer are already adjacent. For multi-hop questions, the binding work of "which fact connects to which" has effectively been done by the retriever's structure rather than left to the reader. We read this as evidence that <strong className="text-foreground">structure, not merely relevance, is what carries multi-hop performance</strong>: reranking sharpens passage relevance but cannot supply the relational adjacency that chaining requires.</P>
 
           <Observation n={1} title="Structured evidence beats relevant passages">
-            Passive graph context beats a reranked vector baseline by +0.32–0.41 F1 at every size, with all paired-bootstrap CIs excluding zero. The same facts presented as a traversable subgraph rather than a bag of passages is what enables chaining.
+            Passive graph context beats a <em>strong</em> bge-m3 + rerank baseline by +{gvDelta.lo.toFixed(2)}–+{gvDelta.hi.toFixed(2)} F1, Holm-significant in {grVsVec.sig}/{grVsVec.total} models (d_z {(dzRange("graph_rag-vector")?.lo ?? 0.32).toFixed(2)}–{(dzRange("graph_rag-vector")?.hi ?? 0.78).toFixed(2)}). The same facts presented as a traversable subgraph rather than a bag of passages is what enables chaining.
           </Observation>
 
           <h3 className="mt-8 text-base font-semibold text-foreground">Q2: Passive context versus agentic graph access — the crossover</h3>
 
-          <P>The central finding of this paper is a sign reversal between two ways of giving a model the <em>same</em> graph. Handing the model a pre-retrieved subgraph (<strong className="text-foreground">graph_rag</strong>) outperforms letting it <em>drive</em> graph-traversal tools itself (<strong className="text-foreground">agentic graph</strong>) by <strong className="text-foreground">+0.48 to +0.54 F1</strong> for every local model we evaluated. The effect is not merely that agency fails to help: for the smaller models, agentic graph access falls <em>below even the vector baseline</em>, a significant negative result. A model that reads a subgraph well can still be a poor pilot of one.</P>
+          <P>The central finding is a sign reversal between two ways of giving a model the <em>same</em> graph. Handing the model a pre-retrieved subgraph (<strong className="text-foreground">graph_rag</strong>) outperforms letting it <em>drive</em> graph-traversal tools itself (<strong className="text-foreground">agentic graph</strong>) by <strong className="text-foreground">+{ggDelta.lo.toFixed(2)} to +{ggDelta.hi.toFixed(2)} F1</strong> — Holm-significant in <strong className="text-foreground">{grVsGraph.sig} of {grVsGraph.total}</strong> models, with paired d_z up to {(dzRange("graph_rag-graph")?.hi ?? 1.11).toFixed(2)}. The effect is not merely that agency fails to help: for most models, agentic graph access falls <em>below even the vector baseline</em> ({graphVsVec.sig}/{graphVsVec.total} models significantly negative). A model that reads a subgraph well can still be a poor pilot of one. We scope this carefully to the <strong className="text-foreground">small / quantized / on-device</strong> regime — with no frontier or unquantized ceiling in this run, the agentic number is a <em>floor</em>, not a verdict that agentic RAG fails in general.</P>
 
           <P>We interpret the crossover as a mismatch between where capability is spent. Agentic retrieval converts a reading problem into a tool-orchestration problem — deciding which traversal to issue, parsing intermediate results, maintaining state across turns, and recovering from missteps. For small and quantized models, that orchestration burden exceeds available capability, and errors compound across turns faster than any one tool call can help; the model spends its budget steering rather than answering. Passive context removes that burden entirely, leaving the model with the one thing it does comparatively well — reading evidence laid out in front of it.</P>
 
           <P>Crucially, the agentic ceiling <em>rises with model size</em>. The deficit narrows as capability grows, which implies a crossover would eventually appear for a model capable enough to amortize the orchestration cost — a prediction consistent with strong results reported for frontier-scale agentic-graph systems. The contribution here is to characterize the regime <em>below</em> that crossover: the small, quantized, on-device models that are exactly where prior agentic-graph work has <strong className="text-foreground">not</strong> looked, and exactly where passive context is the safer design.</P>
 
           <Observation n={2} title="Reading a subgraph beats driving one">
-            For every local model, pre-retrieved graph context beats agentic graph access by +0.48–0.54 F1; for the smaller models agentic graph is significantly <em>worse than vector RAG</em>. The agentic ceiling rises with size, so the advantage is specific to the small/quantized/on-device regime.
+            Pre-retrieved graph context beats agentic graph access by +{ggDelta.lo.toFixed(2)}–{ggDelta.hi.toFixed(2)} F1 ({grVsGraph.sig}/{grVsGraph.total} models, d_z to {(dzRange("graph_rag-graph")?.hi ?? 1.11).toFixed(2)}); for most models agentic graph is significantly <em>worse than vector RAG</em> ({graphVsVec.sig}/{graphVsVec.total}). Scoped to small/quantized/on-device — the agentic arm is a floor here, not a general verdict on agentic RAG.
           </Observation>
 
           <h3 className="mt-8 text-base font-semibold text-foreground">Q3: Context as a substitute for parameters</h3>
 
-          <P>Graph context scales gently with model size — from roughly <strong className="text-foreground">0.53 to 0.70 F1</strong> across an ~18× parameter increase — which has a striking practical consequence: a <strong className="text-foreground">1.7B model reading a subgraph (≈0.53) outperforms a 30B model with vector RAG (≈0.29)</strong>. Along the multi-hop axis that defines this task, the right context shape buys more than an order of magnitude of parameters does.</P>
+          <P>Graph context scales gently with model size — from roughly <strong className="text-foreground">{grRange.lo.toFixed(2)} to {grRange.hi.toFixed(2)} F1</strong> across the full ladder, a span of only {grSpan.toFixed(2)} — which has a striking practical consequence: a <strong className="text-foreground">{small?.params_b ?? 1.7}B model reading a subgraph ({smallGr.toFixed(2)}) outperforms a {bigParams}B model with vector RAG ({bigVec.toFixed(2)})</strong>. Along the multi-hop axis that defines this task, the right context shape buys more than the parameter gap does.</P>
 
           <P>This is, in effect, a graph-specific and on-device echo of the RETRO observation that retrieval can offset raw scale. We state it cautiously: the substitution holds <em>on this task family</em>, where chaining is the bottleneck and the subgraph supplies exactly the relational structure the small model cannot synthesize on its own. We do not claim context replaces capacity in general — only that, for multi-hop graph QA under deployment constraints, structured context and parameters trade against each other far enough that a small model with the right evidence is the better engineering choice.</P>
 
           <Observation n={3} title="Context trades against capacity">
-            Graph context rises only ≈0.53→0.70 over ~18× parameters, so a 1.7B model reading a subgraph beats a 30B model with vector RAG — a graph-specific, on-device echo of RETRO, scoped to multi-hop QA.
+            Graph context rises only ≈{grRange.lo.toFixed(2)}→{grRange.hi.toFixed(2)} across the ladder, so a {small?.params_b ?? 1.7}B model reading a subgraph ({smallGr.toFixed(2)}) beats a {bigParams}B doing vector RAG ({bigVec.toFixed(2)}) — a graph-specific, on-device echo of RETRO, scoped to multi-hop QA.
           </Observation>
 
-          <h3 className="mt-8 text-base font-semibold text-foreground">The context-technique ladder</h3>
+          <h3 className="mt-8 text-base font-semibold text-foreground">Q4: Is it structure — or just volume, content, or retrieval luck?</h3>
+
+          <P>A graph-context win invites four deflating explanations, and the confound-control panel below tests each by lining graph_rag up against a control that isolates it. <strong className="text-foreground">Volume:</strong> a budget-matched vector arm (<code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">vector_matched</code>) gets the same token budget as the subgraph and still trails graph context ({grVsVecMatchedN} models significant). <strong className="text-foreground">Content:</strong> the same facts flattened to individual triples (<code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">triple_rag</code>) collapse to near closed-book level — graph_rag beats it in {grVsTriple.sig}/{grVsTriple.total} models (d_z to {(dzRange("graph_rag-triple_rag")?.hi ?? 1.32).toFixed(2)}). So it is the <em>structure</em>, not the volume or the bare facts.</P>
 
           <FadeInView className="my-5">
-            <MetaqaTechniques />
+            <ConfoundControl />
           </FadeInView>
+          <Caption n={3}>
+            Pooled mean F1 for graph context against four controls, each isolating one alternative
+            explanation. The tick on each control row marks the graph_rag score. Same facts flat
+            (triple_rag) collapse; budget-matched vector trails; the blind subgraph nearly matches
+            the guided one; and the oracle barely tops graph context.
+          </Caption>
 
-          <P>To locate <em>why</em> these gaps arise, the comparison above arranges techniques as a ladder of increasing structure: closed-book, iterative text RAG (<strong className="text-foreground">rag_iter</strong>), flat-triple RAG (<strong className="text-foreground">triple_rag</strong>), blind-graph BFS (<strong className="text-foreground">graph_rag_blind</strong>), relation-guided graph (<strong className="text-foreground">graph_rag</strong>), and an oracle upper bound, with agentic access shown alongside. Each rung isolates one hypothesis. The first two ask whether the deficit is really about <em>access</em> to facts: rag_iter tests whether multiple rounds of retrieval suffice, and triple_rag tests whether simply <em>having</em> the relevant facts — even as flat, unstructured triples — is enough. The comparison shows that neither closes the gap: text RAG cannot chain even when it retrieves iteratively, and facts without traversable structure remain well below the structured-graph conditions.</P>
+          <P>The last two rungs are the honest caveats. The blind-BFS ablation (<code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">graph_rag_blind</code>) turns the relation-guidance heuristic off and lands almost on top of guided graph_rag — significant in only <strong className="text-foreground">{contrastsFor("graph_rag-graph_rag_blind").filter((c) => c.sig).length}/{contrastsFor("graph_rag-graph_rag_blind").length}</strong> models — so the clever relation heuristic adds little; the win is <em>delivering a subgraph at all</em>. And the answer-bearing <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">oracle</code> upper bound barely edges graph_rag ({oracleSig}/{oracleVsGr.length} significant), which means the retriever is already near its ceiling: the residual error is the model <em>reading</em> the context it was given, not the retriever missing it.</P>
 
-          <P>The remaining rungs decompose the structured advantage. Contrasting blind versus relation-guided BFS isolates the relation-guidance heuristic — whether choosing <em>which</em> relations to expand, rather than expanding breadth-first, is what helps. The oracle upper bound then separates two failure modes that a single score conflates: where the oracle bound sits well above guided-graph, the remaining loss is a <strong className="text-foreground">retrieval</strong> failure (the right context exists but our retriever missed it); where even small models trail the oracle, the loss is a <strong className="text-foreground">reading</strong> failure (the context is present but underused). This second case directly engages the standing threat that small models under-use the context they are given: if oracle context is only modest for the smallest models, part of their deficit is capacity, not retrieval. We leave the exact magnitudes to the accompanying table, reading the ladder qualitatively — each step that adds structure should recover error that the step below could not.</P>
-
-          <Observation n={4} title="The ladder separates retrieval failure from reading failure">
-            Iterative and flat-triple RAG test whether multi-round access or bare facts suffice (they do not); blind-vs-guided BFS isolates relation guidance; the oracle bound splits the deficit — gap below oracle is retrieval, gap that persists at the oracle is reading.
+          <Observation n={4} title="Structure, not volume or content; retrieval is near-ceiling">
+            graph_rag beats budget-matched flat docs ({grVsVecMatchedN}/{grVsVec.total}) and the same facts flattened ({grVsTriple.sig}/{grVsTriple.total}, d_z to {(dzRange("graph_rag-triple_rag")?.hi ?? 1.32).toFixed(2)}). It nearly equals its own blind ablation and the oracle ({oracleSig}/{oracleVsGr.length} sig) — so the win is delivering a subgraph, and the residual error is reading, not retrieval.
           </Observation>
 
-          <h3 className="mt-8 text-base font-semibold text-foreground">Generalization across model families</h3>
+          <h3 className="mt-8 text-base font-semibold text-foreground">Tool-training and the agentic gap (directional)</h3>
 
-          <P>The ordering <strong className="text-foreground">graph_rag ≫ vector ≫ agentic</strong> for small models is not a quirk of one architecture. It reproduces across Qwen3, Qwen2.5, Llama, Mistral, Gemma, Granite, and Phi — distinct pretraining corpora, tokenizers, and instruction-tuning recipes. That consistency is the strongest argument that the crossover is a property of the <em>small-model regime</em> rather than of any single model line: when capability is the binding constraint, the way evidence is shaped matters more than which family produced the model. We do note one expected modulation: tool-tuned families such as Granite, explicitly trained for function-calling, may narrow the agentic gap relative to families without such tuning — consistent with the orchestration-burden account, since tool tuning directly reduces that burden — though in our sweep it does not reverse the ordering at these sizes.</P>
+          <P>If the agentic deficit is an orchestration-burden problem, function-call training ought to narrow it. We split the 6–9B band by tool profile — tool-tuned / agentic, function-calling, and not-tool-tuned — and compare passive graph context to agentic graph in each bucket. Passive context wins in <em>every</em> bucket, even the tool-tuned one. But this is <strong className="text-foreground">directional only</strong>: the lean roster leaves just 3, 1, and 1 model per bucket, far too few to actually test the hypothesis. Read it as "tool-tuning did not reverse the ordering at these sizes" and nothing stronger.</P>
 
-          <Observation n={5} title="The pattern holds across seven model families">
-            graph_rag ≫ vector ≫ agentic replicates across Qwen3, Qwen2.5, Llama, Mistral, Gemma, Granite, and Phi, arguing it is a property of the small-model regime, not one architecture. Tool-tuned families (Granite) may narrow the agentic gap without reversing the order.
-          </Observation>
+          <FadeInView className="my-5">
+            <ToolProfile />
+          </FadeInView>
+          <Caption n={4}>
+            Passive graph context vs. agentic graph by tool profile, 6–9B band. Underpowered by
+            construction (3 / 1 / 1 models) — directional evidence, not a hypothesis test.
+          </Caption>
+
+          <h3 className="mt-8 text-base font-semibold text-foreground">Every contrast, every model</h3>
+
+          <P>The table below is the full statistical backbone: for each model and each contrast pair, the paired F1 delta, its bootstrap 95% CI, the paired effect size d_z, and whether it survives Holm–Bonferroni correction. Toggle the pair to inspect any claim above directly.</P>
+
+          <FadeInView className="my-5">
+            <ContrastsTable />
+          </FadeInView>
+          <Caption n={5} kind="Table">
+            Per-model paired contrasts with bootstrap CIs, d_z, and Holm-corrected significance.
+          </Caption>
 
           <h3 className="mt-12 text-base font-semibold text-foreground">Internal replication on the sanctions graph</h3>
 
-          <P>The same shape replicates on our second, independently constructed sanctions graph, where graph context rises from roughly <strong className="text-foreground">0.48 to 0.87 F1</strong> and again dominates both vector RAG and agentic access. We report this as <em>secondary</em> evidence and flag its principal limitation plainly: on the sanctions graph, answers are scored against the same graph that supplies the context, making the evaluation graph-oracle-scored and therefore partly circular. It demonstrates that the qualitative ordering is reproducible on a different, larger graph, but it cannot establish absolute accuracy the way the externally-gold MetaQA results do. The weight of our claims rests on Q1–Q3; the sanctions replication corroborates their shape rather than extending them.</P>
+          <P>The same shape replicates on a second, independently constructed sanctions graph, where graph context again dominates both vector RAG and agentic access. We report this as <em>secondary</em> evidence and flag its principal limitation plainly: on the sanctions graph, answers are scored against the same graph that supplies the context, making the evaluation graph-oracle-scored and therefore partly circular. It demonstrates that the qualitative ordering is reproducible on a different, larger graph, but it cannot establish absolute accuracy the way the externally-gold MetaQA results do. The weight of our claims rests on Q1–Q4; the sanctions replication corroborates their shape rather than extending them.</P>
 
           <FadeInView className="mt-5">
             <GapCollapseChart />
           </FadeInView>
-          <Caption n={2}>
-            Mean F1 vs. model size (log axis) on the sanctions graph, one line per retrieval mode.
-            Lines trace the controlled Qwen3 family; faint dots are other sized models; dashed rings
-            mark the llama-3.2-3b weak-tool-caller control. Scored against the graph oracle, so read
-            as a circular, secondary replication. Hover any point to inspect.
+          <Caption n={6}>
+            Mean F1 vs. model size (log axis) on the legacy sanctions sweep, one line per retrieval
+            mode. Lines trace the controlled Qwen3 family; faint dots are other sized models; dashed
+            rings mark the llama-3.2-3b weak-tool-caller control. Scored against the graph oracle, so
+            read as a circular, secondary replication. Hover any point to inspect.
           </Caption>
 
-          <Observation n={6} title="Sanctions graph corroborates the shape (secondary)">
-            On an independent sanctions graph, graph_rag (≈0.48→0.87) again dominates vector and agentic access. Because answers are scored against the source graph, this evidence is circular and treated as secondary corroboration of the MetaQA findings.
+          <Observation n={5} title="Sanctions graph corroborates the shape (secondary)">
+            On an independent sanctions graph, graph_rag again dominates vector and agentic access. Because answers are scored against the source graph, this evidence is circular and treated as secondary corroboration of the MetaQA findings.
           </Observation>
 
           <FadeInView className="mt-6">
             <StatGrid />
           </FadeInView>
-          <Caption n={3} kind="Table">
-            Summary statistics across the sanctions sweep.
+          <Caption n={7} kind="Table">
+            Summary statistics across the legacy sanctions sweep.
           </Caption>
 
         </Section>
@@ -518,7 +603,7 @@ function ContextEnginePage() {
           <FadeInView>
             <TraceDemo />
           </FadeInView>
-          <Caption n={4}>
+          <Caption n={8}>
             Recorded runs of {ce.demo.model?.name} (on-device). Select a question; the agentic
             traversal replays one tool call at a time. The "answers found" scorecard counts matches
             against the oracle gold set.
@@ -530,18 +615,19 @@ function ContextEnginePage() {
           num="6"
           id="domains"
           title="Generalization across domains"
-          lead="A finding on one dataset is a curiosity. The same engine — zero per-domain code, schema introspected at query time — was pointed at four more public graphs to see whether the lift survives."
+          lead="A finding on one dataset is a curiosity. The same engine — zero per-domain code, schema introspected at query time — was pointed at five public graphs to see whether the lift survives. It does: graph context beats vector on all five."
         >
           <FadeInView>
             <DomainReplication />
           </FadeInView>
-          <Caption n={5}>
-            Per-domain jump from vector RAG (amber) to graph context (blue), local models, mean F1
-            over {ce.domains?.nQuestionsPerDomain ?? 10} questions each. The closed-book tick marks
-            the no-retrieval floor.
+          <Caption n={9}>
+            Per-domain jump from vector RAG (amber) to graph context (blue) across {ce.domains?.nDomains ?? 5}{" "}
+            public graphs, local models, mean F1 over each domain's full question bank. The
+            budget-matched vector tick (deeper amber) sits right on the vector dot — extra tokens
+            don't help; the closed-book tick marks the no-retrieval floor.
           </Caption>
           {dMin && dMax && (
-            <Observation n={7} title="The lift replicates — and varies honestly">
+            <Observation n={6} title="The lift replicates — and varies honestly">
               Graph context beats vector RAG in {allUp ? "every" : "most"} domain tested, by{" "}
               {dMin.delta >= 0 ? "+" : ""}
               {dMin.delta.toFixed(2)} ({dMin.title.split(" ")[0]}) to +{dMax.delta.toFixed(2)} (
@@ -563,21 +649,22 @@ function ContextEnginePage() {
           <FadeInView>
             <CostAccuracyScatter />
           </FadeInView>
-          <Caption n={6}>
-            Tokens per query (log) vs. mean F1, one dot per model × mode. Outlined dots are
-            on-device models; faded dots are the frontier ceiling. Up-and-to-the-left is better.
+          <Caption n={10}>
+            Tokens per query (log) vs. mean F1, one dot per model × mode, on the legacy sanctions
+            sweep. Outlined dots are on-device models; faded dots are the frontier ceiling.
+            Up-and-to-the-left is better.
           </Caption>
 
           <FadeInView className="mt-7">
             <ModeEconomics />
           </FadeInView>
-          <Caption n={7}>
+          <Caption n={11}>
             Left: share of named answers resolving to no real graph node (hallucination). Right:
-            mean tokens per query. Both by mode.
+            mean tokens per query. Both by mode, legacy sanctions sweep.
           </Caption>
 
           <div className="mt-6">
-            <Observation n={8} title="Graph answers are faithful by construction, and cheap">
+            <Observation n={7} title="Graph answers are faithful by construction, and cheap">
               Closed-book answers are uncited guesses and fabricate {pct(n0.hallucination_rate)} of
               the time; graph context drops that to {pct(gr.hallucination_rate)} because the answer
               is read off real nodes. And it gets there for {gr.tokens_mean?.toLocaleString()}{" "}
@@ -598,9 +685,9 @@ function ContextEnginePage() {
           <FadeInView>
             <Leaderboard />
           </FadeInView>
-          <Caption n={8} kind="Table">
-            Per-model mean F1 by mode, sorted by agentic-graph accuracy. On-device and frontier
-            models tagged.
+          <Caption n={12} kind="Table">
+            Per-model mean F1 by mode on the legacy sanctions sweep, sorted by agentic-graph
+            accuracy. On-device and frontier models tagged.
           </Caption>
         </Section>
 
@@ -612,23 +699,25 @@ function ContextEnginePage() {
           lead="What follows if much of the multi-hop deficit is context, not capacity."
         >
           <P>
-            The practical consequence is the part I find most exciting. If a well-built, cited
-            graph lets a model you run on your own hardware match a frontier model on multi-hop
-            investigation, then the whole pipeline — ingestion, resolution, graph, answering — can
-            run <strong className="text-foreground">air-gapped and sovereign</strong>, with no
-            data leaving the machine and no frontier API in the loop. That is exactly the
+            The practical consequence is the part I find most exciting. A well-built, cited graph
+            lets a 1.7B model you run on your own hardware out-score a 30B doing vector RAG on
+            multi-hop investigation — so the whole pipeline (ingestion, resolution, graph,
+            answering) can run <strong className="text-foreground">air-gapped and sovereign</strong>,
+            with no data leaving the machine and no frontier API in the loop. That is exactly the
             constraint in the domains where this kind of work matters most: security, health,
-            finance.
+            finance. We are careful <em>not</em> to claim parity with a frontier model — this run
+            has no frontier or unquantized ceiling — only that, within the local regime, the right
+            context format buys more than parameters or autonomy.
           </P>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <FadeInView>
               <SpotlightCard className="flex h-full gap-3 p-5">
                 <Lock className="size-5 shrink-0 text-[var(--cat-projects)]" />
                 <div>
-                  <div className="text-sm font-semibold text-foreground">On-device, frontier-grade</div>
+                  <div className="text-sm font-semibold text-foreground">On-device, $0, air-gapped</div>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    Local models on one workstation reach frontier-grade multi-hop accuracy when
-                    given the graph. Cost: $0, fully air-gapped.
+                    Given the right subgraph, a small local model on one workstation does multi-hop
+                    QA that a far larger model with vector RAG cannot. No network, no API, $0.
                   </p>
                 </div>
               </SpotlightCard>
@@ -653,11 +742,11 @@ function ContextEnginePage() {
           <Observation n={1} title="Contamination and memorization">
             <P>MetaQA is built on movie facts that may sit in the pretraining corpus, so a graph-mode win could in principle reflect recall rather than reasoning. We mitigate this by reporting the <strong className="text-foreground">closed-book baseline</strong>, which is near-zero — if the model had memorized the answers, the no-context arm would not collapse, so memorization is not carrying the headline result. This is a mitigation, not an elimination: the only clean fix is an <em>anti-contamination</em> evaluation (e.g. MINTQA / FRAMES) whose facts post-date or fall outside the training distribution, which we have not yet run.</P>
           </Observation>
-          <Observation n={2} title="Single seed">
-            <P>For GPU-time reasons the headline numbers come from a single sample per question at low temperature. Our confidence intervals are <strong className="text-foreground">paired bootstrap over the question set</strong>, which captures the dominant variance source (which questions you happen to ask), but it does <em>not</em> capture generation stochasticity across seeds. Multiple seeds are deferred to future work, and until then the reported intervals understate total variance.</P>
+          <Observation n={2} title="Deterministic, single decode">
+            <P>Decoding is <strong className="text-foreground">deterministic greedy</strong>, so there is no sampling stochasticity to average over — a strength for reproducibility, but it also means the reported confidence intervals are a <strong className="text-foreground">paired bootstrap over the question set only</strong>. They capture the dominant variance source (which 100 questions you happen to ask) but would not reflect prompt-format or temperature sensitivity, which we did not vary.</P>
           </Observation>
-          <Observation n={3} title="Agentic arm sampled lighter">
-            <P>The agentic mode costs roughly 50s per cell on a single GPU, so it is run on a smaller subset of questions than the passive arms. Its confidence intervals are correspondingly wider, and comparisons against the agentic arm should be read as directional rather than tight.</P>
+          <Observation n={3} title="Tool-profile evidence is directional">
+            <P>The function-call-training analysis (H3 / the tool-profile panel) is <strong className="text-foreground">directional only</strong>. The lean 10-model roster leaves just 3 agentic, 1 function-calling, and 1 non-tool-tuned model in the 6–9B band — far too few to test whether tool training closes the passive-vs-agentic gap. We report it because passive context wins in every bucket, but it is underpowered and should not be read as a hypothesis test.</P>
           </Observation>
           <Observation n={4} title="Clean-KB caveat">
             <P>MetaQA hands us a curated graph with no extraction noise. That is a feature for <em>isolating context format</em> — it lets us attribute the win to structure rather than to a better information-extraction pipeline — but it is also a limitation: it does <strong className="text-foreground">not</strong> test the realistic, noisy IE-built-graph setting that a real deployment faces. A messy-text benchmark such as MuSiQue is needed to close that gap. The sanctions arm does exercise real entity resolution, but its scoring is graph-oracle and therefore circular, so it cannot stand in for end-to-end noise either.</P>
@@ -665,18 +754,25 @@ function ContextEnginePage() {
           <Observation n={5} title="Entity linking is assumed, not evaluated">
             <P>The graph modes start from the benchmark's marked topic entity — a standard KGQA assumption — so end-to-end entity linking from raw text is outside the measured pipeline. In a real system, linking errors would erode some of the structured-context advantage we report.</P>
           </Observation>
-          <Observation n={6} title="Retrieval-heuristic specificity">
-            <P>Our <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">graph_rag</code> mode uses a <strong className="text-foreground">relation-guided BFS</strong>, and the blind-BFS ablation shows the relation guidance is doing real work rather than just the breadth. But a single hand-designed retriever is not the frontier of subgraph retrieval: a learned or personalized-PageRank retriever (HippoRAG-style) is not yet compared, so we cannot claim our heuristic is optimal — only that it is sufficient.</P>
+          <Observation n={6} title="The relation heuristic adds little">
+            <P>Honest negative: our <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">graph_rag</code> mode uses a <strong className="text-foreground">relation-guided BFS</strong>, but the blind-BFS ablation (<code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">graph_rag_blind</code>) lands almost on top of it — significant in only 1/10 models. So the relation-guidance heuristic is <em>not</em> what carries the result; the win is delivering a subgraph at all. A learned or personalized-PageRank retriever (HippoRAG-style) is not yet compared, so we cannot claim our retriever is optimal — only that even its blind variant suffices.</P>
           </Observation>
-          <Observation n={7} title="No frontier ceiling yet">
-            <P>We do not yet include a frontier model as an upper reference line (a cost decision). As a result, the question "how close does a structured-context local model get to a frontier model" is <em>not</em> quantified on MetaQA. Our claims are therefore about the gap between local configurations, not about closing the gap to the best available models.</P>
+          <Observation n={7} title="No frontier / unquantized ceiling">
+            <P>This run has no frontier or unquantized model as an upper reference line (a cost decision). So "how close does a structured-context local model get to a frontier model" is <em>not</em> quantified, and — crucially — the weak agentic-graph result is a <strong className="text-foreground">floor for the local 4-bit regime</strong>, not evidence that agentic RAG fails at scale. Our claims are about gaps <em>between local configurations</em>, not about closing the gap to the best available models.</P>
+          </Observation>
+          <Observation n={8} title="MetaQA is template-generated">
+            <P>MetaQA questions are generated from templates over a movie KB, so they are cleaner and more uniform than naturally-occurring multi-hop questions. That aids the controlled isolation of context format, but limits external validity; a messy-text set such as MuSiQue is the needed complement.</P>
+          </Observation>
+          <Observation n={9} title="Cross-domain replication is graph-oracle">
+            <P>The five replication domains are scored against a <strong className="text-foreground">graph oracle</strong>, not independent gold — so they confirm the <em>shape</em> of the format effect reproduces across schemas, but they are not independent truth and cannot establish absolute accuracy the way the external MetaQA gold does.</P>
           </Observation>
         </Section>
 
         {/* ── §11 future work ─────────────────────────────────────────── */}
         <Section num="11" id="future" title="Future work" lead="The limitations above map cleanly onto a roadmap. In rough priority order:">
           <ul className="my-3 ml-5 list-disc space-y-1 text-muted">
-            <li><strong className="text-foreground">Frontier ceiling + more seeds</strong> — add a frontier reference line to quantify the local-to-frontier gap, and sample multiple seeds so the confidence intervals capture generation stochasticity, not just question-set variance.</li>
+            <li><strong className="text-foreground">Frontier + unquantized ceiling</strong> — add frontier and full-precision reference lines to quantify the local-to-frontier gap and to test whether the agentic deficit is a quantization/scale artifact (the open question this run cannot answer).</li>
+            <li><strong className="text-foreground">Power up the tool-profile test</strong> — a roster balanced across tool-training profiles, enough per bucket to actually test whether function-call training narrows the passive-vs-agentic gap.</li>
             <li><strong className="text-foreground">MuSiQue</strong> — move from a clean given graph to messy text with an IE-built graph, to test whether the structured-context advantage survives extraction noise.</li>
             <li><strong className="text-foreground">Anti-contamination sets</strong> — run MINTQA / FRAMES to rule out memorization rather than merely bounding it with the closed-book baseline.</li>
             <li><strong className="text-foreground">Better subgraph retrieval</strong> — compare PPR / learned retrievers (HippoRAG-style) against the relation-guided BFS, and ablate the serialization format of the subgraph handed to the model.</li>
@@ -688,7 +784,7 @@ function ContextEnginePage() {
 
         {/* ── §12 conclusion ──────────────────────────────────────────── */}
         <Section num="12" id="conclusion" title="Conclusion" lead="What did we actually learn, and what should a practitioner do with it.">
-          <P>We set out to answer three questions. <strong className="text-foreground">Q1 — does context format matter for a small local model?</strong> Yes, decisively: handing the model a structured subgraph beat both the closed-book baseline (which was near-zero) and flatter context arms, and the gap was large enough to survive paired-bootstrap uncertainty. <strong className="text-foreground">Q2 — does a structured subgraph beat an agentic loop?</strong> On these tasks, passive reading of a relation-guided subgraph matched or exceeded the agentic mode while costing a fraction of the time — the agentic arm's extra machinery did not buy proportionate accuracy. <strong className="text-foreground">Q3 — is the relation guidance doing the work?</strong> The blind-BFS ablation says yes: it is the structure of the retrieved context, not merely its presence, that drives the result.</P>
+          <P>We set out to answer four questions. <strong className="text-foreground">Q1 — does structured graph context beat a strong text-RAG baseline?</strong> Yes, decisively: graph context beat a tuned bge-m3 + rerank baseline by +{gvDelta.lo.toFixed(2)}–+{gvDelta.hi.toFixed(2)} F1, significant in {grVsVec.sig}/{grVsVec.total} models. <strong className="text-foreground">Q2 — passive subgraph vs. agentic loop?</strong> For these small, quantized, on-device models, reading a pre-retrieved subgraph beat driving graph tools in {grVsGraph.sig}/{grVsGraph.total} models — agentic access often fell below even vector RAG. We scope that to the local regime; it is a floor, not a verdict on agentic RAG. <strong className="text-foreground">Q3 — is it structure, or volume/content?</strong> Structure: graph context beat the budget-matched vector arm and the same facts flattened to triples ({grVsTriple.sig}/{grVsTriple.total}). <strong className="text-foreground">Q4 — where does the residual error live?</strong> An answer-bearing oracle barely topped graph context, so the retriever is near its ceiling and the loss is the model <em>reading</em> the context — and notably the clever relation-guidance heuristic added little over a blind subgraph, so the win is delivering a subgraph at all.</P>
           <P>The practical upshot is concrete. Capable investigative QA does not require sending data to a frontier API or spinning up an agentic tool-use loop. It can run <strong className="text-foreground">on-device, at $0 marginal cost</strong>, on a small model — provided you do the work of giving that model a well-chosen, structured subgraph rather than reaching for more parameters or more autonomy. For the contamination-, seed-, and noise-related reasons laid out above, this is a result about a clean, single-seed, single-GPU regime, and it should be read with those boundaries in mind until the roadmap above fills them in.</P>
           <P>If there is one line to carry away, it is this: <em>for small local models, how you deliver context matters more than how many parameters you have.</em></P>
         </Section>

@@ -7,7 +7,7 @@ import {
   MODE_COLORS,
   MODE_LABELS,
   scatterPoints,
-  type Mode,
+  type LegacyMode,
   type ScatterPoint,
 } from "@/data/contextEngine";
 
@@ -23,7 +23,7 @@ const H = 420;
 const M = { top: 24, right: 24, bottom: 50, left: 50 };
 const PLOT_W = W - M.left - M.right;
 const PLOT_H = H - M.top - M.bottom;
-const MODES: Mode[] = ["graph_rag", "graph"];
+const MODES: LegacyMode[] = ["graph_rag", "graph"];
 const Y_MIN = 0;
 const Y_MAX = 1;
 
@@ -33,7 +33,7 @@ export function CostAccuracyScatter() {
   const reduced = useReducedMotion();
   const show = inView || reduced;
   const pts = useMemo(() => scatterPoints(MODES), []);
-  const [hover, setHover] = useState<Mode | null>(null);
+  const [hover, setHover] = useState<LegacyMode | null>(null);
   const [focus, setFocus] = useState<(ScatterPoint & { px: number; py: number }) | null>(null);
 
   const xs = pts.map((p) => p.tokens);
@@ -46,7 +46,7 @@ export function CostAccuracyScatter() {
 
   const xTicks = [1000, 2000, 5000, 10000];
   const yTicks = [0, 0.25, 0.5, 0.75, 1.0];
-  const dim = (mode: Mode) => (hover && hover !== mode ? 0.1 : 1);
+  const dim = (mode: LegacyMode) => (hover && hover !== mode ? 0.1 : 1);
 
   return (
     <figure ref={ref} className="not-prose my-2">

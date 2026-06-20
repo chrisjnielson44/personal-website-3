@@ -1,42 +1,99 @@
 /**
  * Typed access to the context-engine benchmark bundle.
  *
- * The JSON is produced by `scripts/export_web.py` in the context-engine repo:
- *   - `charts`  — per-(model, mode) mean F1 / tokens / faithfulness aggregated
- *                 from the de-errored sweep (results/bench/clean.jsonl).
- *   - `er`      — entity-resolution metrics + the documented false-merge cases.
+ * The JSON is produced by the context-engine repo's web exporter:
+ *   - `metaqa`  — the HEADLINE arm. External MetaQA gold (independent of any
+ *                 graph we build), 100 questions × 10 lean MLX models × 9 context
+ *                 modes, with paired-bootstrap 95% CIs, Holm–Bonferroni-corrected
+ *                 contrasts and paired effect sizes (d_z).
+ *   - `domains` — cross-domain replication of graph_rag vs. vector across 5
+ *                 public-data graphs (graph-oracle scored).
+ *   - `charts`  — the LEGACY sanctions sweep (4 modes); kept only for the
+ *                 cost/economics panels. Not the headline.
+ *   - `er`      — entity-resolution metrics + documented false-merge cases.
  *   - `demo`    — full-fidelity recorded traces for a handful of multi-hop
- *                 questions: one local model running the real engine, scored by
- *                 the same graph-oracle grader used in the benchmark.
+ *                 questions: one local model running the real engine.
  *
  * Everything here is measured, not synthetic. See the page for caveats.
  */
 import bundle from "./contextEngine.json";
 
-export type Mode = "none" | "vector" | "graph_rag" | "graph";
+// ── the nine context modes ──────────────────────────────────────────────────
+export type Mode =
+  | "none"
+  | "vector"
+  | "vector_matched"
+  | "graph_rag"
+  | "graph"
+  | "graph_rag_blind"
+  | "triple_rag"
+  | "rag_iter"
+  | "oracle";
+
+/** The four "legacy" modes the old sanctions sweep (`charts`) still reports. */
+export type LegacyMode = "none" | "vector" | "graph_rag" | "graph";
 
 export const MODE_LABELS: Record<Mode, string> = {
   none: "Closed-book",
   vector: "Vector RAG",
+  vector_matched: "Vector (budget-matched)",
   graph_rag: "Graph context",
   graph: "Agentic graph",
+  graph_rag_blind: "Graph context (blind)",
+  triple_rag: "Flat triples",
+  rag_iter: "Iterative RAG",
+  oracle: "Oracle context",
+};
+
+/** Compact labels for tight chart axes / legends. */
+export const MODE_SHORT: Record<Mode, string> = {
+  none: "Closed-book",
+  vector: "Vector",
+  vector_matched: "Vector·matched",
+  graph_rag: "Graph context",
+  graph: "Agentic",
+  graph_rag_blind: "Graph·blind",
+  triple_rag: "Flat triples",
+  rag_iter: "Iter. RAG",
+  oracle: "Oracle",
 };
 
 export const MODE_BLURB: Record<Mode, string> = {
-  none: "No retrieval — the model answers from its own weights.",
-  vector: "Top-k entity docs by embedding similarity, stuffed into the prompt.",
-  graph_rag: "The relevant subgraph, resolved and handed over as passive facts.",
-  graph: "The model drives graph-traversal tools itself, in a loop.",
+  none: "No retrieval — the model answers from its own weights. The per-model capacity floor.",
+  vector:
+    "A strong, tuned text-RAG baseline: a multilingual bge-m3 retriever over per-entity docs, with cross-encoder reranking.",
+  vector_matched:
+    "The same vector retriever, but given the graph-context token budget — controls for context VOLUME rather than structure.",
+  graph_rag:
+    "The relevant subgraph, resolved by relation-guided BFS and handed over as passive, structured facts.",
+  graph:
+    "The model drives typed graph-traversal tools itself, in a loop of up to 8 rounds.",
+  graph_rag_blind:
+    "The identical graph serializer with relation guidance turned OFF — ablates the relation heuristic.",
+  triple_rag:
+    "The SAME facts as the graph modes, but flattened to individual triples with no structure — isolates structure from content.",
+  rag_iter:
+    "Iterative multi-hop RAG (IRCoT / self-ask style): retrieve, reason, emit a follow-up query, retrieve again.",
+  oracle:
+    "The subgraph restricted to answer-bearing facts — an upper bound on passive context. Gap below it is retrieval; gap at it is reading.",
 };
 
-// Brand-ish colors for the four modes (kept in sync with the chart palette).
+// Brand-ish colors for all nine modes (the original four kept verbatim; the new
+// modes are harmonious variants — vector_matched a vector-adjacent amber, the
+// structured / upper-bound modes distinct but in the same family).
 export const MODE_COLORS: Record<Mode, string> = {
-  none: "#94a3b8",
-  vector: "#d8a65a",
-  graph_rag: "#3a5cc9",
-  graph: "#2f8f63",
+  none: "#94a3b8", // slate (capacity floor)
+  vector: "#d8a65a", // amber (the tuned baseline)
+  vector_matched: "#c8862f", // deeper amber — vector-adjacent
+  graph_rag: "#3a5cc9", // accent blue (the headline)
+  graph: "#2f8f63", // green (agentic)
+  graph_rag_blind: "#6b8ad8", // lighter blue — the blind ablation of graph_rag
+  triple_rag: "#b07d9e", // muted mauve — same facts, no structure
+  rag_iter: "#7a9bb8", // dusty blue-grey — iterative text RAG
+  oracle: "#7c5cc9", // violet — the upper bound
 };
 
+// ── legacy sanctions sweep (`charts`) ────────────────────────────────────────
 export interface PerModel {
   model: string;
   params_b: number;
@@ -61,7 +118,7 @@ export interface PerModel {
 
 export interface ScatterPoint {
   model: string;
-  mode: Mode;
+  mode: LegacyMode;
   tokens: number;
   f1: number;
   tier: string;
@@ -70,7 +127,7 @@ export interface ScatterPoint {
 }
 
 export interface ByMode {
-  mode: Mode;
+  mode: LegacyMode;
   f1_mean: number | null;
   tokens_mean: number | null;
   faithful_mean: number | null;
@@ -79,13 +136,14 @@ export interface ByMode {
 }
 
 export interface Charts {
-  modes: Mode[];
+  modes: LegacyMode[];
   perModel: PerModel[];
   byMode: ByMode[];
   nCells: number;
   nModels: number;
 }
 
+// ── entity resolution ────────────────────────────────────────────────────────
 export interface ErSection {
   baseline: { precision: number; recall: number; f1: number };
   learned: { precision: number; recall: number; f1: number };
@@ -100,6 +158,7 @@ export interface ErSection {
   falseMerges: { a: string; b: string; why: string; trigger: string }[];
 }
 
+// ── recorded worked-example traces (`demo`) ──────────────────────────────────
 export interface Citation {
   entityId: string;
   name: string;
@@ -168,13 +227,17 @@ export interface DemoModel {
   tier: string;
 }
 
+// ── cross-domain replication (`domains`) ─────────────────────────────────────
+/** Domains only score the four headline-relevant modes per dataset. */
+export type DomainMode = "none" | "vector" | "vector_matched" | "graph_rag";
+
 export interface DomainRow {
   key: string;
   title: string;
   tag: string;
   edge: string;
-  byMode: Record<Mode, number | null>;
-  n: Record<Mode, number>;
+  byMode: Partial<Record<DomainMode, number | null>>;
+  n: Partial<Record<DomainMode, number>>;
 }
 
 export interface BySizeRow {
@@ -191,12 +254,12 @@ export interface DomainsSection {
   datasets: DomainRow[];
   bySize: BySizeRow[];
   nDomains: number;
-  nQuestionsPerDomain: number;
+  nQuestionsPerDomain: Record<string, number>;
   models: string[];
   note: string;
 }
 
-// ── MetaQA external-gold arm (the validity headline) ─────────────────────────
+// ── MetaQA external-gold arm (the headline) ──────────────────────────────────
 export interface MetaqaModeStat {
   f1: number;
   lo: number; // bootstrap 95% CI lower
@@ -208,24 +271,33 @@ export interface MetaqaModeStat {
   n: number;
 }
 
-export interface MetaqaRow {
+/** A MetaQA row carries every one of the nine modes (null where not run). */
+export type MetaqaRow = {
   model: string;
   params_b: number;
   control: boolean;
-  none: MetaqaModeStat | null;
-  vector: MetaqaModeStat | null;
-  graph_rag: MetaqaModeStat | null;
-  graph: MetaqaModeStat | null;
-}
+  incomplete?: boolean;
+} & Record<Mode, MetaqaModeStat | null>;
 
 export interface MetaqaContrast {
   model: string;
   pair: string; // e.g. "graph_rag-vector"
   delta: number;
-  lo: number;
+  lo: number; // bootstrap 95% CI on the paired delta
   hi: number;
-  sig: boolean;
+  p: number; // Wilcoxon p (uncorrected)
+  dz: number; // paired Cohen's d_z
+  sig: boolean; // Holm–Bonferroni-corrected significant
+  sigRaw: boolean; // significant before correction
 }
+
+/** Per-mode mean F1 within a tool-profile bucket (6–9B band). */
+export type MetaqaToolBucket = {
+  n_models: number;
+  models: string[];
+  gap_gv: number; // graph − vector
+  gap_gr: number; // graph − graph_rag
+} & Record<Mode, number>;
 
 export interface MetaqaSection {
   meta: {
@@ -237,8 +309,10 @@ export interface MetaqaSection {
   };
   byHop: { "2": MetaqaRow[]; "3": MetaqaRow[]; pooled: MetaqaRow[] };
   contrasts: MetaqaContrast[];
+  toolProfile: { agentic: MetaqaToolBucket; fc: MetaqaToolBucket; none: MetaqaToolBucket };
 }
 
+// ── legacy technique ladder (now superseded; kept optional) ──────────────────
 export interface TechniqueRung {
   mode: string;
   label: string;
@@ -254,7 +328,7 @@ export interface TechniquesSection {
 }
 
 export interface Bundle {
-  meta: { dataset: string; sources: string[]; costUsd: number; note: string };
+  meta: { dataset: string; sources: string[]; costUsd: number; run?: string; note: string };
   charts: Charts;
   metaqa: MetaqaSection | null;
   techniques: TechniquesSection | null;
@@ -265,7 +339,7 @@ export interface Bundle {
 
 export const ce = bundle as unknown as Bundle;
 
-// ── derived selectors ────────────────────────────────────────────────────────
+// ── derived selectors (legacy sanctions `charts`) ─────────────────────────────
 
 /** Models with a real size on the axis AND graph_rag coverage (for the figure). */
 export function sizedModels(): PerModel[] {
@@ -290,19 +364,19 @@ export function localModels(): PerModel[] {
 }
 
 /** Mean over frontier models for one mode (the "ceiling" reference). */
-export function frontierMean(mode: Mode): number | null {
+export function frontierMean(mode: LegacyMode): number | null {
   const xs = frontierModels()
     .map((m) => m[mode])
     .filter((v): v is number => v != null);
   return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
 }
 
-export function byMode(mode: Mode): ByMode | undefined {
+export function byMode(mode: LegacyMode): ByMode | undefined {
   return ce.charts.byMode.find((b) => b.mode === mode);
 }
 
 /** Points for the cost/accuracy scatter: one per (model, mode) with tokens + F1. */
-export function scatterPoints(modes: Mode[] = ["graph_rag", "graph"]): ScatterPoint[] {
+export function scatterPoints(modes: LegacyMode[] = ["graph_rag", "graph"]): ScatterPoint[] {
   const pts: ScatterPoint[] = [];
   for (const m of ce.charts.perModel) {
     for (const mode of modes) {
@@ -329,4 +403,69 @@ export function leaderboard(): PerModel[] {
   return [...ce.charts.perModel]
     .filter((m) => m.graph != null || m.graph_rag != null)
     .sort((a, b) => (b.graph ?? -1) - (a.graph ?? -1));
+}
+
+// ── derived selectors (MetaQA headline) ───────────────────────────────────────
+
+export type Hop = "2" | "3" | "pooled";
+
+function shortModelName(m: string) {
+  return m.replace(/-mlx$/, "").replace(/-local$/, "");
+}
+export { shortModelName as shortModel };
+
+/** Pooled MetaQA rows, ascending by size. */
+export function metaqaRows(hop: Hop = "pooled"): MetaqaRow[] {
+  if (!ce.metaqa) return [];
+  return [...ce.metaqa.byHop[hop]].sort((a, b) => a.params_b - b.params_b);
+}
+
+/** Mean F1 across the MetaQA roster for one mode at one hop (nulls skipped). */
+export function metaqaMean(mode: Mode, hop: Hop = "pooled"): number | null {
+  const xs = metaqaRows(hop)
+    .map((r) => r[mode]?.f1)
+    .filter((v): v is number => v != null);
+  return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
+}
+
+/** Min / max F1 for one mode across the MetaQA size ladder. */
+export function metaqaRange(mode: Mode, hop: Hop = "pooled"): { lo: number; hi: number } | null {
+  const xs = metaqaRows(hop)
+    .map((r) => r[mode]?.f1)
+    .filter((v): v is number => v != null);
+  if (!xs.length) return null;
+  return { lo: Math.min(...xs), hi: Math.max(...xs) };
+}
+
+/** All contrasts for a given pair (e.g. "graph_rag-vector"). */
+export function contrastsFor(pair: string): MetaqaContrast[] {
+  return ce.metaqa?.contrasts.filter((c) => c.pair === pair) ?? [];
+}
+
+/** Count of models where a positive contrast is Holm-significant. */
+export function sigCount(pair: string): { sig: number; total: number } {
+  const xs = contrastsFor(pair);
+  return { sig: xs.filter((c) => c.sig && c.delta > 0).length, total: xs.length };
+}
+
+/** Count of models where a contrast is significantly NEGATIVE (e.g. graph−vector). */
+export function sigNegCount(pair: string): { sig: number; total: number } {
+  const xs = contrastsFor(pair);
+  return { sig: xs.filter((c) => c.sig && c.delta < 0).length, total: xs.length };
+}
+
+/** Min / max paired Δ over all models for a contrast pair. */
+export function contrastDeltaRange(pair: string): { lo: number; hi: number } | null {
+  const xs = contrastsFor(pair).map((c) => c.delta);
+  if (!xs.length) return null;
+  return { lo: Math.min(...xs), hi: Math.max(...xs) };
+}
+
+/** d_z range over the significant contrasts for a pair (absolute values). */
+export function dzRange(pair: string, sigOnly = true): { lo: number; hi: number } | null {
+  const xs = contrastsFor(pair)
+    .filter((c) => (sigOnly ? c.sig : true))
+    .map((c) => Math.abs(c.dz));
+  if (!xs.length) return null;
+  return { lo: Math.min(...xs), hi: Math.max(...xs) };
 }

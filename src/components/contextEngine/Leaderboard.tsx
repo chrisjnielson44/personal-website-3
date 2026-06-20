@@ -6,11 +6,11 @@ import {
   MODE_COLORS,
   MODE_LABELS,
   leaderboard,
-  type Mode,
+  type LegacyMode,
   type PerModel,
 } from "@/data/contextEngine";
 
-const COLS: Mode[] = ["none", "vector", "graph_rag", "graph"];
+const COLS: LegacyMode[] = ["none", "vector", "graph_rag", "graph"];
 
 function Cell({ v, lead }: { v: number | null; lead?: boolean }) {
   if (v == null) return <td className="px-2 py-2 text-right text-muted-foreground">—</td>;

@@ -6,8 +6,9 @@
       "UK OFSI",
       "UN Consolidated"
     ],
-    "costUsd": 10,
-    "note": "Chart aggregates span the full model sweep (de-errored). Demo traces are one local model running the real engine, scored by the same graph-oracle grader."
+    "costUsd": 0,
+    "run": "2026-06-20 clean run: lean 10-model roster, deterministic greedy, strong multilingual bge-m3 vector baseline served locally — NO Ollama, no network at inference. Pre-registered (docs/PROTOCOL.md); contrasts Holm–Bonferroni corrected with effect sizes.",
+    "note": "MetaQA + domains reflect the clean run above. The legacy `charts` leaderboard is the earlier sanctions sweep (kept for the cost/economics panels). Demo traces are one local model running the real engine."
   },
   "charts": {
     "modes": [
@@ -499,114 +500,116 @@
   "metaqa": {
     "meta": {
       "gold": "external (MetaQA held-out test answers)",
-      "nQuestions": 400,
-      "nCells": 9405,
+      "nQuestions": 100,
+      "nCells": 9000,
       "models": [
-        "qwen3-0.6b-mlx",
         "qwen3-1.7b-mlx",
         "llama3.2-3b-mlx",
-        "phi3.5-mini-mlx",
         "qwen3-4b-mlx",
-        "mistral-7b-mlx",
-        "qwen2.5-7b-mlx",
         "granite3.3-8b-mlx",
+        "hermes3-llama3.1-8b-mlx",
         "llama3.1-8b-mlx",
         "qwen3-8b-mlx",
         "gemma2-9b-mlx",
         "qwen3-14b-mlx",
         "qwen3-30b-a3b-mlx"
       ],
-      "note": "Questions and gold answers come from MetaQA, not our graph — the graph-as-oracle circularity is removed. Clean movie KB (no entity resolution / no extraction noise), so mode differences reflect context FORMAT. Local quantized MLX models, sampled at temperature 0.7; 95% CIs are a paired bootstrap over the question set. The agentic-graph arm is sampled lighter (it costs ~50s/cell on one GPU)."
+      "note": "Questions and gold answers come from MetaQA, not our graph — the graph-as-oracle circularity is removed. Clean movie KB (no entity resolution / no extraction noise), so mode differences reflect context FORMAT. Local 4-bit MLX models, DETERMINISTIC greedy decoding; the vector baseline uses a strong multilingual bge-m3 retriever served locally (no Ollama). 95% CIs are a paired bootstrap over the question set; contrast significance is Holm–Bonferroni corrected with paired effect sizes (d_z). Pre-registered (docs/PROTOCOL.md)."
     },
     "byHop": {
       "2": [
-        {
-          "model": "qwen3-0.6b-mlx",
-          "params_b": 0.6,
-          "control": false,
-          "none": {
-            "f1": 0.0576,
-            "lo": 0.0083,
-            "hi": 0.1227,
-            "hits1": 0.0909,
-            "tokens": 231,
-            "latency": 1.37,
-            "toolCalls": 0.0,
-            "n": 44
-          },
-          "vector": {
-            "f1": 0.1448,
-            "lo": 0.0693,
-            "hi": 0.2345,
-            "hits1": 0.1818,
-            "tokens": 667,
-            "latency": 2.59,
-            "toolCalls": 0.0,
-            "n": 44
-          },
-          "graph_rag": {
-            "f1": 0.337,
-            "lo": 0.2221,
-            "hi": 0.4563,
-            "hits1": 0.2955,
-            "tokens": 2375,
-            "latency": 2.13,
-            "toolCalls": 0.0,
-            "n": 44
-          },
-          "graph": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 3549,
-            "latency": 123.95,
-            "toolCalls": 0.0,
-            "n": 50
-          }
-        },
         {
           "model": "qwen3-1.7b-mlx",
           "params_b": 1.7,
           "control": false,
           "none": {
-            "f1": 0.0414,
-            "lo": 0.0243,
-            "hi": 0.0608,
+            "f1": 0.0357,
+            "lo": 0.0057,
+            "hi": 0.0707,
             "hits1": 0.06,
-            "tokens": 256,
-            "latency": 5.54,
+            "tokens": 224,
+            "latency": 1.58,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "vector": {
-            "f1": 0.2216,
-            "lo": 0.1765,
-            "hi": 0.2671,
-            "hits1": 0.295,
-            "tokens": 528,
-            "latency": 3.24,
+            "f1": 0.313,
+            "lo": 0.2153,
+            "hi": 0.421,
+            "hits1": 0.36,
+            "tokens": 693,
+            "latency": 1.6,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.4017,
+            "lo": 0.2888,
+            "hi": 0.5189,
+            "hits1": 0.46,
+            "tokens": 2051,
+            "latency": 6.69,
+            "toolCalls": 0.0,
+            "n": 50
           },
           "graph_rag": {
-            "f1": 0.6497,
-            "lo": 0.5907,
-            "hi": 0.703,
-            "hits1": 0.635,
-            "tokens": 1568,
-            "latency": 5.54,
+            "f1": 0.6074,
+            "lo": 0.4862,
+            "hi": 0.723,
+            "hits1": 0.64,
+            "tokens": 2338,
+            "latency": 6.19,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "graph": {
-            "f1": 0.03,
-            "lo": 0.0,
-            "hi": 0.08,
-            "hits1": 0.04,
-            "tokens": 3842,
-            "latency": 21.38,
+            "f1": 0.0746,
+            "lo": 0.0146,
+            "hi": 0.1493,
+            "hits1": 0.08,
+            "tokens": 3636,
+            "latency": 33.66,
             "toolCalls": 0.2,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.5985,
+            "lo": 0.4766,
+            "hi": 0.7174,
+            "hits1": 0.64,
+            "tokens": 3369,
+            "latency": 9.87,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.0797,
+            "lo": 0.0233,
+            "hi": 0.1533,
+            "hits1": 0.08,
+            "tokens": 761,
+            "latency": 8.54,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.3327,
+            "lo": 0.2194,
+            "hi": 0.4475,
+            "hits1": 0.38,
+            "tokens": 752,
+            "latency": 2.87,
+            "toolCalls": 0.02,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.7002,
+            "lo": 0.5736,
+            "hi": 0.8171,
+            "hits1": 0.66,
+            "tokens": 1063,
+            "latency": 1.07,
+            "toolCalls": 0.0,
             "n": 50
           }
         },
@@ -615,87 +618,92 @@
           "params_b": 3,
           "control": true,
           "none": {
-            "f1": 0.0623,
-            "lo": 0.0385,
-            "hi": 0.0877,
-            "hits1": 0.08,
-            "tokens": 438,
-            "latency": 11.15,
-            "toolCalls": 0.0,
-            "n": 200
-          },
-          "vector": {
-            "f1": 0.2881,
-            "lo": 0.24,
-            "hi": 0.338,
-            "hits1": 0.42,
-            "tokens": 628,
-            "latency": 10.23,
-            "toolCalls": 0.0,
-            "n": 200
-          },
-          "graph_rag": {
-            "f1": 0.6996,
-            "lo": 0.6458,
-            "hi": 0.7536,
-            "hits1": 0.795,
-            "tokens": 1717,
-            "latency": 11.43,
-            "toolCalls": 0.0,
-            "n": 200
-          },
-          "graph": {
-            "f1": 0.017,
-            "lo": 0.0,
-            "hi": 0.0473,
-            "hits1": 0.02,
-            "tokens": 2604,
-            "latency": 8.03,
+            "f1": 0.0731,
+            "lo": 0.0168,
+            "hi": 0.1436,
+            "hits1": 0.14,
+            "tokens": 283,
+            "latency": 2.44,
             "toolCalls": 0.0,
             "n": 50
-          }
-        },
-        {
-          "model": "phi3.5-mini-mlx",
-          "params_b": 3.8,
-          "control": false,
-          "none": {
-            "f1": 0.0072,
-            "lo": 0.0,
-            "hi": 0.0163,
-            "hits1": 0.0465,
-            "tokens": 1070,
-            "latency": 24.84,
-            "toolCalls": 0.0,
-            "n": 43
           },
           "vector": {
-            "f1": 0.2293,
-            "lo": 0.126,
-            "hi": 0.3432,
-            "hits1": 0.2558,
-            "tokens": 730,
-            "latency": 20.05,
+            "f1": 0.3646,
+            "lo": 0.2577,
+            "hi": 0.4706,
+            "hits1": 0.48,
+            "tokens": 665,
+            "latency": 2.34,
             "toolCalls": 0.0,
-            "n": 43
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.4735,
+            "lo": 0.3559,
+            "hi": 0.5917,
+            "hits1": 0.58,
+            "tokens": 1962,
+            "latency": 4.0,
+            "toolCalls": 0.0,
+            "n": 50
           },
           "graph_rag": {
-            "f1": 0.4492,
-            "lo": 0.3231,
-            "hi": 0.5683,
-            "hits1": 0.4884,
-            "tokens": 3270,
-            "latency": 19.49,
+            "f1": 0.6581,
+            "lo": 0.5468,
+            "hi": 0.7668,
+            "hits1": 0.74,
+            "tokens": 2379,
+            "latency": 4.83,
             "toolCalls": 0.0,
-            "n": 43
+            "n": 50
           },
           "graph": {
-            "f1": 0.0091,
-            "lo": 0.0013,
-            "hi": 0.0192,
-            "hits1": 0.06,
-            "tokens": 1239,
-            "latency": 13.18,
+            "f1": 0.0803,
+            "lo": 0.0278,
+            "hi": 0.1459,
+            "hits1": 0.1,
+            "tokens": 2281,
+            "latency": 6.7,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.6093,
+            "lo": 0.4864,
+            "hi": 0.7281,
+            "hits1": 0.68,
+            "tokens": 3381,
+            "latency": 5.91,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.0414,
+            "lo": 0.0057,
+            "hi": 0.0928,
+            "hits1": 0.04,
+            "tokens": 809,
+            "latency": 4.3,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.3819,
+            "lo": 0.2722,
+            "hi": 0.4913,
+            "hits1": 0.46,
+            "tokens": 711,
+            "latency": 3.08,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.7582,
+            "lo": 0.6479,
+            "hi": 0.8591,
+            "hits1": 0.82,
+            "tokens": 1115,
+            "latency": 1.8,
             "toolCalls": 0.0,
             "n": 50
           }
@@ -705,134 +713,94 @@
           "params_b": 4,
           "control": false,
           "none": {
-            "f1": 0.0631,
-            "lo": 0.0401,
-            "hi": 0.0878,
-            "hits1": 0.085,
-            "tokens": 266,
-            "latency": 7.29,
-            "toolCalls": 0.0,
-            "n": 200
-          },
-          "vector": {
-            "f1": 0.3491,
-            "lo": 0.2888,
-            "hi": 0.4096,
-            "hits1": 0.43,
-            "tokens": 521,
-            "latency": 5.17,
-            "toolCalls": 0.0,
-            "n": 200
-          },
-          "graph_rag": {
-            "f1": 0.7697,
-            "lo": 0.7159,
-            "hi": 0.8229,
-            "hits1": 0.825,
-            "tokens": 1676,
-            "latency": 8.98,
-            "toolCalls": 0.0,
-            "n": 200
-          },
-          "graph": {
-            "f1": 0.268,
-            "lo": 0.1507,
-            "hi": 0.396,
-            "hits1": 0.28,
-            "tokens": 5138,
-            "latency": 35.7,
-            "toolCalls": 1.14,
-            "n": 50
-          }
-        },
-        {
-          "model": "mistral-7b-mlx",
-          "params_b": 7,
-          "control": false,
-          "none": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 0,
-            "latency": 0.0,
-            "toolCalls": 0.0,
-            "n": 44
-          },
-          "vector": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 0,
-            "latency": 0.0,
-            "toolCalls": 0.0,
-            "n": 44
-          },
-          "graph_rag": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 0,
-            "latency": 0.0,
-            "toolCalls": 0.0,
-            "n": 44
-          },
-          "graph": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 1066,
-            "latency": 6.79,
+            "f1": 0.052,
+            "lo": 0.013,
+            "hi": 0.1013,
+            "hits1": 0.08,
+            "tokens": 240,
+            "latency": 8.45,
             "toolCalls": 0.0,
             "n": 50
-          }
-        },
-        {
-          "model": "qwen2.5-7b-mlx",
-          "params_b": 7,
-          "control": false,
-          "none": {
-            "f1": 0.0926,
-            "lo": 0.035,
-            "hi": 0.1632,
-            "hits1": 0.1364,
-            "tokens": 204,
-            "latency": 2.78,
-            "toolCalls": 0.0,
-            "n": 44
           },
           "vector": {
-            "f1": 0.356,
-            "lo": 0.2336,
-            "hi": 0.4841,
-            "hits1": 0.3636,
-            "tokens": 514,
-            "latency": 1.49,
+            "f1": 0.4383,
+            "lo": 0.3161,
+            "hi": 0.562,
+            "hits1": 0.46,
+            "tokens": 694,
+            "latency": 7.52,
             "toolCalls": 0.0,
-            "n": 44
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.4923,
+            "lo": 0.3801,
+            "hi": 0.6111,
+            "hits1": 0.56,
+            "tokens": 2084,
+            "latency": 11.79,
+            "toolCalls": 0.0,
+            "n": 50
           },
           "graph_rag": {
-            "f1": 0.6804,
-            "lo": 0.5689,
-            "hi": 0.7863,
-            "hits1": 0.7955,
-            "tokens": 2405,
-            "latency": 5.18,
+            "f1": 0.665,
+            "lo": 0.5473,
+            "hi": 0.7817,
+            "hits1": 0.74,
+            "tokens": 2435,
+            "latency": 13.95,
             "toolCalls": 0.0,
-            "n": 44
+            "n": 50
           },
           "graph": {
-            "f1": 0.1348,
-            "lo": 0.0573,
-            "hi": 0.2242,
-            "hits1": 0.1633,
-            "tokens": 8116,
-            "latency": 18.15,
-            "toolCalls": 12.31,
-            "n": 49
+            "f1": 0.3256,
+            "lo": 0.2017,
+            "hi": 0.4556,
+            "hits1": 0.36,
+            "tokens": 5169,
+            "latency": 64.08,
+            "toolCalls": 1.3,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.7692,
+            "lo": 0.6701,
+            "hi": 0.863,
+            "hits1": 0.86,
+            "tokens": 3492,
+            "latency": 22.71,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.0528,
+            "lo": 0.005,
+            "hi": 0.1117,
+            "hits1": 0.06,
+            "tokens": 753,
+            "latency": 19.27,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.7118,
+            "lo": 0.6027,
+            "hi": 0.8133,
+            "hits1": 0.76,
+            "tokens": 1622,
+            "latency": 17.85,
+            "toolCalls": 0.76,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.7655,
+            "lo": 0.6515,
+            "hi": 0.8704,
+            "hits1": 0.8,
+            "tokens": 1145,
+            "latency": 10.09,
+            "toolCalls": 0.0,
+            "n": 50
           }
         },
         {
@@ -840,42 +808,187 @@
           "params_b": 8,
           "control": false,
           "none": {
-            "f1": 0.1704,
-            "lo": 0.0934,
-            "hi": 0.2588,
-            "hits1": 0.2727,
-            "tokens": 298,
-            "latency": 7.31,
+            "f1": 0.0044,
+            "lo": 0.0,
+            "hi": 0.0133,
+            "hits1": 0.0,
+            "tokens": 201,
+            "latency": 1.05,
             "toolCalls": 0.0,
-            "n": 44
+            "n": 50
           },
           "vector": {
-            "f1": 0.3434,
-            "lo": 0.2168,
-            "hi": 0.4749,
-            "hits1": 0.4091,
-            "tokens": 677,
-            "latency": 6.41,
+            "f1": 0.1036,
+            "lo": 0.04,
+            "hi": 0.1825,
+            "hits1": 0.06,
+            "tokens": 810,
+            "latency": 1.55,
             "toolCalls": 0.0,
-            "n": 44
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.2156,
+            "lo": 0.115,
+            "hi": 0.3278,
+            "hits1": 0.18,
+            "tokens": 2462,
+            "latency": 4.71,
+            "toolCalls": 0.0,
+            "n": 50
           },
           "graph_rag": {
-            "f1": 0.7077,
-            "lo": 0.5877,
-            "hi": 0.8179,
-            "hits1": 0.7674,
-            "tokens": 3223,
-            "latency": 12.6,
+            "f1": 0.4682,
+            "lo": 0.3446,
+            "hi": 0.5924,
+            "hits1": 0.52,
+            "tokens": 3039,
+            "latency": 5.11,
             "toolCalls": 0.0,
-            "n": 43
+            "n": 50
           },
           "graph": {
-            "f1": 0.049,
-            "lo": 0.0118,
-            "hi": 0.096,
-            "hits1": 0.06,
-            "tokens": 2067,
-            "latency": 23.14,
+            "f1": 0.1126,
+            "lo": 0.0497,
+            "hi": 0.1836,
+            "hits1": 0.1,
+            "tokens": 2033,
+            "latency": 9.99,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.4619,
+            "lo": 0.3463,
+            "hi": 0.5803,
+            "hits1": 0.48,
+            "tokens": 4375,
+            "latency": 9.93,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.0813,
+            "lo": 0.02,
+            "hi": 0.1613,
+            "hits1": 0.1,
+            "tokens": 833,
+            "latency": 3.78,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.4972,
+            "lo": 0.3777,
+            "hi": 0.6178,
+            "hits1": 0.62,
+            "tokens": 2375,
+            "latency": 2.98,
+            "toolCalls": 1.14,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.4242,
+            "lo": 0.3004,
+            "hi": 0.5518,
+            "hits1": 0.46,
+            "tokens": 1349,
+            "latency": 1.62,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "hermes3-llama3.1-8b-mlx",
+          "params_b": 8,
+          "control": false,
+          "none": {
+            "f1": 0.0997,
+            "lo": 0.0421,
+            "hi": 0.1713,
+            "hits1": 0.14,
+            "tokens": 303,
+            "latency": 1.95,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "vector": {
+            "f1": 0.4061,
+            "lo": 0.2915,
+            "hi": 0.524,
+            "hits1": 0.48,
+            "tokens": 679,
+            "latency": 1.75,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.4589,
+            "lo": 0.3393,
+            "hi": 0.5792,
+            "hits1": 0.54,
+            "tokens": 1947,
+            "latency": 4.62,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag": {
+            "f1": 0.5602,
+            "lo": 0.434,
+            "hi": 0.6904,
+            "hits1": 0.62,
+            "tokens": 2346,
+            "latency": 4.43,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph": {
+            "f1": 0.0746,
+            "lo": 0.0224,
+            "hi": 0.1357,
+            "hits1": 0.1,
+            "tokens": 678,
+            "latency": 3.77,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.5117,
+            "lo": 0.3889,
+            "hi": 0.6311,
+            "hits1": 0.6,
+            "tokens": 3360,
+            "latency": 6.14,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.0867,
+            "lo": 0.0317,
+            "hi": 0.155,
+            "hits1": 0.12,
+            "tokens": 765,
+            "latency": 2.46,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.3785,
+            "lo": 0.267,
+            "hi": 0.4944,
+            "hits1": 0.54,
+            "tokens": 719,
+            "latency": 1.45,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.6431,
+            "lo": 0.5166,
+            "hi": 0.7613,
+            "hits1": 0.68,
+            "tokens": 1090,
+            "latency": 1.33,
             "toolCalls": 0.0,
             "n": 50
           }
@@ -885,42 +998,92 @@
           "params_b": 8,
           "control": false,
           "none": {
-            "f1": 0.0828,
-            "lo": 0.025,
-            "hi": 0.152,
-            "hits1": 0.125,
-            "tokens": 787,
-            "latency": 130.79,
+            "f1": 0.1262,
+            "lo": 0.0535,
+            "hi": 0.2086,
+            "hits1": 0.16,
+            "tokens": 446,
+            "latency": 21.63,
             "toolCalls": 0.0,
-            "n": 40
+            "n": 50
           },
           "vector": {
-            "f1": 0.3541,
-            "lo": 0.2251,
-            "hi": 0.4894,
-            "hits1": 0.325,
-            "tokens": 907,
-            "latency": 142.53,
+            "f1": 0.478,
+            "lo": 0.3511,
+            "hi": 0.6063,
+            "hits1": 0.5,
+            "tokens": 799,
+            "latency": 22.99,
             "toolCalls": 0.0,
-            "n": 40
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.5983,
+            "lo": 0.4745,
+            "hi": 0.7199,
+            "hits1": 0.62,
+            "tokens": 1990,
+            "latency": 24.49,
+            "toolCalls": 0.0,
+            "n": 50
           },
           "graph_rag": {
-            "f1": 0.674,
-            "lo": 0.538,
-            "hi": 0.8081,
-            "hits1": 0.641,
-            "tokens": 2870,
-            "latency": 134.16,
+            "f1": 0.6646,
+            "lo": 0.5424,
+            "hi": 0.78,
+            "hits1": 0.66,
+            "tokens": 2539,
+            "latency": 26.74,
             "toolCalls": 0.0,
-            "n": 39
+            "n": 50
           },
           "graph": {
             "f1": 0.0,
             "lo": 0.0,
             "hi": 0.0,
             "hits1": 0.0,
-            "tokens": 1481,
-            "latency": 3.14,
+            "tokens": 1493,
+            "latency": 22.94,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.676,
+            "lo": 0.5577,
+            "hi": 0.7903,
+            "hits1": 0.72,
+            "tokens": 3527,
+            "latency": 23.76,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "hits1": 0.0,
+            "tokens": 1123,
+            "latency": 23.06,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.3148,
+            "lo": 0.2027,
+            "hi": 0.4345,
+            "hits1": 0.36,
+            "tokens": 1447,
+            "latency": 34.41,
+            "toolCalls": 0.6,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.6966,
+            "lo": 0.5688,
+            "hi": 0.8131,
+            "hits1": 0.7,
+            "tokens": 1273,
+            "latency": 20.74,
             "toolCalls": 0.0,
             "n": 50
           }
@@ -930,43 +1093,93 @@
           "params_b": 8,
           "control": false,
           "none": {
-            "f1": 0.0724,
-            "lo": 0.0477,
-            "hi": 0.0999,
+            "f1": 0.0762,
+            "lo": 0.0291,
+            "hi": 0.1327,
             "hits1": 0.12,
-            "tokens": 520,
-            "latency": 52.45,
+            "tokens": 372,
+            "latency": 12.29,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "vector": {
-            "f1": 0.3627,
-            "lo": 0.3007,
-            "hi": 0.4248,
-            "hits1": 0.435,
-            "tokens": 546,
-            "latency": 49.93,
+            "f1": 0.4826,
+            "lo": 0.3572,
+            "hi": 0.6093,
+            "hits1": 0.54,
+            "tokens": 697,
+            "latency": 11.89,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.5289,
+            "lo": 0.3988,
+            "hi": 0.6541,
+            "hits1": 0.54,
+            "tokens": 2049,
+            "latency": 15.59,
+            "toolCalls": 0.0,
+            "n": 50
           },
           "graph_rag": {
-            "f1": 0.7689,
-            "lo": 0.7141,
-            "hi": 0.8225,
-            "hits1": 0.815,
-            "tokens": 1651,
-            "latency": 50.27,
+            "f1": 0.7867,
+            "lo": 0.6793,
+            "hi": 0.8826,
+            "hits1": 0.84,
+            "tokens": 2404,
+            "latency": 16.02,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "graph": {
-            "f1": 0.0583,
-            "lo": 0.0053,
-            "hi": 0.1236,
-            "hits1": 0.1,
-            "tokens": 3453,
-            "latency": 34.77,
-            "toolCalls": 0.1,
+            "f1": 0.1181,
+            "lo": 0.0439,
+            "hi": 0.2008,
+            "hits1": 0.16,
+            "tokens": 3708,
+            "latency": 61.31,
+            "toolCalls": 0.32,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.7603,
+            "lo": 0.6519,
+            "hi": 0.8598,
+            "hits1": 0.84,
+            "tokens": 3441,
+            "latency": 26.48,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.0187,
+            "lo": 0.0,
+            "hi": 0.0507,
+            "hits1": 0.04,
+            "tokens": 750,
+            "latency": 18.33,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.5385,
+            "lo": 0.4149,
+            "hi": 0.6595,
+            "hits1": 0.62,
+            "tokens": 2234,
+            "latency": 32.7,
+            "toolCalls": 1.46,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.8022,
+            "lo": 0.6966,
+            "hi": 0.8951,
+            "hits1": 0.84,
+            "tokens": 1137,
+            "latency": 12.31,
+            "toolCalls": 0.0,
             "n": 50
           }
         },
@@ -975,42 +1188,92 @@
           "params_b": 9,
           "control": false,
           "none": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 0,
-            "latency": 0.0,
+            "f1": 0.106,
+            "lo": 0.0457,
+            "hi": 0.1771,
+            "hits1": 0.14,
+            "tokens": 183,
+            "latency": 5.76,
             "toolCalls": 0.0,
-            "n": 44
+            "n": 50
           },
           "vector": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 0,
-            "latency": 0.0,
+            "f1": 0.4625,
+            "lo": 0.3471,
+            "hi": 0.5851,
+            "hits1": 0.56,
+            "tokens": 633,
+            "latency": 5.79,
             "toolCalls": 0.0,
-            "n": 44
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.5484,
+            "lo": 0.4222,
+            "hi": 0.6692,
+            "hits1": 0.62,
+            "tokens": 1907,
+            "latency": 10.92,
+            "toolCalls": 0.0,
+            "n": 50
           },
           "graph_rag": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 0,
-            "latency": 0.0,
+            "f1": 0.6668,
+            "lo": 0.5423,
+            "hi": 0.7865,
+            "hits1": 0.66,
+            "tokens": 2484,
+            "latency": 9.16,
             "toolCalls": 0.0,
-            "n": 44
+            "n": 50
           },
           "graph": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 0,
-            "latency": 0.0,
+            "f1": 0.0903,
+            "lo": 0.0373,
+            "hi": 0.1543,
+            "hits1": 0.12,
+            "tokens": 705,
+            "latency": 11.19,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.595,
+            "lo": 0.4689,
+            "hi": 0.7217,
+            "hits1": 0.64,
+            "tokens": 3528,
+            "latency": 13.16,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.0752,
+            "lo": 0.019,
+            "hi": 0.1438,
+            "hits1": 0.1,
+            "tokens": 690,
+            "latency": 8.22,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.4939,
+            "lo": 0.3743,
+            "hi": 0.6165,
+            "hits1": 0.56,
+            "tokens": 688,
+            "latency": 7.33,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.7312,
+            "lo": 0.6172,
+            "hi": 0.8402,
+            "hits1": 0.76,
+            "tokens": 1122,
+            "latency": 6.29,
             "toolCalls": 0.0,
             "n": 50
           }
@@ -1020,43 +1283,93 @@
           "params_b": 14,
           "control": false,
           "none": {
-            "f1": 0.1103,
-            "lo": 0.0782,
-            "hi": 0.1464,
-            "hits1": 0.15,
-            "tokens": 335,
-            "latency": 21.35,
+            "f1": 0.0989,
+            "lo": 0.0414,
+            "hi": 0.1705,
+            "hits1": 0.14,
+            "tokens": 223,
+            "latency": 15.86,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "vector": {
-            "f1": 0.392,
-            "lo": 0.3291,
-            "hi": 0.4542,
-            "hits1": 0.47,
-            "tokens": 504,
-            "latency": 19.49,
+            "f1": 0.5014,
+            "lo": 0.3758,
+            "hi": 0.6217,
+            "hits1": 0.6,
+            "tokens": 660,
+            "latency": 18.64,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.6428,
+            "lo": 0.5273,
+            "hi": 0.756,
+            "hits1": 0.7,
+            "tokens": 2016,
+            "latency": 24.55,
+            "toolCalls": 0.0,
+            "n": 50
           },
           "graph_rag": {
-            "f1": 0.8049,
-            "lo": 0.7531,
-            "hi": 0.8514,
-            "hits1": 0.86,
-            "tokens": 1561,
-            "latency": 19.81,
+            "f1": 0.7793,
+            "lo": 0.6772,
+            "hi": 0.8705,
+            "hits1": 0.88,
+            "tokens": 2340,
+            "latency": 26.06,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "graph": {
-            "f1": 0.3888,
-            "lo": 0.2567,
-            "hi": 0.5263,
-            "hits1": 0.4,
-            "tokens": 5302,
-            "latency": 71.31,
-            "toolCalls": 1.48,
+            "f1": 0.4287,
+            "lo": 0.2887,
+            "hi": 0.5638,
+            "hits1": 0.46,
+            "tokens": 5801,
+            "latency": 94.27,
+            "toolCalls": 1.76,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.8267,
+            "lo": 0.7433,
+            "hi": 0.8995,
+            "hits1": 0.92,
+            "tokens": 3369,
+            "latency": 29.75,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.0431,
+            "lo": 0.0044,
+            "hi": 0.0951,
+            "hits1": 0.06,
+            "tokens": 706,
+            "latency": 20.68,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.6176,
+            "lo": 0.4931,
+            "hi": 0.7344,
+            "hits1": 0.7,
+            "tokens": 1026,
+            "latency": 20.38,
+            "toolCalls": 0.32,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.8184,
+            "lo": 0.712,
+            "hi": 0.9101,
+            "hits1": 0.86,
+            "tokens": 1072,
+            "latency": 14.29,
+            "toolCalls": 0.0,
             "n": 50
           }
         },
@@ -1065,107 +1378,189 @@
           "params_b": 30,
           "control": false,
           "none": {
-            "f1": 0.0988,
-            "lo": 0.0684,
-            "hi": 0.1328,
-            "hits1": 0.14,
-            "tokens": 205,
-            "latency": 18.79,
+            "f1": 0.0853,
+            "lo": 0.0288,
+            "hi": 0.1569,
+            "hits1": 0.1,
+            "tokens": 197,
+            "latency": 31.1,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "vector": {
-            "f1": 0.3843,
-            "lo": 0.3257,
-            "hi": 0.445,
-            "hits1": 0.455,
-            "tokens": 509,
-            "latency": 17.5,
+            "f1": 0.4905,
+            "lo": 0.3674,
+            "hi": 0.6168,
+            "hits1": 0.56,
+            "tokens": 660,
+            "latency": 31.08,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.5279,
+            "lo": 0.4061,
+            "hi": 0.6466,
+            "hits1": 0.64,
+            "tokens": 2050,
+            "latency": 35.93,
+            "toolCalls": 0.0,
+            "n": 50
           },
           "graph_rag": {
-            "f1": 0.7862,
-            "lo": 0.731,
-            "hi": 0.8375,
-            "hits1": 0.825,
-            "tokens": 1641,
-            "latency": 20.73,
+            "f1": 0.7941,
+            "lo": 0.6907,
+            "hi": 0.8883,
+            "hits1": 0.84,
+            "tokens": 2419,
+            "latency": 36.74,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "graph": {
-            "f1": 0.3146,
-            "lo": 0.194,
-            "hi": 0.4421,
-            "hits1": 0.34,
-            "tokens": 4577,
-            "latency": 377.19,
-            "toolCalls": 1.26,
+            "f1": 0.3357,
+            "lo": 0.209,
+            "hi": 0.4739,
+            "hits1": 0.36,
+            "tokens": 5412,
+            "latency": 109.59,
+            "toolCalls": 2.02,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.7531,
+            "lo": 0.6498,
+            "hi": 0.8499,
+            "hits1": 0.82,
+            "tokens": 3414,
+            "latency": 36.69,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.0547,
+            "lo": 0.01,
+            "hi": 0.1128,
+            "hits1": 0.06,
+            "tokens": 745,
+            "latency": 30.87,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.6087,
+            "lo": 0.4844,
+            "hi": 0.7244,
+            "hits1": 0.7,
+            "tokens": 1293,
+            "latency": 46.88,
+            "toolCalls": 0.48,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.7768,
+            "lo": 0.6626,
+            "hi": 0.8806,
+            "hits1": 0.76,
+            "tokens": 1147,
+            "latency": 31.18,
+            "toolCalls": 0.0,
             "n": 50
           }
         }
       ],
       "3": [
         {
-          "model": "qwen3-0.6b-mlx",
-          "params_b": 0.6,
-          "control": false,
-          "none": null,
-          "vector": null,
-          "graph_rag": null,
-          "graph": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 3572,
-            "latency": 117.87,
-            "toolCalls": 0.0,
-            "n": 50
-          }
-        },
-        {
           "model": "qwen3-1.7b-mlx",
           "params_b": 1.7,
           "control": false,
           "none": {
-            "f1": 0.0385,
-            "lo": 0.0229,
-            "hi": 0.0567,
-            "hits1": 0.06,
-            "tokens": 291,
-            "latency": 7.09,
+            "f1": 0.0638,
+            "lo": 0.0249,
+            "hi": 0.1119,
+            "hits1": 0.16,
+            "tokens": 206,
+            "latency": 1.55,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "vector": {
-            "f1": 0.1487,
-            "lo": 0.1177,
-            "hi": 0.18,
-            "hits1": 0.325,
-            "tokens": 585,
-            "latency": 3.19,
+            "f1": 0.1824,
+            "lo": 0.1102,
+            "hi": 0.2635,
+            "hits1": 0.34,
+            "tokens": 706,
+            "latency": 1.08,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.2449,
+            "lo": 0.1645,
+            "hi": 0.3335,
+            "hits1": 0.4,
+            "tokens": 2392,
+            "latency": 6.09,
+            "toolCalls": 0.0,
+            "n": 50
           },
           "graph_rag": {
-            "f1": 0.4023,
-            "lo": 0.3522,
-            "hi": 0.4525,
-            "hits1": 0.51,
-            "tokens": 2763,
-            "latency": 4.38,
+            "f1": 0.4366,
+            "lo": 0.3238,
+            "hi": 0.5481,
+            "hits1": 0.44,
+            "tokens": 2694,
+            "latency": 6.05,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "graph": {
-            "f1": 0.044,
-            "lo": 0.0067,
-            "hi": 0.0933,
+            "f1": 0.024,
+            "lo": 0.0012,
+            "hi": 0.0575,
             "hits1": 0.08,
-            "tokens": 3537,
-            "latency": 17.45,
+            "tokens": 3609,
+            "latency": 37.45,
+            "toolCalls": 0.04,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.3286,
+            "lo": 0.2198,
+            "hi": 0.4372,
+            "hits1": 0.4,
+            "tokens": 6084,
+            "latency": 14.43,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.1991,
+            "lo": 0.1324,
+            "hi": 0.2745,
+            "hits1": 0.34,
+            "tokens": 768,
+            "latency": 9.02,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.1809,
+            "lo": 0.1056,
+            "hi": 0.2668,
+            "hits1": 0.34,
+            "tokens": 1026,
+            "latency": 1.77,
+            "toolCalls": 0.26,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.485,
+            "lo": 0.3684,
+            "hi": 0.6027,
+            "hits1": 0.46,
+            "tokens": 760,
+            "latency": 1.59,
             "toolCalls": 0.0,
             "n": 50
           }
@@ -1175,60 +1570,92 @@
           "params_b": 3,
           "control": true,
           "none": {
-            "f1": 0.1002,
-            "lo": 0.0753,
-            "hi": 0.1273,
-            "hits1": 0.185,
-            "tokens": 493,
-            "latency": 16.87,
-            "toolCalls": 0.0,
-            "n": 200
-          },
-          "vector": {
-            "f1": 0.18,
-            "lo": 0.1473,
-            "hi": 0.2133,
-            "hits1": 0.34,
-            "tokens": 759,
-            "latency": 15.29,
-            "toolCalls": 0.0,
-            "n": 200
-          },
-          "graph_rag": {
-            "f1": 0.4114,
-            "lo": 0.3569,
-            "hi": 0.4637,
-            "hits1": 0.47,
-            "tokens": 3073,
-            "latency": 19.8,
-            "toolCalls": 0.0,
-            "n": 200
-          },
-          "graph": {
-            "f1": 0.0759,
-            "lo": 0.0283,
-            "hi": 0.1379,
-            "hits1": 0.14,
-            "tokens": 2687,
-            "latency": 7.41,
+            "f1": 0.104,
+            "lo": 0.0568,
+            "hi": 0.1564,
+            "hits1": 0.24,
+            "tokens": 249,
+            "latency": 3.2,
             "toolCalls": 0.0,
             "n": 50
-          }
-        },
-        {
-          "model": "phi3.5-mini-mlx",
-          "params_b": 3.8,
-          "control": false,
-          "none": null,
-          "vector": null,
-          "graph_rag": null,
+          },
+          "vector": {
+            "f1": 0.2239,
+            "lo": 0.1515,
+            "hi": 0.302,
+            "hits1": 0.38,
+            "tokens": 717,
+            "latency": 1.86,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.2629,
+            "lo": 0.188,
+            "hi": 0.3424,
+            "hits1": 0.4,
+            "tokens": 2275,
+            "latency": 3.85,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag": {
+            "f1": 0.3972,
+            "lo": 0.2844,
+            "hi": 0.5135,
+            "hits1": 0.44,
+            "tokens": 2754,
+            "latency": 5.45,
+            "toolCalls": 0.0,
+            "n": 50
+          },
           "graph": {
-            "f1": 0.09,
-            "lo": 0.0514,
-            "hi": 0.1337,
-            "hits1": 0.14,
-            "tokens": 1249,
-            "latency": 10.81,
+            "f1": 0.0944,
+            "lo": 0.0507,
+            "hi": 0.1424,
+            "hits1": 0.2,
+            "tokens": 2298,
+            "latency": 7.66,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.2337,
+            "lo": 0.1488,
+            "hi": 0.3261,
+            "hits1": 0.24,
+            "tokens": 6046,
+            "latency": 8.68,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.0874,
+            "lo": 0.0438,
+            "hi": 0.1402,
+            "hits1": 0.18,
+            "tokens": 896,
+            "latency": 5.55,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.204,
+            "lo": 0.1283,
+            "hi": 0.2852,
+            "hits1": 0.28,
+            "tokens": 745,
+            "latency": 2.58,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.4793,
+            "lo": 0.3661,
+            "hi": 0.5921,
+            "hits1": 0.46,
+            "tokens": 898,
+            "latency": 4.48,
             "toolCalls": 0.0,
             "n": 50
           }
@@ -1238,96 +1665,282 @@
           "params_b": 4,
           "control": false,
           "none": {
-            "f1": 0.0574,
-            "lo": 0.0368,
-            "hi": 0.0805,
-            "hits1": 0.135,
-            "tokens": 244,
-            "latency": 10.3,
+            "f1": 0.0446,
+            "lo": 0.01,
+            "hi": 0.0865,
+            "hits1": 0.1,
+            "tokens": 249,
+            "latency": 7.39,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "vector": {
-            "f1": 0.1579,
-            "lo": 0.1242,
-            "hi": 0.1954,
-            "hits1": 0.355,
-            "tokens": 647,
-            "latency": 7.03,
+            "f1": 0.1317,
+            "lo": 0.0768,
+            "hi": 0.1944,
+            "hits1": 0.3,
+            "tokens": 798,
+            "latency": 7.01,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.2491,
+            "lo": 0.1656,
+            "hi": 0.3373,
+            "hits1": 0.4,
+            "tokens": 2471,
+            "latency": 14.16,
+            "toolCalls": 0.0,
+            "n": 50
           },
           "graph_rag": {
-            "f1": 0.5304,
-            "lo": 0.4709,
-            "hi": 0.5889,
-            "hits1": 0.54,
-            "tokens": 2985,
-            "latency": 18.12,
+            "f1": 0.4836,
+            "lo": 0.3637,
+            "hi": 0.6026,
+            "hits1": 0.44,
+            "tokens": 2892,
+            "latency": 19.3,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "graph": {
-            "f1": 0.0164,
-            "lo": 0.0,
-            "hi": 0.0443,
-            "hits1": 0.04,
-            "tokens": 3715,
-            "latency": 28.76,
-            "toolCalls": 0.08,
+            "f1": 0.0559,
+            "lo": 0.0157,
+            "hi": 0.1099,
+            "hits1": 0.08,
+            "tokens": 3666,
+            "latency": 74.66,
+            "toolCalls": 0.06,
             "n": 50
-          }
-        },
-        {
-          "model": "mistral-7b-mlx",
-          "params_b": 7,
-          "control": false,
-          "none": null,
-          "vector": null,
-          "graph_rag": null,
-          "graph": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 1089,
-            "latency": 7.86,
+          },
+          "graph_rag_blind": {
+            "f1": 0.3907,
+            "lo": 0.2871,
+            "hi": 0.4985,
+            "hits1": 0.54,
+            "tokens": 6220,
+            "latency": 34.53,
             "toolCalls": 0.0,
             "n": 50
-          }
-        },
-        {
-          "model": "qwen2.5-7b-mlx",
-          "params_b": 7,
-          "control": false,
-          "none": null,
-          "vector": null,
-          "graph_rag": null,
-          "graph": {
-            "f1": 0.089,
-            "lo": 0.0347,
-            "hi": 0.1528,
-            "hits1": 0.1837,
-            "tokens": 9257,
-            "latency": 31.52,
-            "toolCalls": 15.06,
-            "n": 49
+          },
+          "triple_rag": {
+            "f1": 0.1727,
+            "lo": 0.113,
+            "hi": 0.2366,
+            "hits1": 0.3,
+            "tokens": 752,
+            "latency": 32.25,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.3262,
+            "lo": 0.2364,
+            "hi": 0.4173,
+            "hits1": 0.52,
+            "tokens": 1809,
+            "latency": 24.8,
+            "toolCalls": 0.82,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.1878,
+            "lo": 0.1026,
+            "hi": 0.2862,
+            "hits1": 0.28,
+            "tokens": 846,
+            "latency": 10.69,
+            "toolCalls": 0.0,
+            "n": 50
           }
         },
         {
           "model": "granite3.3-8b-mlx",
           "params_b": 8,
           "control": false,
-          "none": null,
-          "vector": null,
-          "graph_rag": null,
+          "none": {
+            "f1": 0.0154,
+            "lo": 0.0033,
+            "hi": 0.0308,
+            "hits1": 0.0,
+            "tokens": 223,
+            "latency": 1.71,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "vector": {
+            "f1": 0.01,
+            "lo": 0.0,
+            "hi": 0.03,
+            "hits1": 0.0,
+            "tokens": 882,
+            "latency": 1.39,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.0307,
+            "lo": 0.0,
+            "hi": 0.0773,
+            "hits1": 0.04,
+            "tokens": 2899,
+            "latency": 4.29,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag": {
+            "f1": 0.3474,
+            "lo": 0.2377,
+            "hi": 0.4618,
+            "hits1": 0.26,
+            "tokens": 3438,
+            "latency": 5.16,
+            "toolCalls": 0.0,
+            "n": 50
+          },
           "graph": {
-            "f1": 0.0904,
-            "lo": 0.0454,
-            "hi": 0.1431,
-            "hits1": 0.1,
-            "tokens": 2102,
-            "latency": 16.3,
+            "f1": 0.1168,
+            "lo": 0.0599,
+            "hi": 0.1779,
+            "hits1": 0.18,
+            "tokens": 2090,
+            "latency": 11.59,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.2523,
+            "lo": 0.1546,
+            "hi": 0.3585,
+            "hits1": 0.24,
+            "tokens": 7962,
+            "latency": 17.56,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.1555,
+            "lo": 0.0911,
+            "hi": 0.2298,
+            "hits1": 0.32,
+            "tokens": 870,
+            "latency": 6.5,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.1511,
+            "lo": 0.0806,
+            "hi": 0.2299,
+            "hits1": 0.3,
+            "tokens": 2166,
+            "latency": 3.62,
+            "toolCalls": 0.88,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.2457,
+            "lo": 0.1469,
+            "hi": 0.3514,
+            "hits1": 0.3,
+            "tokens": 910,
+            "latency": 1.97,
+            "toolCalls": 0.0,
+            "n": 50
+          }
+        },
+        {
+          "model": "hermes3-llama3.1-8b-mlx",
+          "params_b": 8,
+          "control": false,
+          "none": {
+            "f1": 0.1456,
+            "lo": 0.0742,
+            "hi": 0.2222,
+            "hits1": 0.26,
+            "tokens": 235,
+            "latency": 1.18,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "vector": {
+            "f1": 0.1567,
+            "lo": 0.0897,
+            "hi": 0.2327,
+            "hits1": 0.34,
+            "tokens": 710,
+            "latency": 1.14,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.1851,
+            "lo": 0.117,
+            "hi": 0.2593,
+            "hits1": 0.36,
+            "tokens": 2227,
+            "latency": 4.22,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag": {
+            "f1": 0.3098,
+            "lo": 0.2106,
+            "hi": 0.4217,
+            "hits1": 0.42,
+            "tokens": 2659,
+            "latency": 4.7,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph": {
+            "f1": 0.0835,
+            "lo": 0.032,
+            "hi": 0.1474,
+            "hits1": 0.14,
+            "tokens": 709,
+            "latency": 4.88,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.275,
+            "lo": 0.1846,
+            "hi": 0.3758,
+            "hits1": 0.44,
+            "tokens": 5931,
+            "latency": 10.58,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.1371,
+            "lo": 0.0831,
+            "hi": 0.1966,
+            "hits1": 0.32,
+            "tokens": 765,
+            "latency": 2.59,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.2145,
+            "lo": 0.1374,
+            "hi": 0.2984,
+            "hits1": 0.38,
+            "tokens": 826,
+            "latency": 1.67,
+            "toolCalls": 0.06,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.4488,
+            "lo": 0.331,
+            "hi": 0.5677,
+            "hits1": 0.54,
+            "tokens": 794,
+            "latency": 1.63,
             "toolCalls": 0.0,
             "n": 50
           }
@@ -1336,16 +1949,93 @@
           "model": "llama3.1-8b-mlx",
           "params_b": 8,
           "control": false,
-          "none": null,
-          "vector": null,
-          "graph_rag": null,
+          "none": {
+            "f1": 0.126,
+            "lo": 0.0624,
+            "hi": 0.2016,
+            "hits1": 0.16,
+            "tokens": 442,
+            "latency": 36.19,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "vector": {
+            "f1": 0.0813,
+            "lo": 0.0319,
+            "hi": 0.1466,
+            "hits1": 0.1,
+            "tokens": 881,
+            "latency": 37.44,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.0828,
+            "lo": 0.0273,
+            "hi": 0.1511,
+            "hits1": 0.16,
+            "tokens": 2405,
+            "latency": 38.62,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag": {
+            "f1": 0.244,
+            "lo": 0.1353,
+            "hi": 0.3592,
+            "hits1": 0.28,
+            "tokens": 2919,
+            "latency": 39.39,
+            "toolCalls": 0.0,
+            "n": 50
+          },
           "graph": {
             "f1": 0.0,
             "lo": 0.0,
             "hi": 0.0,
             "hits1": 0.0,
-            "tokens": 1485,
-            "latency": 1.36,
+            "tokens": 1498,
+            "latency": 32.96,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.2623,
+            "lo": 0.1675,
+            "hi": 0.3652,
+            "hits1": 0.32,
+            "tokens": 6292,
+            "latency": 39.7,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.0417,
+            "lo": 0.0093,
+            "hi": 0.0813,
+            "hits1": 0.08,
+            "tokens": 1055,
+            "latency": 34.5,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.1197,
+            "lo": 0.0562,
+            "hi": 0.1903,
+            "hits1": 0.16,
+            "tokens": 2030,
+            "latency": 59.59,
+            "toolCalls": 0.94,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.2176,
+            "lo": 0.1256,
+            "hi": 0.3176,
+            "hits1": 0.36,
+            "tokens": 1197,
+            "latency": 34.01,
             "toolCalls": 0.0,
             "n": 50
           }
@@ -1355,43 +2045,93 @@
           "params_b": 8,
           "control": false,
           "none": {
-            "f1": 0.0857,
-            "lo": 0.06,
-            "hi": 0.1135,
-            "hits1": 0.18,
-            "tokens": 452,
-            "latency": 66.11,
+            "f1": 0.084,
+            "lo": 0.0428,
+            "hi": 0.1322,
+            "hits1": 0.12,
+            "tokens": 334,
+            "latency": 21.23,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "vector": {
-            "f1": 0.0961,
-            "lo": 0.0669,
-            "hi": 0.1264,
-            "hits1": 0.195,
-            "tokens": 656,
-            "latency": 62.05,
+            "f1": 0.1139,
+            "lo": 0.0564,
+            "hi": 0.1847,
+            "hits1": 0.2,
+            "tokens": 753,
+            "latency": 20.63,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.1558,
+            "lo": 0.0844,
+            "hi": 0.2363,
+            "hits1": 0.24,
+            "tokens": 2421,
+            "latency": 26.6,
+            "toolCalls": 0.0,
+            "n": 50
           },
           "graph_rag": {
-            "f1": 0.5001,
-            "lo": 0.4371,
-            "hi": 0.5624,
-            "hits1": 0.52,
-            "tokens": 3032,
-            "latency": 69.58,
+            "f1": 0.2873,
+            "lo": 0.1778,
+            "hi": 0.403,
+            "hits1": 0.34,
+            "tokens": 2792,
+            "latency": 31.46,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "graph": {
-            "f1": 0.0895,
-            "lo": 0.0467,
-            "hi": 0.1347,
-            "hits1": 0.18,
-            "tokens": 3304,
-            "latency": 29.75,
+            "f1": 0.0761,
+            "lo": 0.031,
+            "hi": 0.1304,
+            "hits1": 0.16,
+            "tokens": 3326,
+            "latency": 90.11,
             "toolCalls": 0.02,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.3527,
+            "lo": 0.2411,
+            "hi": 0.4672,
+            "hits1": 0.44,
+            "tokens": 6206,
+            "latency": 48.91,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.056,
+            "lo": 0.0081,
+            "hi": 0.12,
+            "hits1": 0.06,
+            "tokens": 819,
+            "latency": 33.2,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.3263,
+            "lo": 0.2364,
+            "hi": 0.4226,
+            "hits1": 0.52,
+            "tokens": 2884,
+            "latency": 69.42,
+            "toolCalls": 1.66,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.1543,
+            "lo": 0.0732,
+            "hi": 0.2462,
+            "hits1": 0.2,
+            "tokens": 843,
+            "latency": 21.49,
+            "toolCalls": 0.0,
             "n": 50
           }
         },
@@ -1399,16 +2139,93 @@
           "model": "gemma2-9b-mlx",
           "params_b": 9,
           "control": false,
-          "none": null,
-          "vector": null,
-          "graph_rag": null,
+          "none": {
+            "f1": 0.1938,
+            "lo": 0.1208,
+            "hi": 0.2754,
+            "hits1": 0.36,
+            "tokens": 185,
+            "latency": 3.63,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "vector": {
+            "f1": 0.2218,
+            "lo": 0.1433,
+            "hi": 0.3082,
+            "hits1": 0.42,
+            "tokens": 672,
+            "latency": 3.57,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.2376,
+            "lo": 0.1583,
+            "hi": 0.3219,
+            "hits1": 0.38,
+            "tokens": 2184,
+            "latency": 6.86,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag": {
+            "f1": 0.5475,
+            "lo": 0.4273,
+            "hi": 0.6668,
+            "hits1": 0.44,
+            "tokens": 2808,
+            "latency": 6.69,
+            "toolCalls": 0.0,
+            "n": 50
+          },
           "graph": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 0,
-            "latency": 0.0,
+            "f1": 0.1499,
+            "lo": 0.0938,
+            "hi": 0.2157,
+            "hits1": 0.34,
+            "tokens": 663,
+            "latency": 5.8,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.238,
+            "lo": 0.1403,
+            "hi": 0.3471,
+            "hits1": 0.22,
+            "tokens": 6345,
+            "latency": 13.82,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.1658,
+            "lo": 0.0929,
+            "hi": 0.249,
+            "hits1": 0.38,
+            "tokens": 699,
+            "latency": 5.26,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.225,
+            "lo": 0.1509,
+            "hi": 0.3037,
+            "hits1": 0.42,
+            "tokens": 729,
+            "latency": 4.34,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.306,
+            "lo": 0.2029,
+            "hi": 0.4132,
+            "hits1": 0.34,
+            "tokens": 792,
+            "latency": 3.89,
             "toolCalls": 0.0,
             "n": 50
           }
@@ -1418,43 +2235,93 @@
           "params_b": 14,
           "control": false,
           "none": {
-            "f1": 0.1438,
-            "lo": 0.1116,
-            "hi": 0.1785,
-            "hits1": 0.3,
-            "tokens": 210,
-            "latency": 8.46,
+            "f1": 0.1296,
+            "lo": 0.0739,
+            "hi": 0.1908,
+            "hits1": 0.26,
+            "tokens": 156,
+            "latency": 6.26,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "vector": {
-            "f1": 0.1648,
-            "lo": 0.131,
-            "hi": 0.2002,
-            "hits1": 0.39,
-            "tokens": 572,
-            "latency": 6.43,
+            "f1": 0.1822,
+            "lo": 0.1169,
+            "hi": 0.2562,
+            "hits1": 0.38,
+            "tokens": 695,
+            "latency": 7.92,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.2422,
+            "lo": 0.1638,
+            "hi": 0.3253,
+            "hits1": 0.46,
+            "tokens": 2295,
+            "latency": 12.94,
+            "toolCalls": 0.0,
+            "n": 50
           },
           "graph_rag": {
-            "f1": 0.5662,
-            "lo": 0.508,
-            "hi": 0.6232,
-            "hits1": 0.54,
-            "tokens": 2740,
-            "latency": 14.91,
+            "f1": 0.6019,
+            "lo": 0.4805,
+            "hi": 0.7198,
+            "hits1": 0.44,
+            "tokens": 2641,
+            "latency": 14.62,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "graph": {
-            "f1": 0.0825,
-            "lo": 0.0361,
-            "hi": 0.1383,
-            "hits1": 0.2,
-            "tokens": 4656,
-            "latency": 52.49,
-            "toolCalls": 0.72,
+            "f1": 0.0608,
+            "lo": 0.021,
+            "hi": 0.1087,
+            "hits1": 0.14,
+            "tokens": 4152,
+            "latency": 79.61,
+            "toolCalls": 0.46,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.4864,
+            "lo": 0.3866,
+            "hi": 0.5849,
+            "hits1": 0.62,
+            "tokens": 6007,
+            "latency": 33.65,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.1929,
+            "lo": 0.1225,
+            "hi": 0.271,
+            "hits1": 0.32,
+            "tokens": 720,
+            "latency": 24.66,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.2453,
+            "lo": 0.162,
+            "hi": 0.3346,
+            "hits1": 0.48,
+            "tokens": 975,
+            "latency": 17.99,
+            "toolCalls": 0.18,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.3464,
+            "lo": 0.2343,
+            "hi": 0.469,
+            "hits1": 0.48,
+            "tokens": 724,
+            "latency": 9.49,
+            "toolCalls": 0.0,
             "n": 50
           }
         },
@@ -1463,135 +2330,190 @@
           "params_b": 30,
           "control": false,
           "none": {
-            "f1": 0.1284,
-            "lo": 0.0985,
-            "hi": 0.1599,
-            "hits1": 0.26,
-            "tokens": 239,
-            "latency": 65.85,
+            "f1": 0.1484,
+            "lo": 0.0832,
+            "hi": 0.2226,
+            "hits1": 0.28,
+            "tokens": 228,
+            "latency": 35.25,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "vector": {
-            "f1": 0.1969,
-            "lo": 0.159,
-            "hi": 0.2379,
-            "hits1": 0.41,
-            "tokens": 577,
-            "latency": 59.72,
+            "f1": 0.226,
+            "lo": 0.148,
+            "hi": 0.3098,
+            "hits1": 0.36,
+            "tokens": 702,
+            "latency": 35.37,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
+          },
+          "vector_matched": {
+            "f1": 0.2391,
+            "lo": 0.1614,
+            "hi": 0.3205,
+            "hits1": 0.48,
+            "tokens": 2341,
+            "latency": 42.14,
+            "toolCalls": 0.0,
+            "n": 50
           },
           "graph_rag": {
-            "f1": 0.6117,
-            "lo": 0.552,
-            "hi": 0.6705,
-            "hits1": 0.635,
-            "tokens": 2960,
-            "latency": 71.1,
+            "f1": 0.4182,
+            "lo": 0.2946,
+            "hi": 0.5414,
+            "hits1": 0.38,
+            "tokens": 2839,
+            "latency": 48.45,
             "toolCalls": 0.0,
-            "n": 200
+            "n": 50
           },
           "graph": {
-            "f1": 0.1177,
-            "lo": 0.0569,
-            "hi": 0.1866,
-            "hits1": 0.2,
-            "tokens": 4413,
-            "latency": 393.6,
-            "toolCalls": 0.66,
+            "f1": 0.0916,
+            "lo": 0.0448,
+            "hi": 0.1471,
+            "hits1": 0.18,
+            "tokens": 4950,
+            "latency": 134.35,
+            "toolCalls": 1.34,
+            "n": 50
+          },
+          "graph_rag_blind": {
+            "f1": 0.3807,
+            "lo": 0.2684,
+            "hi": 0.4982,
+            "hits1": 0.44,
+            "tokens": 6114,
+            "latency": 50.87,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "triple_rag": {
+            "f1": 0.111,
+            "lo": 0.054,
+            "hi": 0.1797,
+            "hits1": 0.16,
+            "tokens": 786,
+            "latency": 40.18,
+            "toolCalls": 0.0,
+            "n": 50
+          },
+          "rag_iter": {
+            "f1": 0.3721,
+            "lo": 0.2839,
+            "hi": 0.47,
+            "hits1": 0.56,
+            "tokens": 1788,
+            "latency": 69.53,
+            "toolCalls": 0.74,
+            "n": 50
+          },
+          "oracle": {
+            "f1": 0.075,
+            "lo": 0.022,
+            "hi": 0.1444,
+            "hits1": 0.1,
+            "tokens": 797,
+            "latency": 36.13,
+            "toolCalls": 0.0,
             "n": 50
           }
         }
       ],
       "pooled": [
         {
-          "model": "qwen3-0.6b-mlx",
-          "params_b": 0.6,
-          "control": false,
-          "none": {
-            "f1": 0.0576,
-            "lo": 0.0083,
-            "hi": 0.1212,
-            "hits1": 0.0909,
-            "tokens": 231,
-            "latency": 1.37,
-            "toolCalls": 0.0,
-            "n": 44
-          },
-          "vector": {
-            "f1": 0.1448,
-            "lo": 0.0687,
-            "hi": 0.2327,
-            "hits1": 0.1818,
-            "tokens": 667,
-            "latency": 2.59,
-            "toolCalls": 0.0,
-            "n": 44
-          },
-          "graph_rag": {
-            "f1": 0.337,
-            "lo": 0.2177,
-            "hi": 0.4576,
-            "hits1": 0.2955,
-            "tokens": 2375,
-            "latency": 2.13,
-            "toolCalls": 0.0,
-            "n": 44
-          },
-          "graph": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 3561,
-            "latency": 120.91,
-            "toolCalls": 0.0,
-            "n": 100
-          }
-        },
-        {
           "model": "qwen3-1.7b-mlx",
           "params_b": 1.7,
           "control": false,
           "none": {
-            "f1": 0.04,
-            "lo": 0.0281,
-            "hi": 0.0531,
-            "hits1": 0.06,
-            "tokens": 273,
-            "latency": 6.31,
+            "f1": 0.0497,
+            "lo": 0.0249,
+            "hi": 0.0791,
+            "hits1": 0.11,
+            "tokens": 215,
+            "latency": 1.56,
             "toolCalls": 0.0,
-            "n": 400
+            "n": 100
           },
           "vector": {
-            "f1": 0.1851,
-            "lo": 0.1574,
-            "hi": 0.2132,
-            "hits1": 0.31,
-            "tokens": 557,
-            "latency": 3.21,
+            "f1": 0.2477,
+            "lo": 0.1845,
+            "hi": 0.3135,
+            "hits1": 0.35,
+            "tokens": 699,
+            "latency": 1.34,
             "toolCalls": 0.0,
-            "n": 400
+            "n": 100
+          },
+          "vector_matched": {
+            "f1": 0.3233,
+            "lo": 0.25,
+            "hi": 0.3985,
+            "hits1": 0.43,
+            "tokens": 2222,
+            "latency": 6.39,
+            "toolCalls": 0.0,
+            "n": 100
           },
           "graph_rag": {
-            "f1": 0.526,
-            "lo": 0.4842,
-            "hi": 0.5656,
-            "hits1": 0.5725,
-            "tokens": 2166,
-            "latency": 4.96,
+            "f1": 0.522,
+            "lo": 0.434,
+            "hi": 0.6043,
+            "hits1": 0.54,
+            "tokens": 2516,
+            "latency": 6.12,
             "toolCalls": 0.0,
-            "n": 400
+            "n": 100
           },
           "graph": {
-            "f1": 0.037,
-            "lo": 0.01,
-            "hi": 0.0703,
-            "hits1": 0.06,
-            "tokens": 3690,
-            "latency": 19.42,
-            "toolCalls": 0.1,
+            "f1": 0.0493,
+            "lo": 0.0155,
+            "hi": 0.0899,
+            "hits1": 0.08,
+            "tokens": 3623,
+            "latency": 35.56,
+            "toolCalls": 0.12,
+            "n": 100
+          },
+          "graph_rag_blind": {
+            "f1": 0.4636,
+            "lo": 0.3791,
+            "hi": 0.5468,
+            "hits1": 0.52,
+            "tokens": 4727,
+            "latency": 12.15,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "triple_rag": {
+            "f1": 0.1394,
+            "lo": 0.0928,
+            "hi": 0.1909,
+            "hits1": 0.21,
+            "tokens": 765,
+            "latency": 8.78,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "rag_iter": {
+            "f1": 0.2568,
+            "lo": 0.1879,
+            "hi": 0.332,
+            "hits1": 0.36,
+            "tokens": 889,
+            "latency": 2.32,
+            "toolCalls": 0.14,
+            "n": 100
+          },
+          "oracle": {
+            "f1": 0.5926,
+            "lo": 0.505,
+            "hi": 0.6793,
+            "hits1": 0.56,
+            "tokens": 912,
+            "latency": 1.33,
+            "toolCalls": 0.0,
             "n": 100
           }
         },
@@ -1600,87 +2522,92 @@
           "params_b": 3,
           "control": true,
           "none": {
-            "f1": 0.0812,
-            "lo": 0.0637,
-            "hi": 0.0997,
-            "hits1": 0.1325,
-            "tokens": 465,
-            "latency": 14.01,
-            "toolCalls": 0.0,
-            "n": 400
-          },
-          "vector": {
-            "f1": 0.2341,
-            "lo": 0.2044,
-            "hi": 0.2639,
-            "hits1": 0.38,
-            "tokens": 693,
-            "latency": 12.76,
-            "toolCalls": 0.0,
-            "n": 400
-          },
-          "graph_rag": {
-            "f1": 0.5555,
-            "lo": 0.5149,
-            "hi": 0.5941,
-            "hits1": 0.6325,
-            "tokens": 2395,
-            "latency": 15.61,
-            "toolCalls": 0.0,
-            "n": 400
-          },
-          "graph": {
-            "f1": 0.0464,
-            "lo": 0.0192,
-            "hi": 0.0782,
-            "hits1": 0.08,
-            "tokens": 2646,
-            "latency": 7.72,
+            "f1": 0.0886,
+            "lo": 0.0518,
+            "hi": 0.1325,
+            "hits1": 0.19,
+            "tokens": 266,
+            "latency": 2.82,
             "toolCalls": 0.0,
             "n": 100
-          }
-        },
-        {
-          "model": "phi3.5-mini-mlx",
-          "params_b": 3.8,
-          "control": false,
-          "none": {
-            "f1": 0.0072,
-            "lo": 0.0,
-            "hi": 0.0163,
-            "hits1": 0.0465,
-            "tokens": 1070,
-            "latency": 24.84,
-            "toolCalls": 0.0,
-            "n": 43
           },
           "vector": {
-            "f1": 0.2293,
-            "lo": 0.126,
-            "hi": 0.3402,
-            "hits1": 0.2558,
-            "tokens": 730,
-            "latency": 20.05,
+            "f1": 0.2943,
+            "lo": 0.2297,
+            "hi": 0.3633,
+            "hits1": 0.43,
+            "tokens": 691,
+            "latency": 2.1,
             "toolCalls": 0.0,
-            "n": 43
+            "n": 100
+          },
+          "vector_matched": {
+            "f1": 0.3682,
+            "lo": 0.2968,
+            "hi": 0.4433,
+            "hits1": 0.49,
+            "tokens": 2119,
+            "latency": 3.93,
+            "toolCalls": 0.0,
+            "n": 100
           },
           "graph_rag": {
-            "f1": 0.4492,
-            "lo": 0.3256,
-            "hi": 0.5732,
-            "hits1": 0.4884,
-            "tokens": 3270,
-            "latency": 19.49,
+            "f1": 0.5277,
+            "lo": 0.445,
+            "hi": 0.6114,
+            "hits1": 0.59,
+            "tokens": 2566,
+            "latency": 5.14,
             "toolCalls": 0.0,
-            "n": 43
+            "n": 100
           },
           "graph": {
-            "f1": 0.0495,
-            "lo": 0.0276,
-            "hi": 0.0731,
-            "hits1": 0.1,
-            "tokens": 1244,
-            "latency": 11.99,
+            "f1": 0.0873,
+            "lo": 0.0514,
+            "hi": 0.1288,
+            "hits1": 0.15,
+            "tokens": 2289,
+            "latency": 7.18,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "graph_rag_blind": {
+            "f1": 0.4215,
+            "lo": 0.34,
+            "hi": 0.5043,
+            "hits1": 0.46,
+            "tokens": 4714,
+            "latency": 7.29,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "triple_rag": {
+            "f1": 0.0644,
+            "lo": 0.0335,
+            "hi": 0.1011,
+            "hits1": 0.11,
+            "tokens": 853,
+            "latency": 4.92,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "rag_iter": {
+            "f1": 0.2929,
+            "lo": 0.2252,
+            "hi": 0.3668,
+            "hits1": 0.37,
+            "tokens": 728,
+            "latency": 2.83,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "oracle": {
+            "f1": 0.6187,
+            "lo": 0.5365,
+            "hi": 0.7,
+            "hits1": 0.64,
+            "tokens": 1007,
+            "latency": 3.14,
             "toolCalls": 0.0,
             "n": 100
           }
@@ -1690,134 +2617,94 @@
           "params_b": 4,
           "control": false,
           "none": {
-            "f1": 0.0603,
-            "lo": 0.0439,
-            "hi": 0.077,
-            "hits1": 0.11,
-            "tokens": 255,
-            "latency": 8.8,
-            "toolCalls": 0.0,
-            "n": 400
-          },
-          "vector": {
-            "f1": 0.2535,
-            "lo": 0.2182,
-            "hi": 0.2879,
-            "hits1": 0.3925,
-            "tokens": 584,
-            "latency": 6.1,
-            "toolCalls": 0.0,
-            "n": 400
-          },
-          "graph_rag": {
-            "f1": 0.6501,
-            "lo": 0.6094,
-            "hi": 0.6936,
-            "hits1": 0.6825,
-            "tokens": 2331,
-            "latency": 13.55,
-            "toolCalls": 0.0,
-            "n": 400
-          },
-          "graph": {
-            "f1": 0.1422,
-            "lo": 0.0805,
-            "hi": 0.209,
-            "hits1": 0.16,
-            "tokens": 4426,
-            "latency": 32.23,
-            "toolCalls": 0.61,
-            "n": 100
-          }
-        },
-        {
-          "model": "mistral-7b-mlx",
-          "params_b": 7,
-          "control": false,
-          "none": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 0,
-            "latency": 0.0,
-            "toolCalls": 0.0,
-            "n": 44
-          },
-          "vector": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 0,
-            "latency": 0.0,
-            "toolCalls": 0.0,
-            "n": 44
-          },
-          "graph_rag": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 0,
-            "latency": 0.0,
-            "toolCalls": 0.0,
-            "n": 44
-          },
-          "graph": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 1078,
-            "latency": 7.32,
+            "f1": 0.0483,
+            "lo": 0.0219,
+            "hi": 0.0786,
+            "hits1": 0.09,
+            "tokens": 245,
+            "latency": 7.92,
             "toolCalls": 0.0,
             "n": 100
-          }
-        },
-        {
-          "model": "qwen2.5-7b-mlx",
-          "params_b": 7,
-          "control": false,
-          "none": {
-            "f1": 0.0926,
-            "lo": 0.0339,
-            "hi": 0.1611,
-            "hits1": 0.1364,
-            "tokens": 204,
-            "latency": 2.78,
-            "toolCalls": 0.0,
-            "n": 44
           },
           "vector": {
-            "f1": 0.356,
-            "lo": 0.2358,
-            "hi": 0.4886,
-            "hits1": 0.3636,
-            "tokens": 514,
-            "latency": 1.49,
+            "f1": 0.285,
+            "lo": 0.2105,
+            "hi": 0.3609,
+            "hits1": 0.38,
+            "tokens": 746,
+            "latency": 7.27,
             "toolCalls": 0.0,
-            "n": 44
+            "n": 100
+          },
+          "vector_matched": {
+            "f1": 0.3707,
+            "lo": 0.2953,
+            "hi": 0.4492,
+            "hits1": 0.48,
+            "tokens": 2278,
+            "latency": 12.98,
+            "toolCalls": 0.0,
+            "n": 100
           },
           "graph_rag": {
-            "f1": 0.6804,
-            "lo": 0.568,
-            "hi": 0.7888,
-            "hits1": 0.7955,
-            "tokens": 2405,
-            "latency": 5.18,
+            "f1": 0.5743,
+            "lo": 0.4912,
+            "hi": 0.6593,
+            "hits1": 0.59,
+            "tokens": 2664,
+            "latency": 16.62,
             "toolCalls": 0.0,
-            "n": 44
+            "n": 100
           },
           "graph": {
-            "f1": 0.1119,
-            "lo": 0.0623,
-            "hi": 0.1656,
-            "hits1": 0.1735,
-            "tokens": 8687,
-            "latency": 24.83,
-            "toolCalls": 13.68,
-            "n": 98
+            "f1": 0.1907,
+            "lo": 0.121,
+            "hi": 0.2626,
+            "hits1": 0.22,
+            "tokens": 4417,
+            "latency": 69.37,
+            "toolCalls": 0.68,
+            "n": 100
+          },
+          "graph_rag_blind": {
+            "f1": 0.5799,
+            "lo": 0.4996,
+            "hi": 0.661,
+            "hits1": 0.7,
+            "tokens": 4856,
+            "latency": 28.62,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "triple_rag": {
+            "f1": 0.1127,
+            "lo": 0.0728,
+            "hi": 0.1598,
+            "hits1": 0.18,
+            "tokens": 752,
+            "latency": 25.76,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "rag_iter": {
+            "f1": 0.519,
+            "lo": 0.4395,
+            "hi": 0.5966,
+            "hits1": 0.64,
+            "tokens": 1715,
+            "latency": 21.33,
+            "toolCalls": 0.79,
+            "n": 100
+          },
+          "oracle": {
+            "f1": 0.4767,
+            "lo": 0.3899,
+            "hi": 0.5695,
+            "hits1": 0.54,
+            "tokens": 995,
+            "latency": 10.39,
+            "toolCalls": 0.0,
+            "n": 100
           }
         },
         {
@@ -1825,42 +2712,187 @@
           "params_b": 8,
           "control": false,
           "none": {
-            "f1": 0.1704,
-            "lo": 0.0924,
-            "hi": 0.253,
-            "hits1": 0.2727,
-            "tokens": 298,
-            "latency": 7.31,
+            "f1": 0.0099,
+            "lo": 0.0026,
+            "hi": 0.0191,
+            "hits1": 0.0,
+            "tokens": 212,
+            "latency": 1.38,
             "toolCalls": 0.0,
-            "n": 44
+            "n": 100
           },
           "vector": {
-            "f1": 0.3434,
-            "lo": 0.2203,
-            "hi": 0.4755,
-            "hits1": 0.4091,
-            "tokens": 677,
-            "latency": 6.41,
+            "f1": 0.0568,
+            "lo": 0.0216,
+            "hi": 0.0994,
+            "hits1": 0.03,
+            "tokens": 846,
+            "latency": 1.47,
             "toolCalls": 0.0,
-            "n": 44
+            "n": 100
+          },
+          "vector_matched": {
+            "f1": 0.1231,
+            "lo": 0.0677,
+            "hi": 0.1853,
+            "hits1": 0.11,
+            "tokens": 2681,
+            "latency": 4.5,
+            "toolCalls": 0.0,
+            "n": 100
           },
           "graph_rag": {
-            "f1": 0.7077,
-            "lo": 0.5963,
-            "hi": 0.8175,
-            "hits1": 0.7674,
-            "tokens": 3223,
-            "latency": 12.6,
+            "f1": 0.4078,
+            "lo": 0.3222,
+            "hi": 0.4931,
+            "hits1": 0.39,
+            "tokens": 3239,
+            "latency": 5.13,
             "toolCalls": 0.0,
-            "n": 43
+            "n": 100
           },
           "graph": {
-            "f1": 0.0697,
-            "lo": 0.039,
-            "hi": 0.1048,
-            "hits1": 0.08,
-            "tokens": 2085,
-            "latency": 19.72,
+            "f1": 0.1147,
+            "lo": 0.0721,
+            "hi": 0.16,
+            "hits1": 0.14,
+            "tokens": 2061,
+            "latency": 10.79,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "graph_rag_blind": {
+            "f1": 0.3571,
+            "lo": 0.2768,
+            "hi": 0.4413,
+            "hits1": 0.36,
+            "tokens": 6168,
+            "latency": 13.74,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "triple_rag": {
+            "f1": 0.1184,
+            "lo": 0.0722,
+            "hi": 0.1707,
+            "hits1": 0.21,
+            "tokens": 852,
+            "latency": 5.14,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "rag_iter": {
+            "f1": 0.3242,
+            "lo": 0.2482,
+            "hi": 0.4035,
+            "hits1": 0.46,
+            "tokens": 2270,
+            "latency": 3.3,
+            "toolCalls": 1.01,
+            "n": 100
+          },
+          "oracle": {
+            "f1": 0.3349,
+            "lo": 0.2552,
+            "hi": 0.4206,
+            "hits1": 0.38,
+            "tokens": 1130,
+            "latency": 1.79,
+            "toolCalls": 0.0,
+            "n": 100
+          }
+        },
+        {
+          "model": "hermes3-llama3.1-8b-mlx",
+          "params_b": 8,
+          "control": false,
+          "none": {
+            "f1": 0.1226,
+            "lo": 0.0751,
+            "hi": 0.1747,
+            "hits1": 0.2,
+            "tokens": 269,
+            "latency": 1.57,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "vector": {
+            "f1": 0.2814,
+            "lo": 0.2108,
+            "hi": 0.3558,
+            "hits1": 0.41,
+            "tokens": 695,
+            "latency": 1.44,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "vector_matched": {
+            "f1": 0.322,
+            "lo": 0.2464,
+            "hi": 0.3975,
+            "hits1": 0.45,
+            "tokens": 2087,
+            "latency": 4.42,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "graph_rag": {
+            "f1": 0.435,
+            "lo": 0.3501,
+            "hi": 0.5216,
+            "hits1": 0.52,
+            "tokens": 2503,
+            "latency": 4.57,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "graph": {
+            "f1": 0.0791,
+            "lo": 0.0407,
+            "hi": 0.1207,
+            "hits1": 0.12,
+            "tokens": 693,
+            "latency": 4.32,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "graph_rag_blind": {
+            "f1": 0.3933,
+            "lo": 0.3132,
+            "hi": 0.4732,
+            "hits1": 0.52,
+            "tokens": 4645,
+            "latency": 8.36,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "triple_rag": {
+            "f1": 0.1119,
+            "lo": 0.0721,
+            "hi": 0.1556,
+            "hits1": 0.22,
+            "tokens": 765,
+            "latency": 2.53,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "rag_iter": {
+            "f1": 0.2965,
+            "lo": 0.2261,
+            "hi": 0.3715,
+            "hits1": 0.46,
+            "tokens": 773,
+            "latency": 1.56,
+            "toolCalls": 0.03,
+            "n": 100
+          },
+          "oracle": {
+            "f1": 0.5459,
+            "lo": 0.4564,
+            "hi": 0.6354,
+            "hits1": 0.61,
+            "tokens": 942,
+            "latency": 1.48,
             "toolCalls": 0.0,
             "n": 100
           }
@@ -1870,42 +2902,92 @@
           "params_b": 8,
           "control": false,
           "none": {
-            "f1": 0.0828,
-            "lo": 0.0262,
-            "hi": 0.1519,
-            "hits1": 0.125,
-            "tokens": 787,
-            "latency": 130.79,
+            "f1": 0.1261,
+            "lo": 0.0768,
+            "hi": 0.1831,
+            "hits1": 0.16,
+            "tokens": 444,
+            "latency": 28.91,
             "toolCalls": 0.0,
-            "n": 40
+            "n": 100
           },
           "vector": {
-            "f1": 0.3541,
-            "lo": 0.2246,
-            "hi": 0.4914,
-            "hits1": 0.325,
-            "tokens": 907,
-            "latency": 142.53,
+            "f1": 0.2796,
+            "lo": 0.2042,
+            "hi": 0.3613,
+            "hits1": 0.3,
+            "tokens": 840,
+            "latency": 30.21,
             "toolCalls": 0.0,
-            "n": 40
+            "n": 100
+          },
+          "vector_matched": {
+            "f1": 0.3405,
+            "lo": 0.2607,
+            "hi": 0.4249,
+            "hits1": 0.39,
+            "tokens": 2197,
+            "latency": 31.56,
+            "toolCalls": 0.0,
+            "n": 100
           },
           "graph_rag": {
-            "f1": 0.674,
-            "lo": 0.5317,
-            "hi": 0.8002,
-            "hits1": 0.641,
-            "tokens": 2870,
-            "latency": 134.16,
+            "f1": 0.4543,
+            "lo": 0.3644,
+            "hi": 0.5487,
+            "hits1": 0.47,
+            "tokens": 2729,
+            "latency": 33.06,
             "toolCalls": 0.0,
-            "n": 39
+            "n": 100
           },
           "graph": {
             "f1": 0.0,
             "lo": 0.0,
             "hi": 0.0,
             "hits1": 0.0,
-            "tokens": 1483,
-            "latency": 2.25,
+            "tokens": 1495,
+            "latency": 27.95,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "graph_rag_blind": {
+            "f1": 0.4692,
+            "lo": 0.3792,
+            "hi": 0.5568,
+            "hits1": 0.52,
+            "tokens": 4910,
+            "latency": 31.73,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "triple_rag": {
+            "f1": 0.0209,
+            "lo": 0.0043,
+            "hi": 0.0427,
+            "hits1": 0.04,
+            "tokens": 1089,
+            "latency": 28.78,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "rag_iter": {
+            "f1": 0.2173,
+            "lo": 0.1479,
+            "hi": 0.2894,
+            "hits1": 0.26,
+            "tokens": 1738,
+            "latency": 47.0,
+            "toolCalls": 0.77,
+            "n": 100
+          },
+          "oracle": {
+            "f1": 0.4571,
+            "lo": 0.3659,
+            "hi": 0.5478,
+            "hits1": 0.53,
+            "tokens": 1235,
+            "latency": 27.38,
             "toolCalls": 0.0,
             "n": 100
           }
@@ -1915,43 +2997,93 @@
           "params_b": 8,
           "control": false,
           "none": {
-            "f1": 0.079,
-            "lo": 0.0607,
-            "hi": 0.0986,
-            "hits1": 0.15,
-            "tokens": 486,
-            "latency": 59.28,
+            "f1": 0.0801,
+            "lo": 0.0484,
+            "hi": 0.1169,
+            "hits1": 0.12,
+            "tokens": 353,
+            "latency": 16.76,
             "toolCalls": 0.0,
-            "n": 400
+            "n": 100
           },
           "vector": {
-            "f1": 0.2294,
-            "lo": 0.1916,
-            "hi": 0.2651,
-            "hits1": 0.315,
-            "tokens": 601,
-            "latency": 55.99,
+            "f1": 0.2982,
+            "lo": 0.2191,
+            "hi": 0.3771,
+            "hits1": 0.37,
+            "tokens": 725,
+            "latency": 16.26,
             "toolCalls": 0.0,
-            "n": 400
+            "n": 100
+          },
+          "vector_matched": {
+            "f1": 0.3424,
+            "lo": 0.2598,
+            "hi": 0.4236,
+            "hits1": 0.39,
+            "tokens": 2235,
+            "latency": 21.1,
+            "toolCalls": 0.0,
+            "n": 100
           },
           "graph_rag": {
-            "f1": 0.6345,
-            "lo": 0.5907,
-            "hi": 0.6772,
-            "hits1": 0.6675,
-            "tokens": 2341,
-            "latency": 59.92,
+            "f1": 0.537,
+            "lo": 0.4457,
+            "hi": 0.6272,
+            "hits1": 0.59,
+            "tokens": 2598,
+            "latency": 23.74,
             "toolCalls": 0.0,
-            "n": 400
+            "n": 100
           },
           "graph": {
-            "f1": 0.0739,
-            "lo": 0.0398,
-            "hi": 0.1146,
-            "hits1": 0.14,
-            "tokens": 3379,
-            "latency": 32.26,
-            "toolCalls": 0.06,
+            "f1": 0.0971,
+            "lo": 0.053,
+            "hi": 0.1496,
+            "hits1": 0.16,
+            "tokens": 3517,
+            "latency": 75.71,
+            "toolCalls": 0.17,
+            "n": 100
+          },
+          "graph_rag_blind": {
+            "f1": 0.5565,
+            "lo": 0.4702,
+            "hi": 0.6409,
+            "hits1": 0.64,
+            "tokens": 4823,
+            "latency": 37.7,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "triple_rag": {
+            "f1": 0.0373,
+            "lo": 0.0101,
+            "hi": 0.0721,
+            "hits1": 0.05,
+            "tokens": 784,
+            "latency": 25.77,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "rag_iter": {
+            "f1": 0.4324,
+            "lo": 0.3537,
+            "hi": 0.5137,
+            "hits1": 0.57,
+            "tokens": 2559,
+            "latency": 51.06,
+            "toolCalls": 1.56,
+            "n": 100
+          },
+          "oracle": {
+            "f1": 0.4783,
+            "lo": 0.389,
+            "hi": 0.5688,
+            "hits1": 0.52,
+            "tokens": 990,
+            "latency": 16.9,
+            "toolCalls": 0.0,
             "n": 100
           }
         },
@@ -1960,42 +3092,92 @@
           "params_b": 9,
           "control": false,
           "none": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 0,
-            "latency": 0.0,
+            "f1": 0.1499,
+            "lo": 0.1013,
+            "hi": 0.2019,
+            "hits1": 0.25,
+            "tokens": 184,
+            "latency": 4.69,
             "toolCalls": 0.0,
-            "n": 44
+            "n": 100
           },
           "vector": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 0,
-            "latency": 0.0,
+            "f1": 0.3421,
+            "lo": 0.2682,
+            "hi": 0.4198,
+            "hits1": 0.49,
+            "tokens": 653,
+            "latency": 4.68,
             "toolCalls": 0.0,
-            "n": 44
+            "n": 100
+          },
+          "vector_matched": {
+            "f1": 0.393,
+            "lo": 0.314,
+            "hi": 0.4759,
+            "hits1": 0.5,
+            "tokens": 2045,
+            "latency": 8.89,
+            "toolCalls": 0.0,
+            "n": 100
           },
           "graph_rag": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 0,
-            "latency": 0.0,
+            "f1": 0.6072,
+            "lo": 0.524,
+            "hi": 0.6948,
+            "hits1": 0.55,
+            "tokens": 2646,
+            "latency": 7.92,
             "toolCalls": 0.0,
-            "n": 44
+            "n": 100
           },
           "graph": {
-            "f1": 0.0,
-            "lo": 0.0,
-            "hi": 0.0,
-            "hits1": 0.0,
-            "tokens": 0,
-            "latency": 0.0,
+            "f1": 0.1201,
+            "lo": 0.0802,
+            "hi": 0.1639,
+            "hits1": 0.23,
+            "tokens": 684,
+            "latency": 8.49,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "graph_rag_blind": {
+            "f1": 0.4165,
+            "lo": 0.3313,
+            "hi": 0.5098,
+            "hits1": 0.43,
+            "tokens": 4937,
+            "latency": 13.49,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "triple_rag": {
+            "f1": 0.1205,
+            "lo": 0.0729,
+            "hi": 0.174,
+            "hits1": 0.24,
+            "tokens": 694,
+            "latency": 6.74,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "rag_iter": {
+            "f1": 0.3595,
+            "lo": 0.2846,
+            "hi": 0.4373,
+            "hits1": 0.49,
+            "tokens": 709,
+            "latency": 5.83,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "oracle": {
+            "f1": 0.5186,
+            "lo": 0.4296,
+            "hi": 0.6054,
+            "hits1": 0.55,
+            "tokens": 957,
+            "latency": 5.09,
             "toolCalls": 0.0,
             "n": 100
           }
@@ -2005,43 +3187,93 @@
           "params_b": 14,
           "control": false,
           "none": {
-            "f1": 0.1271,
-            "lo": 0.1039,
-            "hi": 0.152,
-            "hits1": 0.225,
-            "tokens": 273,
-            "latency": 14.9,
+            "f1": 0.1143,
+            "lo": 0.0709,
+            "hi": 0.1585,
+            "hits1": 0.2,
+            "tokens": 189,
+            "latency": 11.06,
             "toolCalls": 0.0,
-            "n": 400
+            "n": 100
           },
           "vector": {
-            "f1": 0.2784,
-            "lo": 0.2413,
-            "hi": 0.3171,
-            "hits1": 0.43,
-            "tokens": 538,
-            "latency": 12.96,
+            "f1": 0.3418,
+            "lo": 0.2628,
+            "hi": 0.4227,
+            "hits1": 0.49,
+            "tokens": 677,
+            "latency": 13.28,
             "toolCalls": 0.0,
-            "n": 400
+            "n": 100
+          },
+          "vector_matched": {
+            "f1": 0.4425,
+            "lo": 0.3631,
+            "hi": 0.5261,
+            "hits1": 0.58,
+            "tokens": 2155,
+            "latency": 18.74,
+            "toolCalls": 0.0,
+            "n": 100
           },
           "graph_rag": {
-            "f1": 0.6856,
-            "lo": 0.6474,
-            "hi": 0.7237,
-            "hits1": 0.7,
-            "tokens": 2150,
-            "latency": 17.36,
+            "f1": 0.6906,
+            "lo": 0.6091,
+            "hi": 0.7679,
+            "hits1": 0.66,
+            "tokens": 2490,
+            "latency": 20.34,
             "toolCalls": 0.0,
-            "n": 400
+            "n": 100
           },
           "graph": {
-            "f1": 0.2357,
-            "lo": 0.1604,
-            "hi": 0.316,
+            "f1": 0.2448,
+            "lo": 0.1682,
+            "hi": 0.3253,
             "hits1": 0.3,
-            "tokens": 4979,
-            "latency": 61.9,
-            "toolCalls": 1.1,
+            "tokens": 4977,
+            "latency": 86.94,
+            "toolCalls": 1.11,
+            "n": 100
+          },
+          "graph_rag_blind": {
+            "f1": 0.6565,
+            "lo": 0.5824,
+            "hi": 0.7247,
+            "hits1": 0.77,
+            "tokens": 4688,
+            "latency": 31.7,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "triple_rag": {
+            "f1": 0.118,
+            "lo": 0.0737,
+            "hi": 0.1666,
+            "hits1": 0.19,
+            "tokens": 713,
+            "latency": 22.67,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "rag_iter": {
+            "f1": 0.4315,
+            "lo": 0.3501,
+            "hi": 0.5158,
+            "hits1": 0.59,
+            "tokens": 1001,
+            "latency": 19.19,
+            "toolCalls": 0.25,
+            "n": 100
+          },
+          "oracle": {
+            "f1": 0.5824,
+            "lo": 0.4927,
+            "hi": 0.6665,
+            "hits1": 0.67,
+            "tokens": 898,
+            "latency": 11.89,
+            "toolCalls": 0.0,
             "n": 100
           }
         },
@@ -2050,43 +3282,93 @@
           "params_b": 30,
           "control": false,
           "none": {
-            "f1": 0.1136,
-            "lo": 0.0926,
-            "hi": 0.1367,
-            "hits1": 0.2,
-            "tokens": 222,
-            "latency": 42.32,
+            "f1": 0.1168,
+            "lo": 0.0721,
+            "hi": 0.1695,
+            "hits1": 0.19,
+            "tokens": 213,
+            "latency": 33.17,
             "toolCalls": 0.0,
-            "n": 400
+            "n": 100
           },
           "vector": {
-            "f1": 0.2906,
-            "lo": 0.253,
-            "hi": 0.3283,
-            "hits1": 0.4325,
-            "tokens": 543,
-            "latency": 38.61,
+            "f1": 0.3582,
+            "lo": 0.2827,
+            "hi": 0.4368,
+            "hits1": 0.46,
+            "tokens": 681,
+            "latency": 33.23,
             "toolCalls": 0.0,
-            "n": 400
+            "n": 100
+          },
+          "vector_matched": {
+            "f1": 0.3835,
+            "lo": 0.3061,
+            "hi": 0.4627,
+            "hits1": 0.56,
+            "tokens": 2195,
+            "latency": 39.04,
+            "toolCalls": 0.0,
+            "n": 100
           },
           "graph_rag": {
-            "f1": 0.6989,
-            "lo": 0.6559,
-            "hi": 0.7388,
-            "hits1": 0.73,
-            "tokens": 2300,
-            "latency": 45.92,
+            "f1": 0.6062,
+            "lo": 0.5157,
+            "hi": 0.6927,
+            "hits1": 0.61,
+            "tokens": 2629,
+            "latency": 42.59,
             "toolCalls": 0.0,
-            "n": 400
+            "n": 100
           },
           "graph": {
-            "f1": 0.2161,
-            "lo": 0.1444,
-            "hi": 0.2903,
+            "f1": 0.2136,
+            "lo": 0.1433,
+            "hi": 0.2876,
             "hits1": 0.27,
-            "tokens": 4495,
-            "latency": 385.39,
-            "toolCalls": 0.96,
+            "tokens": 5181,
+            "latency": 121.97,
+            "toolCalls": 1.68,
+            "n": 100
+          },
+          "graph_rag_blind": {
+            "f1": 0.5669,
+            "lo": 0.4847,
+            "hi": 0.6511,
+            "hits1": 0.63,
+            "tokens": 4764,
+            "latency": 43.78,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "triple_rag": {
+            "f1": 0.0829,
+            "lo": 0.0446,
+            "hi": 0.1283,
+            "hits1": 0.11,
+            "tokens": 765,
+            "latency": 35.53,
+            "toolCalls": 0.0,
+            "n": 100
+          },
+          "rag_iter": {
+            "f1": 0.4904,
+            "lo": 0.4121,
+            "hi": 0.5699,
+            "hits1": 0.63,
+            "tokens": 1541,
+            "latency": 58.2,
+            "toolCalls": 0.61,
+            "n": 100
+          },
+          "oracle": {
+            "f1": 0.4259,
+            "lo": 0.334,
+            "hi": 0.5211,
+            "hits1": 0.43,
+            "tokens": 972,
+            "latency": 33.65,
+            "toolCalls": 0.0,
             "n": 100
           }
         }
@@ -2096,372 +3378,867 @@
       {
         "model": "gemma2-9b-mlx",
         "pair": "graph-vector",
-        "delta": 0.0,
-        "lo": 0.0,
-        "hi": 0.0,
-        "sig": false
+        "delta": -0.2221,
+        "lo": -0.2976,
+        "hi": -0.1486,
+        "p": 6.165792313886371e-07,
+        "dz": -0.574,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "gemma2-9b-mlx",
         "pair": "graph_rag-graph",
-        "delta": 0.0,
-        "lo": 0.0,
-        "hi": 0.0,
-        "sig": false
+        "delta": 0.4871,
+        "lo": 0.3993,
+        "hi": 0.5704,
+        "p": 7.308775617074198e-13,
+        "dz": 1.087,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "gemma2-9b-mlx",
+        "pair": "graph_rag-graph_rag_blind",
+        "delta": 0.1907,
+        "lo": 0.0959,
+        "hi": 0.286,
+        "p": 0.0008383421467664006,
+        "dz": 0.391,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "gemma2-9b-mlx",
+        "pair": "graph_rag-triple_rag",
+        "delta": 0.4867,
+        "lo": 0.3966,
+        "hi": 0.576,
+        "p": 4.822214215461604e-12,
+        "dz": 1.053,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "gemma2-9b-mlx",
         "pair": "graph_rag-vector",
-        "delta": 0.0,
-        "lo": 0.0,
-        "hi": 0.0,
-        "sig": false
+        "delta": 0.2651,
+        "lo": 0.1636,
+        "hi": 0.3668,
+        "p": 4.840700081695109e-06,
+        "dz": 0.519,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "gemma2-9b-mlx",
+        "pair": "graph_rag-vector_matched",
+        "delta": 0.2142,
+        "lo": 0.1223,
+        "hi": 0.3023,
+        "p": 5.786211072854559e-05,
+        "dz": 0.466,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "gemma2-9b-mlx",
+        "pair": "oracle-graph_rag",
+        "delta": -0.0886,
+        "lo": -0.1766,
+        "hi": -0.0022,
+        "p": 0.0687957714605258,
+        "dz": -0.194,
+        "sig": false,
+        "sigRaw": true
       },
       {
         "model": "granite3.3-8b-mlx",
         "pair": "graph-vector",
-        "delta": -0.2877,
-        "lo": -0.4053,
-        "hi": -0.1817,
-        "sig": true
+        "delta": 0.0579,
+        "lo": -0.0044,
+        "hi": 0.1192,
+        "p": 0.05206712596682012,
+        "dz": 0.183,
+        "sig": false,
+        "sigRaw": false
       },
       {
         "model": "granite3.3-8b-mlx",
         "pair": "graph_rag-graph",
-        "delta": 0.6507,
-        "lo": 0.5322,
-        "hi": 0.7608,
-        "sig": true
+        "delta": 0.2931,
+        "lo": 0.2,
+        "hi": 0.3807,
+        "p": 4.530024484487995e-08,
+        "dz": 0.623,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "granite3.3-8b-mlx",
+        "pair": "graph_rag-graph_rag_blind",
+        "delta": 0.0507,
+        "lo": -0.0386,
+        "hi": 0.1392,
+        "p": 0.2702308703637444,
+        "dz": 0.109,
+        "sig": false,
+        "sigRaw": false
+      },
+      {
+        "model": "granite3.3-8b-mlx",
+        "pair": "graph_rag-triple_rag",
+        "delta": 0.2894,
+        "lo": 0.2022,
+        "hi": 0.3777,
+        "p": 1.81029345635534e-07,
+        "dz": 0.645,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "granite3.3-8b-mlx",
         "pair": "graph_rag-vector",
-        "delta": 0.3563,
-        "lo": 0.2158,
-        "hi": 0.4965,
-        "sig": true
+        "delta": 0.351,
+        "lo": 0.2594,
+        "hi": 0.4421,
+        "p": 1.7087151130118344e-08,
+        "dz": 0.748,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "granite3.3-8b-mlx",
+        "pair": "graph_rag-vector_matched",
+        "delta": 0.2846,
+        "lo": 0.189,
+        "hi": 0.3789,
+        "p": 2.0498760174978608e-05,
+        "dz": 0.571,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "granite3.3-8b-mlx",
+        "pair": "oracle-graph_rag",
+        "delta": -0.0728,
+        "lo": -0.1635,
+        "hi": 0.0208,
+        "p": 0.20733992916008026,
+        "dz": -0.153,
+        "sig": false,
+        "sigRaw": false
+      },
+      {
+        "model": "hermes3-llama3.1-8b-mlx",
+        "pair": "graph-vector",
+        "delta": -0.2024,
+        "lo": -0.2741,
+        "hi": -0.1362,
+        "p": 2.1060224593895724e-07,
+        "dz": -0.584,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "hermes3-llama3.1-8b-mlx",
+        "pair": "graph_rag-graph",
+        "delta": 0.3559,
+        "lo": 0.2613,
+        "hi": 0.4524,
+        "p": 8.022055703358014e-09,
+        "dz": 0.724,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "hermes3-llama3.1-8b-mlx",
+        "pair": "graph_rag-graph_rag_blind",
+        "delta": 0.0416,
+        "lo": -0.0463,
+        "hi": 0.1282,
+        "p": 0.38885877580429307,
+        "dz": 0.094,
+        "sig": false,
+        "sigRaw": false
+      },
+      {
+        "model": "hermes3-llama3.1-8b-mlx",
+        "pair": "graph_rag-triple_rag",
+        "delta": 0.3231,
+        "lo": 0.2365,
+        "hi": 0.4099,
+        "p": 6.5848628918623874e-09,
+        "dz": 0.713,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "hermes3-llama3.1-8b-mlx",
+        "pair": "graph_rag-vector",
+        "delta": 0.1536,
+        "lo": 0.0585,
+        "hi": 0.2483,
+        "p": 0.0028099443472515678,
+        "dz": 0.316,
+        "sig": false,
+        "sigRaw": true
+      },
+      {
+        "model": "hermes3-llama3.1-8b-mlx",
+        "pair": "graph_rag-vector_matched",
+        "delta": 0.113,
+        "lo": 0.0242,
+        "hi": 0.204,
+        "p": 0.02067408787437967,
+        "dz": 0.244,
+        "sig": false,
+        "sigRaw": true
+      },
+      {
+        "model": "hermes3-llama3.1-8b-mlx",
+        "pair": "oracle-graph_rag",
+        "delta": 0.1109,
+        "lo": 0.0252,
+        "hi": 0.1959,
+        "p": 0.015347295465718318,
+        "dz": 0.257,
+        "sig": false,
+        "sigRaw": true
       },
       {
         "model": "llama3.1-8b-mlx",
         "pair": "graph-vector",
-        "delta": -0.3541,
-        "lo": -0.4935,
-        "hi": -0.2258,
-        "sig": true
+        "delta": -0.2796,
+        "lo": -0.3609,
+        "hi": -0.203,
+        "p": 5.7029567890325026e-09,
+        "dz": -0.688,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "llama3.1-8b-mlx",
         "pair": "graph_rag-graph",
-        "delta": 0.674,
-        "lo": 0.5336,
-        "hi": 0.8033,
-        "sig": true
+        "delta": 0.4543,
+        "lo": 0.3608,
+        "hi": 0.5458,
+        "p": 1.548710477665937e-11,
+        "dz": 0.972,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "llama3.1-8b-mlx",
+        "pair": "graph_rag-graph_rag_blind",
+        "delta": -0.0149,
+        "lo": -0.1154,
+        "hi": 0.0801,
+        "p": 0.7458219617291282,
+        "dz": -0.029,
+        "sig": false,
+        "sigRaw": false
+      },
+      {
+        "model": "llama3.1-8b-mlx",
+        "pair": "graph_rag-triple_rag",
+        "delta": 0.4334,
+        "lo": 0.3407,
+        "hi": 0.5252,
+        "p": 4.248015426276644e-11,
+        "dz": 0.905,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "llama3.1-8b-mlx",
         "pair": "graph_rag-vector",
-        "delta": 0.3108,
-        "lo": 0.1412,
-        "hi": 0.4864,
-        "sig": true
+        "delta": 0.1747,
+        "lo": 0.0948,
+        "hi": 0.2596,
+        "p": 0.00018027850999585184,
+        "dz": 0.423,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "llama3.1-8b-mlx",
+        "pair": "graph_rag-vector_matched",
+        "delta": 0.1138,
+        "lo": 0.0203,
+        "hi": 0.2067,
+        "p": 0.017557253875341055,
+        "dz": 0.24,
+        "sig": false,
+        "sigRaw": true
+      },
+      {
+        "model": "llama3.1-8b-mlx",
+        "pair": "oracle-graph_rag",
+        "delta": 0.0028,
+        "lo": -0.0802,
+        "hi": 0.0868,
+        "p": 0.828284268170855,
+        "dz": 0.006,
+        "sig": false,
+        "sigRaw": false
       },
       {
         "model": "llama3.2-3b-mlx",
         "pair": "graph-vector",
-        "delta": -0.2205,
-        "lo": -0.2897,
-        "hi": -0.1536,
-        "sig": true
+        "delta": -0.2069,
+        "lo": -0.2705,
+        "hi": -0.1468,
+        "p": 7.392520825307638e-08,
+        "dz": -0.647,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "llama3.2-3b-mlx",
         "pair": "graph_rag-graph",
-        "delta": 0.5228,
-        "lo": 0.4396,
-        "hi": 0.6044,
-        "sig": true
+        "delta": 0.4403,
+        "lo": 0.3521,
+        "hi": 0.5252,
+        "p": 6.216550614740901e-12,
+        "dz": 1.005,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "llama3.2-3b-mlx",
+        "pair": "graph_rag-graph_rag_blind",
+        "delta": 0.1062,
+        "lo": 0.0157,
+        "hi": 0.1928,
+        "p": 0.01974056736679505,
+        "dz": 0.231,
+        "sig": false,
+        "sigRaw": true
+      },
+      {
+        "model": "llama3.2-3b-mlx",
+        "pair": "graph_rag-triple_rag",
+        "delta": 0.4633,
+        "lo": 0.3706,
+        "hi": 0.5537,
+        "p": 4.914353841991409e-12,
+        "dz": 1.0,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "llama3.2-3b-mlx",
         "pair": "graph_rag-vector",
-        "delta": 0.3214,
-        "lo": 0.2797,
-        "hi": 0.3646,
-        "sig": true
+        "delta": 0.2334,
+        "lo": 0.1429,
+        "hi": 0.3203,
+        "p": 3.1400419186790327e-06,
+        "dz": 0.519,
+        "sig": true,
+        "sigRaw": true
       },
       {
-        "model": "mistral-7b-mlx",
-        "pair": "graph-vector",
-        "delta": 0.0,
-        "lo": 0.0,
-        "hi": 0.0,
-        "sig": false
+        "model": "llama3.2-3b-mlx",
+        "pair": "graph_rag-vector_matched",
+        "delta": 0.1594,
+        "lo": 0.0673,
+        "hi": 0.2519,
+        "p": 0.0009791697137124375,
+        "dz": 0.34,
+        "sig": true,
+        "sigRaw": true
       },
       {
-        "model": "mistral-7b-mlx",
-        "pair": "graph_rag-graph",
-        "delta": 0.0,
-        "lo": 0.0,
-        "hi": 0.0,
-        "sig": false
-      },
-      {
-        "model": "mistral-7b-mlx",
-        "pair": "graph_rag-vector",
-        "delta": 0.0,
-        "lo": 0.0,
-        "hi": 0.0,
-        "sig": false
-      },
-      {
-        "model": "phi3.5-mini-mlx",
-        "pair": "graph-vector",
-        "delta": -0.2192,
-        "lo": -0.3258,
-        "hi": -0.1178,
-        "sig": true
-      },
-      {
-        "model": "phi3.5-mini-mlx",
-        "pair": "graph_rag-graph",
-        "delta": 0.4391,
-        "lo": 0.3168,
-        "hi": 0.5665,
-        "sig": true
-      },
-      {
-        "model": "phi3.5-mini-mlx",
-        "pair": "graph_rag-vector",
-        "delta": 0.2198,
-        "lo": 0.1005,
-        "hi": 0.3456,
-        "sig": true
-      },
-      {
-        "model": "qwen2.5-7b-mlx",
-        "pair": "graph-vector",
-        "delta": -0.2339,
-        "lo": -0.3805,
-        "hi": -0.0926,
-        "sig": true
-      },
-      {
-        "model": "qwen2.5-7b-mlx",
-        "pair": "graph_rag-graph",
-        "delta": 0.5427,
-        "lo": 0.3737,
-        "hi": 0.695,
-        "sig": true
-      },
-      {
-        "model": "qwen2.5-7b-mlx",
-        "pair": "graph_rag-vector",
-        "delta": 0.3244,
-        "lo": 0.1725,
-        "hi": 0.479,
-        "sig": true
-      },
-      {
-        "model": "qwen3-0.6b-mlx",
-        "pair": "graph-vector",
-        "delta": -0.1448,
-        "lo": -0.2349,
-        "hi": -0.069,
-        "sig": true
-      },
-      {
-        "model": "qwen3-0.6b-mlx",
-        "pair": "graph_rag-graph",
-        "delta": 0.337,
-        "lo": 0.2227,
-        "hi": 0.4527,
-        "sig": true
-      },
-      {
-        "model": "qwen3-0.6b-mlx",
-        "pair": "graph_rag-vector",
-        "delta": 0.1922,
-        "lo": 0.0645,
-        "hi": 0.3199,
-        "sig": true
+        "model": "llama3.2-3b-mlx",
+        "pair": "oracle-graph_rag",
+        "delta": 0.0911,
+        "lo": 0.0086,
+        "hi": 0.1735,
+        "p": 0.01710845866998064,
+        "dz": 0.222,
+        "sig": false,
+        "sigRaw": true
       },
       {
         "model": "qwen3-1.7b-mlx",
         "pair": "graph-vector",
-        "delta": -0.1507,
-        "lo": -0.2132,
-        "hi": -0.0907,
-        "sig": true
+        "delta": -0.1984,
+        "lo": -0.2689,
+        "hi": -0.1343,
+        "p": 4.4287227342697786e-07,
+        "dz": -0.574,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "qwen3-1.7b-mlx",
         "pair": "graph_rag-graph",
-        "delta": 0.4792,
-        "lo": 0.4018,
-        "hi": 0.5632,
-        "sig": true
+        "delta": 0.4727,
+        "lo": 0.3918,
+        "hi": 0.5555,
+        "p": 1.339165088995468e-12,
+        "dz": 1.109,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "qwen3-1.7b-mlx",
+        "pair": "graph_rag-graph_rag_blind",
+        "delta": 0.0584,
+        "lo": -0.0131,
+        "hi": 0.1312,
+        "p": 0.10084604668636646,
+        "dz": 0.155,
+        "sig": false,
+        "sigRaw": false
+      },
+      {
+        "model": "qwen3-1.7b-mlx",
+        "pair": "graph_rag-triple_rag",
+        "delta": 0.3826,
+        "lo": 0.2945,
+        "hi": 0.472,
+        "p": 5.618476033192652e-11,
+        "dz": 0.871,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "qwen3-1.7b-mlx",
         "pair": "graph_rag-vector",
-        "delta": 0.3409,
-        "lo": 0.3036,
-        "hi": 0.3792,
-        "sig": true
+        "delta": 0.2742,
+        "lo": 0.1979,
+        "hi": 0.3529,
+        "p": 8.049737077246996e-09,
+        "dz": 0.7,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "qwen3-1.7b-mlx",
+        "pair": "graph_rag-vector_matched",
+        "delta": 0.1986,
+        "lo": 0.1294,
+        "hi": 0.2696,
+        "p": 5.022439455640916e-07,
+        "dz": 0.546,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "qwen3-1.7b-mlx",
+        "pair": "oracle-graph_rag",
+        "delta": 0.0706,
+        "lo": 0.0124,
+        "hi": 0.1296,
+        "p": 0.01974128180300772,
+        "dz": 0.233,
+        "sig": false,
+        "sigRaw": true
       },
       {
         "model": "qwen3-14b-mlx",
         "pair": "graph-vector",
-        "delta": -0.055,
-        "lo": -0.1524,
-        "hi": 0.0461,
-        "sig": false
+        "delta": -0.097,
+        "lo": -0.1991,
+        "hi": 0.0044,
+        "p": 0.06422468224103337,
+        "dz": -0.184,
+        "sig": false,
+        "sigRaw": false
       },
       {
         "model": "qwen3-14b-mlx",
         "pair": "graph_rag-graph",
-        "delta": 0.4689,
-        "lo": 0.3626,
-        "hi": 0.571,
-        "sig": true
+        "delta": 0.4458,
+        "lo": 0.3439,
+        "hi": 0.5446,
+        "p": 1.3290365585723162e-09,
+        "dz": 0.865,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "qwen3-14b-mlx",
+        "pair": "graph_rag-graph_rag_blind",
+        "delta": 0.034,
+        "lo": -0.0438,
+        "hi": 0.1088,
+        "p": 0.07238531135067026,
+        "dz": 0.088,
+        "sig": false,
+        "sigRaw": false
+      },
+      {
+        "model": "qwen3-14b-mlx",
+        "pair": "graph_rag-triple_rag",
+        "delta": 0.5726,
+        "lo": 0.4873,
+        "hi": 0.6573,
+        "p": 1.6250704769099665e-13,
+        "dz": 1.317,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "qwen3-14b-mlx",
         "pair": "graph_rag-vector",
-        "delta": 0.4072,
-        "lo": 0.3631,
-        "hi": 0.4516,
-        "sig": true
+        "delta": 0.3488,
+        "lo": 0.2618,
+        "hi": 0.4381,
+        "p": 2.781501009697471e-09,
+        "dz": 0.776,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "qwen3-14b-mlx",
+        "pair": "graph_rag-vector_matched",
+        "delta": 0.2481,
+        "lo": 0.1551,
+        "hi": 0.3379,
+        "p": 2.413359660472055e-06,
+        "dz": 0.539,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "qwen3-14b-mlx",
+        "pair": "oracle-graph_rag",
+        "delta": -0.1082,
+        "lo": -0.1786,
+        "hi": -0.0368,
+        "p": 0.0080009269719864,
+        "dz": -0.292,
+        "sig": false,
+        "sigRaw": true
       },
       {
         "model": "qwen3-30b-a3b-mlx",
         "pair": "graph-vector",
-        "delta": -0.0993,
-        "lo": -0.184,
-        "hi": -0.0132,
-        "sig": true
+        "delta": -0.1446,
+        "lo": -0.2299,
+        "hi": -0.06,
+        "p": 0.0010803816955022862,
+        "dz": -0.328,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "qwen3-30b-a3b-mlx",
         "pair": "graph_rag-graph",
-        "delta": 0.4864,
-        "lo": 0.3832,
-        "hi": 0.5853,
-        "sig": true
+        "delta": 0.3925,
+        "lo": 0.2996,
+        "hi": 0.484,
+        "p": 2.491834211999136e-10,
+        "dz": 0.836,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "qwen3-30b-a3b-mlx",
+        "pair": "graph_rag-graph_rag_blind",
+        "delta": 0.0393,
+        "lo": -0.0512,
+        "hi": 0.1231,
+        "p": 0.3099676917329852,
+        "dz": 0.088,
+        "sig": false,
+        "sigRaw": false
+      },
+      {
+        "model": "qwen3-30b-a3b-mlx",
+        "pair": "graph_rag-triple_rag",
+        "delta": 0.5233,
+        "lo": 0.4187,
+        "hi": 0.6177,
+        "p": 2.3026222692507408e-12,
+        "dz": 1.034,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "qwen3-30b-a3b-mlx",
         "pair": "graph_rag-vector",
-        "delta": 0.4083,
-        "lo": 0.3623,
-        "hi": 0.4529,
-        "sig": true
+        "delta": 0.2479,
+        "lo": 0.1492,
+        "hi": 0.3506,
+        "p": 1.166932646684294e-05,
+        "dz": 0.484,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "qwen3-30b-a3b-mlx",
+        "pair": "graph_rag-vector_matched",
+        "delta": 0.2227,
+        "lo": 0.1251,
+        "hi": 0.3174,
+        "p": 3.3919491120809715e-05,
+        "dz": 0.457,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "qwen3-30b-a3b-mlx",
+        "pair": "oracle-graph_rag",
+        "delta": -0.1802,
+        "lo": -0.2671,
+        "hi": -0.0966,
+        "p": 0.00018653617431357446,
+        "dz": -0.413,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "qwen3-4b-mlx",
         "pair": "graph-vector",
-        "delta": -0.1298,
-        "lo": -0.219,
-        "hi": -0.045,
-        "sig": true
+        "delta": -0.0943,
+        "lo": -0.1796,
+        "hi": -0.0078,
+        "p": 0.03147907599630082,
+        "dz": -0.211,
+        "sig": false,
+        "sigRaw": true
       },
       {
         "model": "qwen3-4b-mlx",
         "pair": "graph_rag-graph",
-        "delta": 0.5054,
-        "lo": 0.4168,
-        "hi": 0.598,
-        "sig": true
+        "delta": 0.3836,
+        "lo": 0.2851,
+        "hi": 0.4818,
+        "p": 5.032582334699205e-09,
+        "dz": 0.764,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "qwen3-4b-mlx",
+        "pair": "graph_rag-graph_rag_blind",
+        "delta": -0.0056,
+        "lo": -0.0916,
+        "hi": 0.0818,
+        "p": 0.9832791914913138,
+        "dz": -0.013,
+        "sig": false,
+        "sigRaw": false
+      },
+      {
+        "model": "qwen3-4b-mlx",
+        "pair": "graph_rag-triple_rag",
+        "delta": 0.4616,
+        "lo": 0.3747,
+        "hi": 0.5465,
+        "p": 1.6394896247436095e-12,
+        "dz": 1.024,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "qwen3-4b-mlx",
         "pair": "graph_rag-vector",
-        "delta": 0.3965,
-        "lo": 0.3533,
-        "hi": 0.4405,
-        "sig": true
+        "delta": 0.2893,
+        "lo": 0.1939,
+        "hi": 0.3853,
+        "p": 2.500377123505034e-07,
+        "dz": 0.597,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "qwen3-4b-mlx",
+        "pair": "graph_rag-vector_matched",
+        "delta": 0.2036,
+        "lo": 0.1073,
+        "hi": 0.302,
+        "p": 0.0001475370627380005,
+        "dz": 0.407,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "qwen3-4b-mlx",
+        "pair": "oracle-graph_rag",
+        "delta": -0.0976,
+        "lo": -0.1855,
+        "hi": -0.0088,
+        "p": 0.04083375887449866,
+        "dz": -0.213,
+        "sig": false,
+        "sigRaw": true
       },
       {
         "model": "qwen3-8b-mlx",
         "pair": "graph-vector",
-        "delta": -0.1785,
-        "lo": -0.2593,
-        "hi": -0.097,
-        "sig": true
+        "delta": -0.2011,
+        "lo": -0.29,
+        "hi": -0.1184,
+        "p": 3.6134220523020095e-05,
+        "dz": -0.457,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "qwen3-8b-mlx",
         "pair": "graph_rag-graph",
-        "delta": 0.538,
-        "lo": 0.4408,
-        "hi": 0.6292,
-        "sig": true
+        "delta": 0.4399,
+        "lo": 0.3409,
+        "hi": 0.5325,
+        "p": 7.631119348874172e-11,
+        "dz": 0.864,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "qwen3-8b-mlx",
+        "pair": "graph_rag-graph_rag_blind",
+        "delta": -0.0195,
+        "lo": -0.113,
+        "hi": 0.0735,
+        "p": 0.5849983253007709,
+        "dz": -0.041,
+        "sig": false,
+        "sigRaw": false
+      },
+      {
+        "model": "qwen3-8b-mlx",
+        "pair": "graph_rag-triple_rag",
+        "delta": 0.4997,
+        "lo": 0.4066,
+        "hi": 0.5913,
+        "p": 8.22774218259789e-12,
+        "dz": 1.039,
+        "sig": true,
+        "sigRaw": true
       },
       {
         "model": "qwen3-8b-mlx",
         "pair": "graph_rag-vector",
-        "delta": 0.4052,
-        "lo": 0.3572,
-        "hi": 0.4535,
-        "sig": true
+        "delta": 0.2388,
+        "lo": 0.1494,
+        "hi": 0.3246,
+        "p": 4.576318669979061e-06,
+        "dz": 0.527,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "qwen3-8b-mlx",
+        "pair": "graph_rag-vector_matched",
+        "delta": 0.1946,
+        "lo": 0.1058,
+        "hi": 0.2857,
+        "p": 0.00012848766918988508,
+        "dz": 0.419,
+        "sig": true,
+        "sigRaw": true
+      },
+      {
+        "model": "qwen3-8b-mlx",
+        "pair": "oracle-graph_rag",
+        "delta": -0.0587,
+        "lo": -0.1293,
+        "hi": 0.0144,
+        "p": 0.20406282743618365,
+        "dz": -0.16,
+        "sig": false,
+        "sigRaw": false
       }
-    ]
+    ],
+    "toolProfile": {
+      "agentic": {
+        "n_models": 3,
+        "models": [
+          "granite3.3-8b-mlx",
+          "hermes3-llama3.1-8b-mlx",
+          "qwen3-8b-mlx"
+        ],
+        "gap_gv": -0.11518952030772538,
+        "gap_gr": -0.36295207064207063,
+        "none": 0.07088160024207013,
+        "vector": 0.21214267979618853,
+        "vector_matched": 0.26249811031013687,
+        "graph_rag": 0.4599052301305338,
+        "graph": 0.09695315948846317,
+        "graph_rag_blind": 0.4356484460753995,
+        "triple_rag": 0.08919939301802048,
+        "rag_iter": 0.35102244489895024,
+        "oracle": 0.4530444402556982
+      },
+      "fc": {
+        "n_models": 1,
+        "models": [
+          "llama3.1-8b-mlx"
+        ],
+        "gap_gv": -0.2796294508308618,
+        "gap_gr": -0.45430234076210063,
+        "none": 0.12612520853938766,
+        "vector": 0.2796294508308618,
+        "vector_matched": 0.3405233101088044,
+        "graph_rag": 0.45430234076210063,
+        "graph": 0.0,
+        "graph_rag_blind": 0.4691727184668421,
+        "triple_rag": 0.020857142857142855,
+        "rag_iter": 0.21727395699519167,
+        "oracle": 0.45706304726061364
+      },
+      "none": {
+        "n_models": 1,
+        "models": [
+          "gemma2-9b-mlx"
+        ],
+        "gap_gv": -0.22205316060883742,
+        "gap_gr": -0.48710963711264754,
+        "none": 0.14992897505588776,
+        "vector": 0.3421361218436868,
+        "vector_matched": 0.39301570565738897,
+        "graph_rag": 0.607192598347497,
+        "graph": 0.12008296123484938,
+        "graph_rag_blind": 0.41653492063492065,
+        "triple_rag": 0.1205028809973541,
+        "rag_iter": 0.3594844732568927,
+        "oracle": 0.518568889781064
+      }
+    }
   },
   "techniques": null,
   "domains": {
     "datasets": [
-      {
-        "key": "sanctions",
-        "title": "Global sanctions lists",
-        "tag": "national security",
-        "edge": "LINKED_TO",
-        "byMode": {
-          "none": 0.0,
-          "vector": 0.3665,
-          "graph_rag": 0.7013,
-          "graph": 0.4333
-        },
-        "n": {
-          "none": 50,
-          "vector": 50,
-          "graph_rag": 50,
-          "graph": 10
-        }
-      },
-      {
-        "key": "clinicaltrials",
-        "title": "ClinicalTrials.gov",
-        "tag": "health",
-        "edge": "SPONSORED_BY",
-        "byMode": {
-          "none": 0.1018,
-          "vector": 0.3799,
-          "graph_rag": 0.637,
-          "graph": 0.5524
-        },
-        "n": {
-          "none": 50,
-          "vector": 50,
-          "graph_rag": 50,
-          "graph": 10
-        }
-      },
       {
         "key": "cordis",
         "title": "CORDIS EU research grants",
         "tag": "research funding",
         "edge": "PARTICIPATES_IN",
         "byMode": {
-          "none": 0.0086,
-          "vector": 0.4443,
-          "graph_rag": 0.5792,
-          "graph": 0.5
+          "none": 0.0686,
+          "vector": 0.1806,
+          "vector_matched": 0.1815,
+          "graph_rag": 0.5791
         },
         "n": {
-          "none": 50,
-          "vector": 50,
-          "graph_rag": 50,
-          "graph": 10
+          "none": 768,
+          "vector": 768,
+          "vector_matched": 768,
+          "graph_rag": 768
+        }
+      },
+      {
+        "key": "sanctions",
+        "title": "Global sanctions lists",
+        "tag": "national security",
+        "edge": "LINKED_TO",
+        "byMode": {
+          "none": 0.1445,
+          "vector": 0.4466,
+          "vector_matched": 0.4513,
+          "graph_rag": 0.5771
+        },
+        "n": {
+          "none": 800,
+          "vector": 800,
+          "vector_matched": 800,
+          "graph_rag": 800
         }
       },
       {
@@ -2470,16 +4247,16 @@
         "tag": "finance",
         "edge": "INSIDER_OF",
         "byMode": {
-          "none": 0.0503,
-          "vector": 0.3925,
-          "graph_rag": 0.4741,
-          "graph": 0.5966
+          "none": 0.0781,
+          "vector": 0.158,
+          "vector_matched": 0.1572,
+          "graph_rag": 0.5484
         },
         "n": {
-          "none": 50,
-          "vector": 50,
-          "graph_rag": 50,
-          "graph": 10
+          "none": 576,
+          "vector": 576,
+          "vector_matched": 576,
+          "graph_rag": 576
         }
       },
       {
@@ -2488,67 +4265,94 @@
         "tag": "corporate ownership",
         "edge": "PARENT_OF",
         "byMode": {
-          "none": 0.0019,
-          "vector": 0.3423,
-          "graph_rag": 0.4433,
-          "graph": 0.3
+          "none": 0.0977,
+          "vector": 0.2013,
+          "vector_matched": 0.1985,
+          "graph_rag": 0.4942
         },
         "n": {
-          "none": 50,
-          "vector": 50,
-          "graph_rag": 50,
-          "graph": 10
+          "none": 640,
+          "vector": 640,
+          "vector_matched": 640,
+          "graph_rag": 640
+        }
+      },
+      {
+        "key": "clinicaltrials",
+        "title": "ClinicalTrials.gov",
+        "tag": "health",
+        "edge": "SPONSORED_BY",
+        "byMode": {
+          "none": 0.09,
+          "vector": 0.1772,
+          "vector_matched": 0.1632,
+          "graph_rag": 0.463
+        },
+        "n": {
+          "none": 576,
+          "vector": 576,
+          "vector_matched": 576,
+          "graph_rag": 576
         }
       }
     ],
     "bySize": [
       {
-        "model": "llama3.2-3b",
+        "model": "qwen3-1.7b-mlx",
+        "label": "qwen3-1.7b",
+        "params_b": 1.7,
+        "control": false,
+        "none": 0.0866,
+        "vector": 0.2014,
+        "graph_rag": 0.4525
+      },
+      {
+        "model": "llama3.2-3b-mlx",
         "label": "llama-3.2-3b",
         "params_b": 3,
         "control": true,
-        "none": 0.0387,
-        "vector": 0.4093,
-        "graph_rag": 0.6255
+        "none": 0.1064,
+        "vector": 0.2509,
+        "graph_rag": 0.5076
       },
       {
-        "model": "qwen3-4b-local",
-        "label": "qwen3-4b",
-        "params_b": 4,
-        "control": false,
-        "none": 0.0165,
-        "vector": 0.2234,
-        "graph_rag": 0.3822
-      },
-      {
-        "model": "qwen3-8b-local",
+        "model": "qwen3-8b-mlx",
         "label": "qwen3-8b",
         "params_b": 8,
         "control": false,
-        "none": 0.0273,
-        "vector": 0.4342,
-        "graph_rag": 0.6419
+        "none": 0.1027,
+        "vector": 0.2458,
+        "graph_rag": 0.5972
       },
       {
-        "model": "qwen3-14b-local",
-        "label": "qwen3-14b",
-        "params_b": 14,
+        "model": "qwen3-30b-a3b-mlx",
+        "label": "qwen3-30b-a3b",
+        "params_b": 30,
         "control": false,
-        "none": 0.0482,
-        "vector": 0.4705,
-        "graph_rag": 0.7084
+        "none": 0.1141,
+        "vector": 0.2625,
+        "graph_rag": 0.6238
       }
     ],
     "nDomains": 5,
-    "nQuestionsPerDomain": 10,
+    "nQuestionsPerDomain": {
+      "cordis": 96,
+      "sanctions": 100,
+      "sec_edgar": 72,
+      "gleif": 80,
+      "clinicaltrials": 72
+    },
     "models": [
-      "llama3.2-3b",
-      "qwen3-14b-local",
-      "qwen3-30b-a3b-local",
-      "qwen3-4b-local",
-      "qwen3-8b-local"
+      "gemma2-9b-mlx",
+      "granite3.3-8b-mlx",
+      "hermes3-llama3.1-8b-mlx",
+      "llama3.1-8b-mlx",
+      "llama3.2-3b-mlx",
+      "qwen3-1.7b-mlx",
+      "qwen3-30b-a3b-mlx",
+      "qwen3-8b-mlx"
     ],
-    "note": "Same engine, zero per-domain benchmark code — each graph's schema is introspected at query time. Local Qwen3 size sweep + llama-3.2-3b control, 10 questions per domain, $0."
+    "note": "Same engine, zero per-domain benchmark code — each graph's schema is introspected at query time. 8-model representative roster (Qwen3 size axis + tool-profile contrasts + llama-3.2-3b control), full question bank per domain, graph-oracle scored, local bge-m3, $0."
   },
   "er": {
     "baseline": {
@@ -2680,9 +4484,9 @@
           "vector": {
             "answerText": "[]\nANSWER: []",
             "predicted": [],
-            "f1": 0.0,
-            "precision": 1.0,
-            "recall": 0.0,
+            "f1": 0,
+            "precision": 1,
+            "recall": 0,
             "faithful": null,
             "promptTokens": 1048,
             "completionTokens": 459,
@@ -2742,10 +4546,10 @@
               "EL HASSAN, Gaffar Mohmed",
               "SHANT, Adam Yacub"
             ],
-            "f1": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
-            "faithful": 1.0,
+            "f1": 1,
+            "precision": 1,
+            "recall": 1,
+            "faithful": 1,
             "promptTokens": 1294,
             "completionTokens": 538,
             "latencyS": 31.76,
@@ -2796,10 +4600,10 @@
               "EL HASSAN, Gaffar Mohmed",
               "SHANT, Adam Yacub"
             ],
-            "f1": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
-            "faithful": 1.0,
+            "f1": 1,
+            "precision": 1,
+            "recall": 1,
+            "faithful": 1,
             "promptTokens": 5868,
             "completionTokens": 731,
             "latencyS": 41.71,
@@ -2818,7 +4622,7 @@
                       "entityId": "ent:ofac:10155",
                       "name": "AUF, Awad Ibn",
                       "type": "INDIVIDUAL",
-                      "score": 100.0
+                      "score": 100
                     }
                   ],
                   "total": 1
@@ -2995,9 +4799,9 @@
           "vector": {
             "answerText": "[]\nANSWER: []",
             "predicted": [],
-            "f1": 0.0,
-            "precision": 1.0,
-            "recall": 0.0,
+            "f1": 0,
+            "precision": 1,
+            "recall": 0,
             "faithful": null,
             "promptTokens": 1238,
             "completionTokens": 602,
@@ -3052,10 +4856,10 @@
               "LLC AEON DEVELOPMENT",
               "LIMITED LIABILITY COMPANY AHD KUTUZOVSKIY TOWERS"
             ],
-            "f1": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
-            "faithful": 1.0,
+            "f1": 1,
+            "precision": 1,
+            "recall": 1,
+            "faithful": 1,
             "promptTokens": 2098,
             "completionTokens": 608,
             "latencyS": 35.52,
@@ -3101,10 +4905,10 @@
               "LLC AEON DEVELOPMENT",
               "LIMITED LIABILITY COMPANY AHD KUTUZOVSKIY TOWERS"
             ],
-            "f1": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
-            "faithful": 1.0,
+            "f1": 1,
+            "precision": 1,
+            "recall": 1,
+            "faithful": 1,
             "promptTokens": 5120,
             "completionTokens": 779,
             "latencyS": 40.58,
@@ -3123,7 +4927,7 @@
                       "entityId": "ent:ofac:46032",
                       "name": "LIMITED LIABILITY COMPANY AHD SOUTH PORT",
                       "type": "ENTITY",
-                      "score": 100.0
+                      "score": 100
                     }
                   ],
                   "total": 1
@@ -3275,9 +5079,9 @@
               "IGNATOVA, Anastasia"
             ],
             "f1": 0.889,
-            "precision": 1.0,
+            "precision": 1,
             "recall": 0.8,
-            "faithful": 1.0,
+            "faithful": 1,
             "promptTokens": 982,
             "completionTokens": 528,
             "latencyS": 27.66,
@@ -3334,10 +5138,10 @@
               "CHEMEZOV, Sergey Sergeevich",
               "IGNATOVA, Anastasia"
             ],
-            "f1": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
-            "faithful": 1.0,
+            "f1": 1,
+            "precision": 1,
+            "recall": 1,
+            "faithful": 1,
             "promptTokens": 1860,
             "completionTokens": 613,
             "latencyS": 35.56,
@@ -3386,10 +5190,10 @@
               "CHEMEZOV, Sergey Sergeevich",
               "IGNATOVA, Anastasia"
             ],
-            "f1": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
-            "faithful": 1.0,
+            "f1": 1,
+            "precision": 1,
+            "recall": 1,
+            "faithful": 1,
             "promptTokens": 5871,
             "completionTokens": 967,
             "latencyS": 50.2,
@@ -3408,7 +5212,7 @@
                       "entityId": "ent:ofac:16685",
                       "name": "CHEMEZOV, Sergei",
                       "type": "INDIVIDUAL",
-                      "score": 100.0
+                      "score": 100
                     }
                   ],
                   "total": 1
@@ -3653,9 +5457,9 @@
               "PRIGOZHIN, Yevgeniy Viktorovich"
             ],
             "f1": 0.667,
-            "precision": 1.0,
+            "precision": 1,
             "recall": 0.5,
-            "faithful": 1.0,
+            "faithful": 1,
             "promptTokens": 888,
             "completionTokens": 598,
             "latencyS": 29.77,
@@ -3709,10 +5513,10 @@
               "PRIGOZHIN, Yevgeniy Viktorovich",
               "INTERNET RESEARCH AGENCY LLC"
             ],
-            "f1": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
-            "faithful": 1.0,
+            "f1": 1,
+            "precision": 1,
+            "recall": 1,
+            "faithful": 1,
             "promptTokens": 1762,
             "completionTokens": 388,
             "latencyS": 26.64,
@@ -3758,10 +5562,10 @@
               "PRIGOZHIN, Yevgeniy Viktorovich",
               "INTERNET RESEARCH AGENCY LLC"
             ],
-            "f1": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
-            "faithful": 1.0,
+            "f1": 1,
+            "precision": 1,
+            "recall": 1,
+            "faithful": 1,
             "promptTokens": 5468,
             "completionTokens": 872,
             "latencyS": 45.87,
@@ -3780,7 +5584,7 @@
                       "entityId": "ent:ofac:31293",
                       "name": "PRIBYSHIN, Taras Kirillovich",
                       "type": "INDIVIDUAL",
-                      "score": 100.0
+                      "score": 100
                     }
                   ],
                   "total": 1
@@ -3950,9 +5754,9 @@
               "NATIONAL IRANIAN TANKER COMPANY"
             ],
             "f1": 0.667,
-            "precision": 1.0,
+            "precision": 1,
             "recall": 0.5,
-            "faithful": 1.0,
+            "faithful": 1,
             "promptTokens": 1193,
             "completionTokens": 195,
             "latencyS": 17.03,
@@ -4006,10 +5810,10 @@
               "NATIONAL IRANIAN TANKER COMPANY",
               "N.I.T.C. REPRESENTATIVE OFFICE"
             ],
-            "f1": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
-            "faithful": 1.0,
+            "f1": 1,
+            "precision": 1,
+            "recall": 1,
+            "faithful": 1,
             "promptTokens": 1509,
             "completionTokens": 341,
             "latencyS": 22.98,
@@ -4055,10 +5859,10 @@
               "NATIONAL IRANIAN TANKER COMPANY",
               "N.I.T.C. REPRESENTATIVE OFFICE"
             ],
-            "f1": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
-            "faithful": 1.0,
+            "f1": 1,
+            "precision": 1,
+            "recall": 1,
+            "faithful": 1,
             "promptTokens": 3547,
             "completionTokens": 353,
             "latencyS": 21.29,
@@ -4077,7 +5881,7 @@
                       "entityId": "ent:ofac:29853",
                       "name": "ATLAS SHIP MANAGEMENT",
                       "type": "ENTITY",
-                      "score": 100.0
+                      "score": 100
                     }
                   ],
                   "total": 1
@@ -4152,9 +5956,9 @@
               "VENEZUELA-EO13850",
               "RUSSIA-EO14024"
             ],
-            "f1": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
+            "f1": 1,
+            "precision": 1,
+            "recall": 1,
             "faithful": null,
             "promptTokens": 1498,
             "completionTokens": 184,
@@ -4209,9 +6013,9 @@
               "RUSSIA-EO14024",
               "VENEZUELA-EO13850"
             ],
-            "f1": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
+            "f1": 1,
+            "precision": 1,
+            "recall": 1,
             "faithful": null,
             "promptTokens": 2097,
             "completionTokens": 250,
@@ -4258,9 +6062,9 @@
               "RUSSIA-EO14024",
               "VENEZUELA-EO13850"
             ],
-            "f1": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
+            "f1": 1,
+            "precision": 1,
+            "recall": 1,
             "faithful": null,
             "promptTokens": 3558,
             "completionTokens": 313,
@@ -4280,7 +6084,7 @@
                       "entityId": "ent:ofac:26503",
                       "name": "EVROFINANCE MOSNARBANK",
                       "type": "ENTITY",
-                      "score": 100.0
+                      "score": 100
                     }
                   ],
                   "total": 1
