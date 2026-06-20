@@ -327,12 +327,26 @@ export interface TechniquesSection {
   note: string;
 }
 
+// ── economics: tokens / latency / F1 / faithfulness by mode (local, $0) ───────
+export interface Economics {
+  /** Per-mode cost & accuracy, pooled over the 10 MetaQA models (all 9 modes). */
+  byMode: { mode: Mode; tokens: number; latency: number; f1: number; n: number }[];
+  /**
+   * Faithfulness by mode from the 5 graph-oracle domains (answers map to graph
+   * nodes). MetaQA external string gold has no faithfulness, so only the four
+   * retrieval-relevant modes appear here.
+   */
+  hallucination: { mode: Mode; faithful: number; hallucination: number; n: number }[];
+  note: string;
+}
+
 export interface Bundle {
   meta: { dataset: string; sources: string[]; costUsd: number; run?: string; note: string };
   charts: Charts;
   metaqa: MetaqaSection | null;
   techniques: TechniquesSection | null;
   domains: DomainsSection | null;
+  economics: Economics;
   er: ErSection;
   demo: { model: DemoModel | null; questions: DemoQuestion[] };
 }

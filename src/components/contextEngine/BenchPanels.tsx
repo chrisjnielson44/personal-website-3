@@ -1,9 +1,14 @@
 "use client";
 
-import { MODE_COLORS, MODE_LABELS, byMode, ce, type LegacyMode } from "@/data/contextEngine";
+import {
+  MODE_COLORS,
+  MODE_LABELS,
+  MODE_SHORT,
+  byMode,
+  ce,
+  type Mode,
+} from "@/data/contextEngine";
 import { AnimatedBar, CountUp, SpotlightCard } from "./primitives";
-
-const ALL_MODES: LegacyMode[] = ["none", "vector", "graph_rag", "graph"];
 
 // ── hero stat grid ─────────────────────────────────────────────────────────────
 function Stat({
@@ -119,57 +124,200 @@ function BarRow({
   );
 }
 
-export function ModeEconomics() {
-  const rows = ALL_MODES.map((m) => byMode(m)).filter(Boolean) as NonNullable<
-    ReturnType<typeof byMode>
-  >[];
-  const maxTok = Math.max(...rows.map((r) => r.tokens_mean ?? 0));
-  const maxHall = Math.max(...rows.map((r) => r.hallucination_rate ?? 0));
+// ── §7 economics: built from ce.economics (local, $0, MetaQA-pooled) ─────────────
+
+/** Tokens per query by mode — a lollipop over all nine modes (sorted ascending). */
+export function EconomicsTokens() {
+  const rows = [...ce.economics.byMode].sort((a, b) => a.tokens - b.tokens);
+  const maxTok = Math.max(...rows.map((r) => r.tokens));
+  return (
+    <SpotlightCard className="p-6">
+      <h3 className="text-sm font-semibold text-foreground">Tokens per query by mode</h3>
+      <p className="mb-5 mt-1 text-xs leading-5 text-muted-foreground">
+        Pooled over the 10 MetaQA models. The token-heavy modes are the <em>k</em>-hop ones —
+        the blind subgraph and the agentic loop — while passive graph context, and especially
+        the oracle, stay lean.
+      </p>
+      <div className="space-y-2.5">
+        {rows.map((r, i) => (
+          <BarRow
+            key={r.mode}
+            label={MODE_LABELS[r.mode]}
+            color={MODE_COLORS[r.mode]}
+            value={r.tokens}
+            display={r.tokens.toLocaleString()}
+            max={maxTok}
+            delay={i * 0.06}
+          />
+        ))}
+      </div>
+    </SpotlightCard>
+  );
+}
+
+/** Hallucination by mode — bar over the four graph-oracle-scored retrieval modes. */
+export function EconomicsHallucination() {
+  const rows = ce.economics.hallucination;
+  const maxHall = Math.max(...rows.map((r) => r.hallucination));
+  return (
+    <SpotlightCard className="p-6">
+      <h3 className="text-sm font-semibold text-foreground">Hallucination rate by mode</h3>
+      <p className="mb-5 mt-1 text-xs leading-5 text-muted-foreground">
+        Share of named answers that resolve to no real graph node, measured on the five
+        graph-oracle domains (MetaQA external gold has no faithfulness). Graph context is the
+        most faithful retrieval mode.
+      </p>
+      <div className="space-y-3">
+        {rows.map((r, i) => (
+          <BarRow
+            key={r.mode}
+            label={MODE_LABELS[r.mode]}
+            color={MODE_COLORS[r.mode]}
+            value={r.hallucination}
+            display={pct(r.hallucination)}
+            max={maxHall}
+            delay={i * 0.08}
+          />
+        ))}
+      </div>
+    </SpotlightCard>
+  );
+}
+
+/**
+ * Cost vs. accuracy — tokens per query (log x) against mean F1 (y), ONE dot per
+ * mode (nine points), local-only. Up-and-to-the-left is better; graph_rag and
+ * oracle sit up-left.
+ */
+const SC_W = 720;
+const SC_H = 420;
+const SC_M = { top: 24, right: 24, bottom: 50, left: 50 };
+const SC_PLOT_W = SC_W - SC_M.left - SC_M.right;
+const SC_PLOT_H = SC_H - SC_M.top - SC_M.bottom;
+
+export function EconomicsScatter() {
+  const pts = ce.economics.byMode;
+  const xs = pts.map((p) => p.tokens);
+  const xMin = Math.min(...xs) * 0.85;
+  const xMax = Math.max(...xs) * 1.15;
+
+  const xScale = (t: number) =>
+    SC_M.left +
+    ((Math.log(t) - Math.log(xMin)) / (Math.log(xMax) - Math.log(xMin))) * SC_PLOT_W;
+  const yScale = (f: number) => SC_M.top + (1 - f) * SC_PLOT_H;
+
+  const xTicks = [250, 500, 1000, 2000, 5000];
+  const yTicks = [0, 0.25, 0.5, 0.75, 1.0];
+  // Modes whose labels should sit below-left of the dot to avoid the top edge.
+  const labelBelow = new Set<Mode>(["graph_rag", "oracle"]);
 
   return (
-    <div className="grid gap-5 md:grid-cols-2">
-      <SpotlightCard className="p-6">
-        <h3 className="text-sm font-semibold text-foreground">Hallucination rate by mode</h3>
-        <p className="mb-5 mt-1 text-xs leading-5 text-muted-foreground">
-          Share of named answers that resolve to no real graph node. Graph context is
-          faithful by construction.
-        </p>
-        <div className="space-y-3">
-          {rows.map((r, i) => (
-            <BarRow
-              key={r.mode}
-              label={MODE_LABELS[r.mode]}
-              color={MODE_COLORS[r.mode]}
-              value={r.hallucination_rate ?? 0}
-              display={pct(r.hallucination_rate ?? 0)}
-              max={maxHall}
-              delay={i * 0.08}
-            />
+    <figure className="not-prose my-2">
+      <div className="glass-panel relative overflow-hidden p-2 sm:p-3">
+        <svg
+          viewBox={`0 0 ${SC_W} ${SC_H}`}
+          className="block h-auto w-full"
+          role="img"
+          aria-label="Tokens per query versus mean F1, one point per mode, local only."
+        >
+          <defs>
+            <linearGradient id="ce-econ-corner" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor={MODE_COLORS.graph_rag} stopOpacity="0.16" />
+              <stop offset="55%" stopColor={MODE_COLORS.graph_rag} stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <rect
+            x={SC_M.left}
+            y={SC_M.top}
+            width={SC_PLOT_W}
+            height={SC_PLOT_H}
+            fill="url(#ce-econ-corner)"
+          />
+          {yTicks.map((g) => (
+            <g key={g}>
+              <line
+                x1={SC_M.left}
+                x2={SC_W - SC_M.right}
+                y1={yScale(g)}
+                y2={yScale(g)}
+                stroke="var(--color-border)"
+                strokeWidth={1}
+                opacity={0.5}
+              />
+              <text
+                x={SC_M.left - 10}
+                y={yScale(g) + 4}
+                textAnchor="end"
+                className="fill-[var(--color-muted-foreground)] font-mono text-[11px]"
+              >
+                {g.toFixed(2)}
+              </text>
+            </g>
           ))}
-        </div>
-      </SpotlightCard>
+          {xTicks.map((t) => (
+            <text
+              key={t}
+              x={xScale(t)}
+              y={SC_H - SC_M.bottom + 20}
+              textAnchor="middle"
+              className="fill-[var(--color-muted-foreground)] font-mono text-[11px]"
+            >
+              {t >= 1000 ? `${(t / 1000).toLocaleString()}k` : t}
+            </text>
+          ))}
+          <text
+            x={SC_M.left + SC_PLOT_W / 2}
+            y={SC_H - 8}
+            textAnchor="middle"
+            className="fill-[var(--color-muted)] text-[12px]"
+          >
+            tokens per query (log scale) — cost →
+          </text>
+          <text
+            transform={`translate(14 ${SC_M.top + SC_PLOT_H / 2}) rotate(-90)`}
+            textAnchor="middle"
+            className="fill-[var(--color-muted)] text-[12px]"
+          >
+            mean F1 — accuracy ↑
+          </text>
+          <text
+            x={SC_M.left + 8}
+            y={SC_M.top + 16}
+            className="fill-[var(--color-muted-foreground)] text-[10px] uppercase tracking-wide"
+          >
+            ◤ cheaper · more accurate
+          </text>
 
-      <SpotlightCard className="p-6">
-        <h3 className="text-sm font-semibold text-foreground">Tokens per query by mode</h3>
-        <p className="mb-5 mt-1 text-xs leading-5 text-muted-foreground">
-          Passive graph context lands frontier-grade accuracy at a fraction of the agentic
-          loop's token cost.
-        </p>
-        <div className="space-y-3">
-          {rows.map((r, i) => (
-            <BarRow
-              key={r.mode}
-              label={MODE_LABELS[r.mode]}
-              color={MODE_COLORS[r.mode]}
-              value={r.tokens_mean ?? 0}
-              display={(r.tokens_mean ?? 0).toLocaleString()}
-              max={maxTok}
-              delay={i * 0.08}
-            />
-          ))}
-        </div>
-      </SpotlightCard>
-    </div>
+          {pts.map((p) => {
+            const px = xScale(p.tokens);
+            const py = yScale(p.f1);
+            const emph = p.mode === "graph_rag" || p.mode === "oracle";
+            const below = labelBelow.has(p.mode);
+            return (
+              <g key={p.mode}>
+                <circle
+                  cx={px}
+                  cy={py}
+                  r={emph ? 7 : 5}
+                  fill={MODE_COLORS[p.mode]}
+                  stroke={emph ? "var(--color-foreground)" : "none"}
+                  strokeWidth={emph ? 1.5 : 0}
+                />
+                <text
+                  x={px}
+                  y={below ? py + 16 : py - 10}
+                  textAnchor="middle"
+                  className="fill-[var(--color-muted)] text-[10px]"
+                  style={{ fontWeight: emph ? 600 : 400 }}
+                >
+                  {MODE_SHORT[p.mode]}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+    </figure>
   );
 }
 

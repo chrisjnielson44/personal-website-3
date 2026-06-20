@@ -4203,6 +4203,100 @@
     }
   },
   "techniques": null,
+  "economics": {
+    "byMode": [
+      {
+        "mode": "none",
+        "tokens": 259,
+        "latency": 11.0,
+        "f1": 0.0906,
+        "n": 1000
+      },
+      {
+        "mode": "vector",
+        "tokens": 725,
+        "latency": 11.1,
+        "f1": 0.2785,
+        "n": 1000
+      },
+      {
+        "mode": "vector_matched",
+        "tokens": 2221,
+        "latency": 15.2,
+        "f1": 0.3409,
+        "n": 1000
+      },
+      {
+        "mode": "graph_rag",
+        "tokens": 2658,
+        "latency": 16.5,
+        "f1": 0.5362,
+        "n": 1000
+      },
+      {
+        "mode": "graph",
+        "tokens": 2894,
+        "latency": 44.8,
+        "f1": 0.1197,
+        "n": 1000
+      },
+      {
+        "mode": "graph_rag_blind",
+        "tokens": 4923,
+        "latency": 22.9,
+        "f1": 0.4881,
+        "n": 1000
+      },
+      {
+        "mode": "triple_rag",
+        "tokens": 803,
+        "latency": 16.7,
+        "f1": 0.0926,
+        "n": 1000
+      },
+      {
+        "mode": "rag_iter",
+        "tokens": 1392,
+        "latency": 21.3,
+        "f1": 0.362,
+        "n": 1000
+      },
+      {
+        "mode": "oracle",
+        "tokens": 1004,
+        "latency": 11.3,
+        "f1": 0.5031,
+        "n": 1000
+      }
+    ],
+    "hallucination": [
+      {
+        "mode": "none",
+        "faithful": 0.4217,
+        "hallucination": 0.5783,
+        "n": 1790
+      },
+      {
+        "mode": "vector",
+        "faithful": 0.7571,
+        "hallucination": 0.2429,
+        "n": 1271
+      },
+      {
+        "mode": "vector_matched",
+        "faithful": 0.7357,
+        "hallucination": 0.2643,
+        "n": 1309
+      },
+      {
+        "mode": "graph_rag",
+        "faithful": 0.8488,
+        "hallucination": 0.1512,
+        "n": 1687
+      }
+    ],
+    "note": "Clean bge-m3 run, local, $0. Tokens/latency/F1 per mode are pooled over the 10 MetaQA models; hallucination (share of named answers that resolve to no real graph node) is from the 5 graph-oracle domains, where answers map to graph nodes — MetaQA uses external string gold, so faithfulness isn't defined there."
+  },
   "domains": {
     "datasets": [
       {

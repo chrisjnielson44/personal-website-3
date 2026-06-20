@@ -3,7 +3,6 @@ import { ArrowDown, ArrowUpRight, GitFork, Lock } from "lucide-react";
 import { Container } from "@/components/Container";
 import { FadeInView, ReadingProgress } from "@/components/Motion";
 import { GapCollapseChart } from "@/components/contextEngine/GapCollapseChart";
-import { CostAccuracyScatter } from "@/components/contextEngine/CostAccuracyScatter";
 import { DomainReplication } from "@/components/contextEngine/DomainReplication";
 import {
   MetaqaCrossover,
@@ -14,8 +13,13 @@ import { ConfoundControl } from "@/components/contextEngine/ConfoundControl";
 import { ToolProfile } from "@/components/contextEngine/ToolProfile";
 import { ContrastsTable } from "@/components/contextEngine/ContrastsTable";
 import { ModeExplainer } from "@/components/contextEngine/ModeExplainer";
-import { StatGrid, ModeEconomics, ErPanel } from "@/components/contextEngine/BenchPanels";
-import { Leaderboard } from "@/components/contextEngine/Leaderboard";
+import {
+  StatGrid,
+  ErPanel,
+  EconomicsTokens,
+  EconomicsHallucination,
+  EconomicsScatter,
+} from "@/components/contextEngine/BenchPanels";
 import { TraceDemo } from "@/components/contextEngine/TraceDemo";
 import { SpotlightCard } from "@/components/contextEngine/primitives";
 import {
@@ -31,7 +35,6 @@ import {
   type TocItem,
 } from "@/components/contextEngine/academic";
 import {
-  byMode,
   ce,
   contrastDeltaRange,
   contrastsFor,
@@ -80,11 +83,10 @@ const TOC: TocItem[] = [
   { id: "trace", num: "5", label: "Worked example" },
   { id: "domains", num: "6", label: "Generalization" },
   { id: "economics", num: "7", label: "Cost & faithfulness" },
-  { id: "leaderboard", num: "8", label: "Full results" },
-  { id: "discussion", num: "9", label: "Discussion" },
-  { id: "limitations", num: "10", label: "Limitations" },
-  { id: "future", num: "11", label: "Future work" },
-  { id: "conclusion", num: "12", label: "Conclusion" },
+  { id: "discussion", num: "8", label: "Discussion" },
+  { id: "limitations", num: "9", label: "Limitations" },
+  { id: "future", num: "10", label: "Future work" },
+  { id: "conclusion", num: "11", label: "Conclusion" },
 ];
 
 function pct(x: number | null | undefined) {
@@ -145,11 +147,16 @@ function GraphSchemaCard() {
 }
 
 function ContextEnginePage() {
-  // Legacy sanctions sweep — still backs the cost/faithfulness economics panels.
-  const n0 = byMode("none")!;
-  const gr = byMode("graph_rag")!;
-  const g = byMode("graph")!;
-  const tokenRatio = g.tokens_mean && gr.tokens_mean ? g.tokens_mean / gr.tokens_mean : 0;
+  // §7 economics (local, $0; tokens/F1 MetaQA-pooled, faithfulness graph-oracle).
+  const econByMode = (m: string) => ce.economics.byMode.find((r) => r.mode === m);
+  const econHall = (m: string) => ce.economics.hallucination.find((r) => r.mode === m);
+  const econGr = econByMode("graph_rag");
+  const econGraph = econByMode("graph");
+  const econOracle = econByMode("oracle");
+  const econBlind = econByMode("graph_rag_blind");
+  const hallNone = econHall("none");
+  const hallVec = econHall("vector");
+  const hallGr = econHall("graph_rag");
 
   // MetaQA headline figures (external gold, pooled).
   const grRange = metaqaRange("graph_rag") ?? { lo: 0.41, hi: 0.69 };
@@ -644,56 +651,68 @@ function ContextEnginePage() {
           num="7"
           id="economics"
           title="Cost and faithfulness"
-          lead="For high-stakes work the failure that matters is not low accuracy but confident fabrication — and the second axis is what each mode costs to run."
+          lead="Accuracy is only half the picture for deployment. Two other axes decide whether a mode is usable: what each query costs to run, and — for high-stakes work — how often the model fabricates an answer that maps to nothing real."
         >
-          <FadeInView>
-            <CostAccuracyScatter />
+          <P>
+            Every mode here runs <strong className="text-foreground">on-device, $0, local</strong>.
+            The cost we can compare is therefore tokens per query (and the latency that tracks it),
+            pooled over the ten MetaQA models. The token-heavy modes are the <em>k</em>-hop ones:
+            the blind subgraph at {econBlind?.tokens.toLocaleString()} tokens and the agentic loop at{" "}
+            {econGraph?.tokens.toLocaleString()}. Passive graph context costs{" "}
+            {econGr?.tokens.toLocaleString()} — only modestly less than the agentic loop, not the
+            order-of-magnitude gap one might assume — while the answer-bearing oracle is both the
+            leanest fact-bearing mode ({econOracle?.tokens.toLocaleString()}) and among the most
+            accurate. The agentic loop is the real cost outlier on <em>latency</em> (its multi-round
+            tool calls run far longer per query), without buying accuracy back.
+          </P>
+
+          <FadeInView className="mt-5">
+            <EconomicsTokens />
           </FadeInView>
           <Caption n={10}>
-            Tokens per query (log) vs. mean F1, one dot per model × mode, on the legacy sanctions
-            sweep. Outlined dots are on-device models; faded dots are the frontier ceiling.
-            Up-and-to-the-left is better.
+            Mean tokens per query by mode, pooled over the 10 MetaQA models (local, $0). The
+            <em> k</em>-hop modes — graph context (blind) and the agentic graph loop — are the
+            token-heavy ones; passive graph context and especially the oracle stay lean.
           </Caption>
 
           <FadeInView className="mt-7">
-            <ModeEconomics />
+            <EconomicsScatter />
           </FadeInView>
           <Caption n={11}>
-            Left: share of named answers resolving to no real graph node (hallucination). Right:
-            mean tokens per query. Both by mode, legacy sanctions sweep.
+            Tokens per query (log x) vs. mean F1, one point per mode, local only — no frontier
+            models, no dollar axis. Up-and-to-the-left is better: graph context and the oracle sit
+            in the cheap-and-accurate corner, while the agentic loop spends the most tokens for one
+            of the lowest scores.
+          </Caption>
+
+          <FadeInView className="mt-7">
+            <EconomicsHallucination />
+          </FadeInView>
+          <Caption n={12}>
+            Hallucination rate by mode — share of named answers that resolve to no real graph node —
+            measured on the five graph-oracle domains (MetaQA external string gold has no
+            faithfulness signal). Closed-book fabricates {pct(hallNone?.hallucination)}; graph
+            context is the most faithful retrieval mode at {pct(hallGr?.hallucination)}.
           </Caption>
 
           <div className="mt-6">
-            <Observation n={7} title="Graph answers are faithful by construction, and cheap">
-              Closed-book answers are uncited guesses and fabricate {pct(n0.hallucination_rate)} of
-              the time; graph context drops that to {pct(gr.hallucination_rate)} because the answer
-              is read off real nodes. And it gets there for {gr.tokens_mean?.toLocaleString()}{" "}
-              tokens per query — {tokenRatio.toFixed(1)}× cheaper than the agentic loop's{" "}
-              {g.tokens_mean?.toLocaleString()} — making it the pragmatic default for everything
-              but the hardest questions.
+            <Observation n={7} title="Graph context is the faithful — and lean — retrieval mode">
+              On the graph-oracle domains, closed-book answers are uncited guesses that fabricate{" "}
+              {pct(hallNone?.hallucination)} of the time; passive graph context drops that to{" "}
+              {pct(hallGr?.hallucination)} — the most faithful of the retrieval modes, well below
+              even vector RAG ({pct(hallVec?.hallucination)}) — because the answer is read off real
+              nodes. It gets there for {econGr?.tokens.toLocaleString()} tokens per query, only
+              modestly above the leanest fact-bearing modes and barely cheaper than the agentic loop
+              ({econGraph?.tokens.toLocaleString()} tokens) — so the case for passive context here is
+              accuracy and faithfulness, not a dramatic token saving. Faithfulness is measured on the
+              graph-oracle domains only; MetaQA's external gold does not define it.
             </Observation>
           </div>
         </Section>
 
-        {/* ── §8 full results ─────────────────────────────────────────── */}
+        {/* ── §8 discussion ───────────────────────────────────────────── */}
         <Section
           num="8"
-          id="leaderboard"
-          title="Full results"
-          lead="Mean F1 for every model across the modes. Both graph modes dominate vector RAG at every size; cell shade tracks accuracy and the agentic leader is ringed."
-        >
-          <FadeInView>
-            <Leaderboard />
-          </FadeInView>
-          <Caption n={12} kind="Table">
-            Per-model mean F1 by mode on the legacy sanctions sweep, sorted by agentic-graph
-            accuracy. On-device and frontier models tagged.
-          </Caption>
-        </Section>
-
-        {/* ── §9 discussion ───────────────────────────────────────────── */}
-        <Section
-          num="9"
           id="discussion"
           title="Discussion"
           lead="What follows if much of the multi-hop deficit is context, not capacity."
@@ -738,7 +757,7 @@ function ContextEnginePage() {
         </Section>
 
         {/* ── §10 limitations ─────────────────────────────────────────── */}
-        <Section num="10" id="limitations" title="Limitations & threats to validity" lead="The result — that a structured subgraph lets a small local model punch above its weight — rests on a specific experimental frame. Here is where that frame is thin, and what would harden it.">
+        <Section num="9" id="limitations" title="Limitations & threats to validity" lead="The result — that a structured subgraph lets a small local model punch above its weight — rests on a specific experimental frame. Here is where that frame is thin, and what would harden it.">
           <Observation n={1} title="Contamination and memorization">
             <P>MetaQA is built on movie facts that may sit in the pretraining corpus, so a graph-mode win could in principle reflect recall rather than reasoning. We mitigate this by reporting the <strong className="text-foreground">closed-book baseline</strong>, which is near-zero — if the model had memorized the answers, the no-context arm would not collapse, so memorization is not carrying the headline result. This is a mitigation, not an elimination: the only clean fix is an <em>anti-contamination</em> evaluation (e.g. MINTQA / FRAMES) whose facts post-date or fall outside the training distribution, which we have not yet run.</P>
           </Observation>
@@ -769,7 +788,7 @@ function ContextEnginePage() {
         </Section>
 
         {/* ── §11 future work ─────────────────────────────────────────── */}
-        <Section num="11" id="future" title="Future work" lead="The limitations above map cleanly onto a roadmap. In rough priority order:">
+        <Section num="10" id="future" title="Future work" lead="The limitations above map cleanly onto a roadmap. In rough priority order:">
           <ul className="my-3 ml-5 list-disc space-y-1 text-muted">
             <li><strong className="text-foreground">Frontier + unquantized ceiling</strong> — add frontier and full-precision reference lines to quantify the local-to-frontier gap and to test whether the agentic deficit is a quantization/scale artifact (the open question this run cannot answer).</li>
             <li><strong className="text-foreground">Power up the tool-profile test</strong> — a roster balanced across tool-training profiles, enough per bucket to actually test whether function-call training narrows the passive-vs-agentic gap.</li>
@@ -783,7 +802,7 @@ function ContextEnginePage() {
         </Section>
 
         {/* ── §12 conclusion ──────────────────────────────────────────── */}
-        <Section num="12" id="conclusion" title="Conclusion" lead="What did we actually learn, and what should a practitioner do with it.">
+        <Section num="11" id="conclusion" title="Conclusion" lead="What did we actually learn, and what should a practitioner do with it.">
           <P>We set out to answer four questions. <strong className="text-foreground">Q1 — does structured graph context beat a strong text-RAG baseline?</strong> Yes, decisively: graph context beat a tuned bge-m3 + rerank baseline by +{gvDelta.lo.toFixed(2)}–+{gvDelta.hi.toFixed(2)} F1, significant in {grVsVec.sig}/{grVsVec.total} models. <strong className="text-foreground">Q2 — passive subgraph vs. agentic loop?</strong> For these small, quantized, on-device models, reading a pre-retrieved subgraph beat driving graph tools in {grVsGraph.sig}/{grVsGraph.total} models — agentic access often fell below even vector RAG. We scope that to the local regime; it is a floor, not a verdict on agentic RAG. <strong className="text-foreground">Q3 — is it structure, or volume/content?</strong> Structure: graph context beat the budget-matched vector arm and the same facts flattened to triples ({grVsTriple.sig}/{grVsTriple.total}). <strong className="text-foreground">Q4 — where does the residual error live?</strong> An answer-bearing oracle barely topped graph context, so the retriever is near its ceiling and the loss is the model <em>reading</em> the context — and notably the clever relation-guidance heuristic added little over a blind subgraph, so the win is delivering a subgraph at all.</P>
           <P>The practical upshot is concrete. Capable investigative QA does not require sending data to a frontier API or spinning up an agentic tool-use loop. It can run <strong className="text-foreground">on-device, at $0 marginal cost</strong>, on a small model — provided you do the work of giving that model a well-chosen, structured subgraph rather than reaching for more parameters or more autonomy. For the contamination-, seed-, and noise-related reasons laid out above, this is a result about a clean, single-seed, single-GPU regime, and it should be read with those boundaries in mind until the roadmap above fills them in.</P>
           <P>If there is one line to carry away, it is this: <em>for small local models, how you deliver context matters more than how many parameters you have.</em></P>
