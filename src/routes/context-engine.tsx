@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ArrowDown, ArrowUpRight, GitFork, Lock } from "lucide-react";
 import { Container } from "@/components/Container";
 import { FadeInView, ReadingProgress } from "@/components/Motion";
-import { GapCollapseChart } from "@/components/contextEngine/GapCollapseChart";
 import { DomainReplication } from "@/components/contextEngine/DomainReplication";
 import {
   MetaqaCrossover,
@@ -14,7 +13,6 @@ import { ToolProfile } from "@/components/contextEngine/ToolProfile";
 import { ContrastsTable } from "@/components/contextEngine/ContrastsTable";
 import { ModeExplainer } from "@/components/contextEngine/ModeExplainer";
 import {
-  StatGrid,
   ErPanel,
   EconomicsTokens,
   EconomicsHallucination,
@@ -325,7 +323,7 @@ function ContextEnginePage() {
           <P>The prior literature is encouraging but does not settle the small-model case, and a full Related Work section follows. The headline GraphRAG-versus-RAG comparisons are run almost entirely on large or frontier models, where abundant parameters may mask or distort the effect of context format. The small and quantized regime—where capacity is genuinely scarce and the context-versus-capacity tension is sharpest—is comparatively under-studied. Two relevant results are partly known: that graph-structured context can beat flat retrieval, and that retrieval can substitute for parameters (the RETRO line of work). Because each is partly established, the novelty here has to be sharper than restating either: it has to characterize how these effects behave as the model shrinks and is quantized to fit on-device.</P>
           <P>We frame the contribution as three research questions. <strong className="text-foreground">(Q1)</strong> Does structured graph context beat a strong text-RAG baseline—reranked and iterative, not a strawman—for multi-hop QA on small local models? <strong className="text-foreground">(Q2)</strong> For small, quantized, on-device models, is it better to hand the model a pre-retrieved subgraph (the <em>passive</em> mode) or to let the model drive graph-traversal tools itself (the <em>agentic</em> mode)—and where, along the size ladder, is the capability crossover between the two? <strong className="text-foreground">(Q3)</strong> How far does graph-structured context substitute for model parameters: how much capacity can the right context format buy back?</P>
           <P>A word on validity, because the easiest way to get a flattering graph result is to ask the graph its own questions. The headline experiments run on <strong className="text-foreground">MetaQA</strong>, an external multi-hop benchmark whose questions and gold answers are independent of the graph we build—removing the graph-as-oracle circularity that an earlier version of this study suffered, where the evaluation was effectively scored against the same structure under test. Because the underlying knowledge base is clean and shared across conditions, the differences we measure reflect the <em>format</em> in which context is delivered, not noise in how facts were extracted. Every mode reads from the same facts; only the packaging changes.</P>
-          <P>The setup is deliberately uniform. All models are 4-bit quantized and run on-device on an Apple M3 Ultra via MLX: a Qwen3 size ladder from 0.6B to 30B, a Llama-3.2-3B control, and a cross-family panel (Qwen2.5-7B, Llama-3.1-8B, Mistral-7B, Gemma-2-9B, Granite-3.3-8B, Phi-3.5-mini) to check that effects are not an artifact of one model family. The central pattern is large and consistent. Pooled MetaQA F1 for graph-as-passive-context rises from roughly <strong className="text-foreground">0.53 to 0.70</strong> across the size ladder, against roughly <strong className="text-foreground">0.19 to 0.29</strong> for reranked vector RAG and <strong className="text-foreground">0.04 to 0.13</strong> closed-book. The substitution is stark at the extremes: a 1.7B model reading a subgraph (~0.53) outscores a 30B model equipped with vector RAG (~0.29). The bottleneck, at least here, is more context than capacity.</P>
+          <P>The setup is deliberately uniform. All models are 4-bit quantized and run on-device on an Apple M3 Ultra via MLX: a Qwen3 size ladder from 1.7B to 30B, a Llama-3.2-3B control, and a cross-family panel (Llama-3.1-8B, Gemma-2-9B, Granite-3.3-8B, Hermes-3-Llama-3.1-8B) to check that effects are not an artifact of one model family. The central pattern is large and consistent. Pooled MetaQA F1 for graph-as-passive-context rises from roughly <strong className="text-foreground">0.52 to 0.69</strong> across the size ladder, against roughly <strong className="text-foreground">0.25 to 0.36</strong> for reranked vector RAG and <strong className="text-foreground">0.05 to 0.12</strong> closed-book. The substitution is stark at the extremes: a 1.7B model reading a subgraph (~0.52) outscores a 30B model equipped with vector RAG (~0.36). The bottleneck, at least here, is more context than capacity.</P>
           <Observation n={1} title="Contributions">We report a <strong className="text-foreground">passive-versus-agentic crossover</strong> for on-device quantized models—the novel core, locating where letting the model drive graph traversal begins to pay off relative to handing it a pre-retrieved subgraph. We show <strong className="text-foreground">graph context decisively beats tuned text RAG at every model size</strong>, not just on average. We <strong className="text-foreground">quantify how far context substitutes for capacity</strong>, sizing the parameter count that the right context format buys back. And we do all of it on <strong className="text-foreground">external gold answers with bootstrap confidence intervals</strong>, at <strong className="text-foreground">$0 cost and fully local</strong>.</Observation>
         </Section>
 
@@ -573,31 +571,6 @@ function ContextEnginePage() {
             Per-model paired contrasts with bootstrap CIs, d_z, and Holm-corrected significance.
           </Caption>
 
-          <h3 className="mt-12 text-base font-semibold text-foreground">Internal replication on the sanctions graph</h3>
-
-          <P>The same shape replicates on a second, independently constructed sanctions graph, where graph context again dominates both vector RAG and agentic access. We report this as <em>secondary</em> evidence and flag its principal limitation plainly: on the sanctions graph, answers are scored against the same graph that supplies the context, making the evaluation graph-oracle-scored and therefore partly circular. It demonstrates that the qualitative ordering is reproducible on a different, larger graph, but it cannot establish absolute accuracy the way the externally-gold MetaQA results do. The weight of our claims rests on Q1–Q4; the sanctions replication corroborates their shape rather than extending them.</P>
-
-          <FadeInView className="mt-5">
-            <GapCollapseChart />
-          </FadeInView>
-          <Caption n={6}>
-            Mean F1 vs. model size (log axis) on the legacy sanctions sweep, one line per retrieval
-            mode. Lines trace the controlled Qwen3 family; faint dots are other sized models; dashed
-            rings mark the llama-3.2-3b weak-tool-caller control. Scored against the graph oracle, so
-            read as a circular, secondary replication. Hover any point to inspect.
-          </Caption>
-
-          <Observation n={5} title="Sanctions graph corroborates the shape (secondary)">
-            On an independent sanctions graph, graph_rag again dominates vector and agentic access. Because answers are scored against the source graph, this evidence is circular and treated as secondary corroboration of the MetaQA findings.
-          </Observation>
-
-          <FadeInView className="mt-6">
-            <StatGrid />
-          </FadeInView>
-          <Caption n={7} kind="Table">
-            Summary statistics across the legacy sanctions sweep.
-          </Caption>
-
         </Section>
 
         {/* ── §5 worked example ───────────────────────────────────────── */}
@@ -605,15 +578,18 @@ function ContextEnginePage() {
           num="5"
           id="trace"
           title="A worked example"
-          lead="One question, two engines, recorded live. Vector RAG retrieves similar text and guesses; the agentic graph resolves the entity and walks the edges, citing each answer to a source list."
+          lead="To make the engine's mechanics concrete, here is one recorded trace on the sanctions graph with a local model — illustrative only, and separate from the headline MetaQA run above. Vector RAG retrieves similar text and guesses; the agentic graph resolves the entity and walks the edges, citing each answer to a source list."
         >
           <FadeInView>
             <TraceDemo />
           </FadeInView>
-          <Caption n={8}>
-            Recorded runs of {ce.demo.model?.name} (on-device). Select a question; the agentic
-            traversal replays one tool call at a time. The "answers found" scorecard counts matches
-            against the oracle gold set.
+          <Caption n={6}>
+            An illustrative <strong>recorded trace</strong> of {ce.demo.model?.name}{" "}
+            (a local 4-bit model) running the engine on the <strong>sanctions graph</strong>. This
+            trace is separate from — and predates — the headline MetaQA run: it is <em>not</em> one
+            of the ten lean MetaQA models, and the scorecard counts matches against the sanctions
+            graph oracle, not external gold. It is shown only to make the engine's mechanics
+            concrete. Select a question; the agentic traversal replays one tool call at a time.
           </Caption>
         </Section>
 
@@ -627,14 +603,14 @@ function ContextEnginePage() {
           <FadeInView>
             <DomainReplication />
           </FadeInView>
-          <Caption n={9}>
+          <Caption n={7}>
             Per-domain jump from vector RAG (amber) to graph context (blue) across {ce.domains?.nDomains ?? 5}{" "}
             public graphs, local models, mean F1 over each domain's full question bank. The
             budget-matched vector tick (deeper amber) sits right on the vector dot — extra tokens
             don't help; the closed-book tick marks the no-retrieval floor.
           </Caption>
           {dMin && dMax && (
-            <Observation n={6} title="The lift replicates — and varies honestly">
+            <Observation n={5} title="The lift replicates — and varies honestly">
               Graph context beats vector RAG in {allUp ? "every" : "most"} domain tested, by{" "}
               {dMin.delta >= 0 ? "+" : ""}
               {dMin.delta.toFixed(2)} ({dMin.title.split(" ")[0]}) to +{dMax.delta.toFixed(2)} (
@@ -669,7 +645,7 @@ function ContextEnginePage() {
           <FadeInView className="mt-5">
             <EconomicsTokens />
           </FadeInView>
-          <Caption n={10}>
+          <Caption n={8}>
             Mean tokens per query by mode, pooled over the 10 MetaQA models (local, $0). The
             <em> k</em>-hop modes — graph context (blind) and the agentic graph loop — are the
             token-heavy ones; passive graph context and especially the oracle stay lean.
@@ -678,7 +654,7 @@ function ContextEnginePage() {
           <FadeInView className="mt-7">
             <EconomicsScatter />
           </FadeInView>
-          <Caption n={11}>
+          <Caption n={9}>
             Tokens per query (log x) vs. mean F1, one point per mode, local only — no frontier
             models, no dollar axis. Up-and-to-the-left is better: graph context and the oracle sit
             in the cheap-and-accurate corner, while the agentic loop spends the most tokens for one
@@ -688,7 +664,7 @@ function ContextEnginePage() {
           <FadeInView className="mt-7">
             <EconomicsHallucination />
           </FadeInView>
-          <Caption n={12}>
+          <Caption n={10}>
             Hallucination rate by mode — share of named answers that resolve to no real graph node —
             measured on the five graph-oracle domains (MetaQA external string gold has no
             faithfulness signal). Closed-book fabricates {pct(hallNone?.hallucination)}; graph
@@ -696,7 +672,7 @@ function ContextEnginePage() {
           </Caption>
 
           <div className="mt-6">
-            <Observation n={7} title="Graph context is the faithful — and lean — retrieval mode">
+            <Observation n={6} title="Graph context is the faithful — and lean — retrieval mode">
               On the graph-oracle domains, closed-book answers are uncited guesses that fabricate{" "}
               {pct(hallNone?.hallucination)} of the time; passive graph context drops that to{" "}
               {pct(hallGr?.hallucination)} — the most faithful of the retrieval modes, well below
@@ -820,7 +796,7 @@ function ContextEnginePage() {
                 "UK OFSI consolidated list of financial sanctions targets, HM Treasury.",
                 "UN Security Council consolidated sanctions list.",
                 "Cross-domain sources: CORDIS (EU research grants), ClinicalTrials.gov, GLEIF (legal-entity ownership), SEC EDGAR (filings & Form 4 insider trades).",
-                "Stack: Kuzu (embedded graph), MLX (on-device inference), sentence-transformers (vector baseline), OpenRouter (frontier ceiling only). Engine is local-only; frontier models are a reference ceiling, never in the pipeline.",
+                "Stack: Kuzu (embedded graph), MLX (on-device inference, 4-bit), bge-m3 + cross-encoder rerank (vector baseline). Fully local — no Ollama, no network at inference, no frontier API anywhere in the pipeline, $0 marginal cost.",
               ]}
             />
           </FadeInView>
