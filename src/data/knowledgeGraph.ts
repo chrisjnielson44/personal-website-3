@@ -1101,6 +1101,23 @@ const coreKnowledgeNodes: KnowledgeNode[] = [
     href: "/articles/semantic-models-for-databases",
   },
   {
+    id: "paper-context-engine",
+    label: "The Context Engine",
+    kind: "article",
+    eyebrow: "Research paper · 2026",
+    description:
+      "A controlled, size-swept study I ran on-device: handing a small local LLM a pre-retrieved subgraph beats both a tuned bge-m3 vector RAG baseline and agentic graph tools, running air-gapped at $0.",
+    tags: [
+      "Research",
+      "Context Engineering",
+      "GraphRAG",
+      "Local LLMs",
+      "Evaluation",
+    ],
+    href: "/context-engine",
+    importance: 3,
+  },
+  {
     id: "resume",
     label: "Resume",
     kind: "resource",
@@ -1880,6 +1897,27 @@ const coreKnowledgeLinks: KnowledgeLink[] = [
   { source: "christopher", target: "article-graphrag", relation: "wrote" },
   { source: "christopher", target: "article-production-agents", relation: "wrote" },
   { source: "christopher", target: "article-semantic-models", relation: "wrote" },
+  { source: "christopher", target: "paper-context-engine", relation: "wrote" },
+  {
+    source: "context-engineering",
+    target: "paper-context-engine",
+    relation: "tested in",
+  },
+  {
+    source: "graphrag",
+    target: "paper-context-engine",
+    relation: "evaluated in",
+  },
+  {
+    source: "small-models-thesis",
+    target: "paper-context-engine",
+    relation: "tested in",
+  },
+  {
+    source: "local-llm-inference",
+    target: "paper-context-engine",
+    relation: "benchmarked in",
+  },
   { source: "christopher", target: "resume", relation: "summarized by" },
   { source: "christopher", target: "github", relation: "publishes on" },
   { source: "christopher", target: "linkedin", relation: "connects on" },
