@@ -34,12 +34,12 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "Christopher Nielson - Software Engineer",
+        title: "Christopher Nielson - Full Stack Software Engineer",
       },
       {
         name: "description",
         content:
-          "Software Engineer at BNY. Building ML-driven solutions for financial risk analysis. CMU Graduate Certificate, FSU CS Graduate.",
+          "Full-stack software engineer on BNY's Risk Engineering team, building production AI agent infrastructure, evaluation systems, and governed AI workflows. CMU Graduate Certificate, FSU CS graduate.",
       },
       {
         name: "author",
@@ -47,12 +47,12 @@ export const Route = createRootRoute({
       },
       {
         property: "og:title",
-        content: "Christopher Nielson - Software Engineer",
+        content: "Christopher Nielson - Full Stack Software Engineer",
       },
       {
         property: "og:description",
         content:
-          "Software Engineer at BNY. Building ML-driven solutions for financial risk analysis.",
+          "Full-stack software engineer building production AI agent infrastructure on BNY's Risk Engineering team. Explore my work as an interactive knowledge graph.",
       },
       {
         property: "og:type",
@@ -81,7 +81,7 @@ export const Route = createRootRoute({
       {
         property: "og:image:alt",
         content:
-          "Christopher Nielson - Software Engineer · Production AI & Financial Risk",
+          "Christopher Nielson - Full Stack SWE · Production AI & Financial Risk",
       },
       {
         name: "twitter:card",
@@ -89,12 +89,12 @@ export const Route = createRootRoute({
       },
       {
         name: "twitter:title",
-        content: "Christopher Nielson - Software Engineer",
+        content: "Christopher Nielson - Full Stack Software Engineer",
       },
       {
         name: "twitter:description",
         content:
-          "Software Engineer at BNY. Building ML-driven solutions for financial risk analysis.",
+          "Full-stack software engineer building production AI agent infrastructure on BNY's Risk Engineering team. Explore my work as an interactive knowledge graph.",
       },
       {
         name: "twitter:image",

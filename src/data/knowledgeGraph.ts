@@ -391,7 +391,7 @@ const coreKnowledgeNodes: KnowledgeNode[] = [
     id: "christopher",
     label: "Christopher Nielson",
     kind: "profile",
-    eyebrow: "Software engineer · Risk Engineering at BNY",
+    eyebrow: "Full Stack SWE · Risk Engineering at BNY",
     description:
       "I'm a software engineer building infrastructure for production AI agents — governed tool execution, financial-risk systems, and context-rich, permission-aware workflows.",
     details: [

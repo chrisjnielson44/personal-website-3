@@ -1,37 +1,40 @@
 // Generates the social-preview (Open Graph) image at public/og-image.png.
 // Run with: node scripts/generate-og.mjs
 //
-// 1200x630 is the canonical OG/Twitter card size. Social platforms only
-// render raster images (PNG/JPG), so we author an SVG and rasterize it with
-// resvg, loading the Space Grotesk variable font used for the site wordmark.
+// 1200x630 is the canonical OG/Twitter card size. Social platforms only render
+// raster images (PNG/JPG), so we author an SVG and rasterize it with resvg.
+// The name is set in Source Serif 4 to mirror the career-graph hero masthead;
+// the meta lines use Space Grotesk (the site wordmark). resvg can't decode
+// woff2 here, so we load static TTFs from scripts/fonts (instanced from the
+// fontsource woff2: Source Serif @600, Space Grotesk @500).
 
 import { Resvg } from "@resvg/resvg-js";
-import { writeFileSync, readFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
 
-const fontPath = resolve(
-  root,
-  "node_modules/@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2",
-);
+const serifFont = resolve(root, "scripts/fonts/source-serif-4.ttf");
+const groteskFont = resolve(root, "scripts/fonts/space-grotesk.ttf");
+const SERIF = "Source Serif 4";
+const SANS = "Space Grotesk Light";
 
 const W = 1200;
 const H = 630;
-const ACCENT = "#3b82f6";
+const ACCENT = "#88a8ff"; // slate-blue accent (dark-mode token)
 
 // A small constellation of graph nodes on the right, echoing the career-graph
 // hero. Deterministic positions so the image is stable across regenerations.
 const nodes = [
-  { x: 980, y: 150, r: 26, o: 1 },
-  { x: 1080, y: 250, r: 12, o: 0.85 },
-  { x: 900, y: 280, r: 9, o: 0.7 },
-  { x: 1020, y: 380, r: 16, o: 0.9 },
-  { x: 870, y: 420, r: 8, o: 0.6 },
-  { x: 1110, y: 470, r: 10, o: 0.75 },
-  { x: 950, y: 510, r: 7, o: 0.55 },
+  { x: 1004, y: 150, r: 26, o: 1 },
+  { x: 1104, y: 250, r: 12, o: 0.85 },
+  { x: 924, y: 286, r: 9, o: 0.7 },
+  { x: 1044, y: 384, r: 16, o: 0.9 },
+  { x: 900, y: 430, r: 8, o: 0.6 },
+  { x: 1124, y: 474, r: 10, o: 0.75 },
+  { x: 974, y: 516, r: 7, o: 0.55 },
 ];
 const edges = [
   [0, 1],
@@ -48,29 +51,29 @@ const edgeMarkup = edges
   .map(([a, b]) => {
     const s = nodes[a];
     const t = nodes[b];
-    return `<line x1="${s.x}" y1="${s.y}" x2="${t.x}" y2="${t.y}" stroke="${ACCENT}" stroke-opacity="0.28" stroke-width="1.5" />`;
+    return `<line x1="${s.x}" y1="${s.y}" x2="${t.x}" y2="${t.y}" stroke="${ACCENT}" stroke-opacity="0.26" stroke-width="1.5" />`;
   })
   .join("");
 
 const nodeMarkup = nodes
   .map(
     (n) =>
-      `<circle cx="${n.x}" cy="${n.y}" r="${n.r}" fill="${ACCENT}" fill-opacity="${0.12 + n.o * 0.18}" stroke="${ACCENT}" stroke-opacity="${n.o}" stroke-width="2" />`,
+      `<circle cx="${n.x}" cy="${n.y}" r="${n.r}" fill="${ACCENT}" fill-opacity="${0.1 + n.o * 0.16}" stroke="${ACCENT}" stroke-opacity="${n.o}" stroke-width="2" />`,
   )
   .join("");
 
 const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0c0e10" />
-      <stop offset="1" stop-color="#14181c" />
+      <stop offset="0" stop-color="#0a0e14" />
+      <stop offset="1" stop-color="#141a23" />
     </linearGradient>
-    <radialGradient id="glow" cx="0.82" cy="0.32" r="0.6">
-      <stop offset="0" stop-color="${ACCENT}" stop-opacity="0.16" />
+    <radialGradient id="glow" cx="0.84" cy="0.30" r="0.62">
+      <stop offset="0" stop-color="${ACCENT}" stop-opacity="0.18" />
       <stop offset="1" stop-color="${ACCENT}" stop-opacity="0" />
     </radialGradient>
     <pattern id="dots" width="32" height="32" patternUnits="userSpaceOnUse">
-      <circle cx="2" cy="2" r="1.4" fill="#ffffff" fill-opacity="0.045" />
+      <circle cx="2" cy="2" r="1.4" fill="#ffffff" fill-opacity="0.04" />
     </pattern>
   </defs>
 
@@ -81,28 +84,31 @@ const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http
   <g>${edgeMarkup}${nodeMarkup}</g>
 
   <!-- accent rule + eyebrow -->
-  <rect x="80" y="232" width="46" height="4" rx="2" fill="${ACCENT}" />
-  <text x="140" y="240" font-family="Space Grotesk Variable" font-size="22" font-weight="600" letter-spacing="6" fill="#8b93a1">CAREER GRAPH</text>
+  <rect x="80" y="214" width="44" height="4" rx="2" fill="${ACCENT}" />
+  <text x="138" y="222" font-family="${SANS}" font-size="21" font-weight="500" letter-spacing="6" fill="#8b93a1">CAREER · KNOWLEDGE GRAPH</text>
 
-  <!-- name -->
-  <text x="78" y="350" font-family="Space Grotesk Variable" font-size="92" font-weight="600" letter-spacing="-2" fill="#f4f6f8">Christopher Nielson</text>
+  <!-- name (Source Serif, mirrors the hero masthead) -->
+  <text x="76" y="338" font-family="${SERIF}" font-size="104" font-weight="600" letter-spacing="-3" fill="#eef2f7">Christopher Nielson</text>
 
   <!-- role -->
-  <text x="80" y="412" font-family="Space Grotesk Variable" font-size="34" font-weight="500" fill="#c2c8d0">Software Engineer · Production AI &amp; Financial Risk</text>
+  <text x="80" y="404" font-family="${SANS}" font-size="33" font-weight="500" fill="#c4cad3">Full Stack SWE · Risk Engineering at BNY</text>
+
+  <!-- focus line -->
+  <text x="80" y="456" font-family="${SANS}" font-size="24" font-weight="500" fill="#8b93a1">Production AI agent infrastructure · context engineering</text>
 
   <!-- credentials row -->
-  <text x="80" y="468" font-family="Space Grotesk Variable" font-size="24" font-weight="500" fill="#7e8694">BNY  ·  Carnegie Mellon  ·  Florida State</text>
+  <text x="80" y="520" font-family="${SANS}" font-size="23" font-weight="500" fill="#6b7686">BNY  ·  Carnegie Mellon  ·  Florida State</text>
 
   <!-- url -->
-  <text x="80" y="556" font-family="Space Grotesk Variable" font-size="24" font-weight="600" letter-spacing="1" fill="${ACCENT}">cjnielson.com</text>
+  <text x="80" y="566" font-family="${SANS}" font-size="23" font-weight="500" letter-spacing="1" fill="${ACCENT}">cjnielson.com</text>
 </svg>`;
 
 const resvg = new Resvg(svg, {
   fitTo: { mode: "width", value: W },
   font: {
-    fontFiles: [fontPath],
-    loadSystemFonts: true,
-    defaultFontFamily: "Space Grotesk Variable",
+    fontFiles: [serifFont, groteskFont],
+    loadSystemFonts: false,
+    defaultFontFamily: SANS,
   },
 });
 
@@ -110,6 +116,4 @@ const png = resvg.render().asPng();
 const out = resolve(root, "public/og-image.png");
 writeFileSync(out, png);
 
-// Report the font actually used so we catch a silent fallback.
 console.log(`Wrote ${out} (${png.length} bytes, ${W}x${H})`);
-void readFileSync; // keep import tree-shake-safe across node versions

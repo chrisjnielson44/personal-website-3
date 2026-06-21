@@ -283,11 +283,14 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
   const profileFacts = useMemo(
     () =>
       (profileNode?.highlights ?? [])
-        // "Role" lives in the eyebrow already; "Languages" is intentionally
-        // dropped from the card (still shown in the profile node's inspector).
+        // "Role" lives in the eyebrow already; "Languages" and "Based in" are
+        // intentionally dropped from the hero to keep it clean (both still show
+        // in the profile node's inspector).
         .filter(
           (highlight) =>
-            highlight.label !== "Role" && highlight.label !== "Languages",
+            highlight.label !== "Role" &&
+            highlight.label !== "Languages" &&
+            highlight.label !== "Based in",
         )
         .map((highlight) => ({
           key:
@@ -1366,84 +1369,81 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
                 ease: [0.2, 0.8, 0.2, 1],
               }}
             >
-              <div className="graph-welcome-tab">
-                <span className="graph-welcome-file">
-                  <FileText className="size-3.5" />
-                  christopher.md
-                </span>
-                <button
-                  type="button"
-                  className="graph-welcome-close"
-                  onClick={() => setWelcomeOpen(false)}
-                  aria-label="Dismiss welcome"
-                >
-                  <X className="size-4" />
-                </button>
+              <button
+                type="button"
+                className="graph-welcome-dismiss"
+                onClick={() => setWelcomeOpen(false)}
+                aria-label="Dismiss intro"
+              >
+                <X className="size-4" />
+              </button>
+
+              <div className="graph-welcome-heading">
+                <h2 className="graph-welcome-title">Christopher Nielson</h2>
+                <p className="graph-welcome-role">
+                  {profileNode?.eyebrow ??
+                    "Software engineer · Risk Engineering at BNY"}
+                </p>
               </div>
 
-              <div className="graph-welcome-body">
-                <div className="graph-welcome-heading">
-                  <h2 className="graph-welcome-title">
-                    <span aria-hidden="true">#</span>
-                    Christopher Nielson
-                  </h2>
-                  <p className="graph-welcome-role">
-                    {profileNode?.eyebrow ??
-                      "Software engineer · Risk Engineering at BNY"}
-                  </p>
-                </div>
+              {profileFacts.length > 0 ? (
+                <dl className="graph-welcome-frontmatter">
+                  {profileFacts.map((fact) => (
+                    <div key={fact.key}>
+                      <dt>{fact.key}</dt>
+                      <dd>{fact.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
 
-                {profileFacts.length > 0 ? (
-                  <dl className="graph-welcome-frontmatter">
-                    {profileFacts.map((fact) => (
-                      <div key={fact.key}>
-                        <dt>{fact.key}</dt>
-                        <dd>{fact.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                ) : null}
+              <p className="graph-welcome-comment">
+                // my career as a living knowledge graph
+              </p>
 
-                <p className="graph-welcome-comment">
-                  // my career as a living knowledge graph
-                </p>
+              <div className="graph-welcome-actions">
+                <button
+                  type="button"
+                  className="graph-welcome-cmd is-primary"
+                  onClick={() => {
+                    setWelcomeOpen(false);
+                    selectNode("christopher");
+                  }}
+                >
+                  <ArrowRight className="size-3.5" />
+                  start with me
+                </button>
+                <a
+                  href="/christopher-nielson-resume.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="graph-welcome-cmd"
+                >
+                  <FileText className="size-3.5" />
+                  résumé
+                </a>
+              </div>
 
-                <div className="graph-welcome-actions">
-                  <button
-                    type="button"
-                    className="graph-welcome-cmd is-primary"
-                    onClick={() => {
-                      setWelcomeOpen(false);
-                      selectNode("christopher");
-                    }}
-                  >
-                    <ArrowRight className="size-3.5" />
-                    start with me
-                  </button>
+              <div className="graph-welcome-social">
+                {socialLinks.map((link) => (
                   <a
-                    href="/christopher-nielson-resume.pdf"
+                    key={link.name}
+                    href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="graph-welcome-cmd"
+                    className="graph-welcome-social-link"
                   >
-                    <FileText className="size-3.5" />
-                    résumé
+                    {link.name.toLowerCase()}
                   </a>
-                </div>
-
-                <div className="graph-welcome-social">
-                  {socialLinks.map((link) => (
-                    <a
-                      key={link.name}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="graph-welcome-social-link"
-                    >
-                      {link.name.toLowerCase()}
-                    </a>
-                  ))}
-                </div>
+                ))}
+                <a
+                  href="https://cal.com/christopher-nielson-7u3re7/quick-chat"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="graph-welcome-social-link is-cta"
+                >
+                  book a call
+                </a>
               </div>
             </motion.aside>
           ) : null}

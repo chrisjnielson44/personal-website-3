@@ -1759,119 +1759,91 @@ pre code {
   transform: translateX(0) translateY(0);
 }
 
-/* Top-left welcome / orientation card. Glass like the HUD chips but more opaque
-   so the copy stays crisp over the graph. Sits in the empty corner below the
-   meta row, frames the whole page as Christopher's résumé, and points first-time
-   visitors at the two ways in (click a node, ask a question). Dismissible. */
+/* Top-left hero — Christopher's name as the page masthead rather than a boxed
+   card. No glass panel, tab, or markdown chrome; a soft radial scrim keeps the
+   serif type crisp over the graph. Frames the whole page as his résumé;
+   dismissible. */
 .graph-welcome {
   position: absolute;
   z-index: 14;
-  top: 4.5rem;
-  left: 1rem;
+  top: 4.35rem;
+  left: 1.75rem;
   display: flex;
-  width: clamp(18rem, 24vw, 21.5rem);
-  max-height: calc(100dvh - 9rem);
+  width: clamp(20rem, 30vw, 26rem);
+  max-width: calc(100vw - 3rem);
   flex-direction: column;
-  overflow: hidden;
-  border: 1px solid var(--glass-border);
-  border-radius: 14px;
-  background: var(--glass-bg-strong);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-highlight),
-    0 0 0 1px color-mix(in srgb, var(--color-accent) 6%, transparent);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  gap: 1rem;
+  padding: 0.5rem 0.25rem;
 }
 
-/* Editor-style filename tab — mirrors the node inspector's `christopher.md`. */
-.graph-welcome-tab {
-  display: flex;
-  height: 2.4rem;
-  flex: none;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--glass-border) 60%, transparent);
-  background: color-mix(in srgb, var(--inspector-raised) 35%, transparent);
-  padding: 0 0.5rem 0 0.85rem;
+/* Soft, edgeless scrim behind the hero: darkens the graph just enough for the
+   copy to read, then fades to nothing — no card border. Kept clear of the meta
+   row above so it never dims the node/connection count or the instructions. */
+.graph-welcome::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -0.3rem -3.5rem -1.75rem -2.25rem;
+  background: radial-gradient(
+    120% 100% at 16% 24%,
+    color-mix(in srgb, var(--color-background) 88%, transparent) 0%,
+    color-mix(in srgb, var(--color-background) 68%, transparent) 44%,
+    transparent 78%
+  );
+  filter: blur(6px);
+  pointer-events: none;
 }
 
-.graph-welcome-file {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  color: var(--color-muted-foreground);
-  font-family: var(--font-mono);
-  font-size: 0.64rem;
-  letter-spacing: 0.01em;
-}
-
-.graph-welcome-file svg {
-  color: var(--color-accent);
-}
-
-.graph-welcome-close {
+/* Quiet floating dismiss — only asserts itself on hover/focus. */
+.graph-welcome-dismiss {
+  position: absolute;
+  top: -0.1rem;
+  right: -0.1rem;
   display: grid;
   width: 1.7rem;
   height: 1.7rem;
-  flex: none;
   place-items: center;
   border-radius: 6px;
-  color: var(--color-muted-foreground);
+  color: color-mix(in srgb, var(--color-muted-foreground) 70%, transparent);
+  opacity: 0;
   transition:
     background-color 150ms ease,
-    color 150ms ease;
+    color 150ms ease,
+    opacity 200ms ease;
 }
 
-.graph-welcome-close:hover {
+.graph-welcome:hover .graph-welcome-dismiss,
+.graph-welcome-dismiss:focus-visible {
+  opacity: 1;
+}
+
+.graph-welcome-dismiss:hover {
   background: var(--inspector-hover);
   color: var(--color-foreground);
-}
-
-.graph-welcome-body {
-  display: flex;
-  min-height: 0;
-  flex: 1;
-  flex-direction: column;
-  gap: 0.85rem;
-  overflow-y: auto;
-  padding: 1.05rem 1.15rem;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border) transparent;
 }
 
 .graph-welcome-heading {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.55rem;
 }
 
-/* `# Heading` — the markdown hash is a quiet accent token, the name is bold. */
+/* The masthead: large editorial serif, wrapping to two lines for presence. */
 .graph-welcome-title {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
+  max-width: 11ch;
+  margin: 0;
   color: var(--color-foreground);
-  font-family: var(--font-sans);
-  font-size: 1.2rem;
-  font-weight: 720;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-}
-
-.graph-welcome-title span {
-  color: color-mix(in srgb, var(--color-accent) 80%, var(--color-muted));
-  font-family: var(--font-mono);
-  font-size: 0.92rem;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 3.6vw, 3.1rem);
   font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.0;
 }
 
 .graph-welcome-role {
   color: var(--color-accent);
   font-family: var(--font-mono);
-  font-size: 0.66rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.01em;
   text-transform: lowercase;
@@ -1884,23 +1856,12 @@ pre code {
   line-height: 1.45;
 }
 
-/* Real YAML frontmatter: `---` fences (type, not borders) wrapping `key: value`
-   rows, the way the file would actually open in an editor. */
+/* `key: value` rows — stripped of the `---` fences for a cleaner hero. */
 .graph-welcome-frontmatter {
   display: grid;
-  gap: 0.42rem;
+  gap: 0.5rem;
   margin: 0;
   padding: 0;
-}
-
-.graph-welcome-frontmatter::before,
-.graph-welcome-frontmatter::after {
-  content: "---";
-  color: color-mix(in srgb, var(--color-muted-foreground) 60%, transparent);
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  font-weight: 600;
-  letter-spacing: 0.32em;
 }
 
 .graph-welcome-frontmatter > div {
@@ -1942,9 +1903,9 @@ pre code {
   height: 2.05rem;
   align-items: center;
   gap: 0.4rem;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
-  background: color-mix(in srgb, var(--inspector-raised) 55%, transparent);
+  background: var(--inspector-raised);
   padding: 0 0.8rem;
   color: var(--color-foreground);
   font-family: var(--font-mono);
@@ -2004,6 +1965,17 @@ pre code {
 
 .graph-welcome-social-link:hover {
   color: var(--color-accent);
+}
+
+/* "book a call" — the one link in the row that's a CTA, so it carries the
+   accent at rest rather than only on hover. */
+.graph-welcome-social-link.is-cta {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.graph-welcome-social-link.is-cta:hover {
+  color: color-mix(in srgb, var(--color-accent) 80%, var(--color-foreground));
 }
 
 .graph-toolbar {
@@ -2175,6 +2147,20 @@ pre code {
   border-color: color-mix(in srgb, var(--color-accent) 60%, var(--glass-border));
   background: color-mix(in srgb, var(--color-accent) 16%, var(--glass-bg));
   color: var(--color-accent);
+}
+
+/* In dark mode the heavy --glass-shadow on the top HUD chips smears into a grey
+   band across the canvas. Drop the drop-shadow (keep the inset highlight) so the
+   chips still read as glass without casting the band. Light mode is unaffected;
+   the question bar and benchmark panels keep their own shadows. */
+@media (prefers-color-scheme: dark) {
+  .graph-workspace-title,
+  .graph-meta-reopen,
+  .graph-filter-panel,
+  .graph-view-controls,
+  .edge-label-toggle {
+    box-shadow: inset 0 1px 0 var(--glass-highlight);
+  }
 }
 
 .graph-question-bar {
@@ -2770,20 +2756,19 @@ pre code {
     grid-template-columns: 1fr;
   }
 
-  /* Shrink the welcome card to a compact badge on phones so the graph stays
-     front-and-centre: keep the identity + lead + CTAs, drop the hint list and
-     social row (the question bar and tappable nodes are self-evident here). */
+  /* Tighten the hero on phones so the graph stays front-and-centre: smaller
+     masthead, snugger to the corner. */
   .graph-welcome {
-    top: 4.25rem;
-    right: 0.75rem;
-    left: 0.75rem;
+    top: 5.25rem;
+    left: 0.85rem;
     width: auto;
-    max-width: 20rem;
+    max-width: 18rem;
+    gap: 0.8rem;
+    padding: 0.4rem 0.2rem;
   }
 
-  .graph-welcome-body {
-    gap: 0.7rem;
-    padding: 0.9rem 0.95rem;
+  .graph-welcome-title {
+    font-size: clamp(1.85rem, 9vw, 2.3rem);
   }
 }
 

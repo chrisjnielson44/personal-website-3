@@ -1,9 +1,14 @@
-// Generates the site favicon — a small knowledge-graph glyph (one bright accent
-// "hub" node wired to muted satellites) on a dark rounded tile, echoing the
-// career-graph hero and OG image. Single source of truth: the SVG below is
-// written to public/favicon.svg AND rasterized into a multi-size public/favicon.ico.
+// Generates the site favicon — the initials "CN" set in Source Serif 4 (the same
+// editorial serif as the career-graph hero masthead) on a dark slate rounded
+// tile with a faint slate-blue edge. Single source of truth: the SVG below is
+// written to public/favicon.svg AND rasterized into public/favicon.ico plus the
+// PWA icons (logo192/logo512).
 //
-// Run with: node scripts/generate-favicon.mjs
+// The .ico/PNGs are rasterized with the real Source Serif via resvg; the
+// on-disk favicon.svg uses a serif font stack so it stays tiny (no 50KB embed)
+// while still reading as the same elegant serif.
+//
+// Run with: node scripts/generate-favicon.mjs   (add --preview for a 256px PNG)
 
 import { Resvg } from "@resvg/resvg-js";
 import { writeFileSync } from "node:fs";
@@ -13,50 +18,53 @@ import { dirname, resolve } from "node:path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
 
-// 64x64 viewBox. Hub at (29,32); four satellites around it; a hub→satellite
-// star plus one satellite→satellite edge so it reads as a graph, not a snowflake.
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Christopher Nielson">
+// resvg can't decode woff2 in this environment, so we ship a static TTF
+// (Source Serif 4 instanced at wght=600) decompressed from the fontsource woff2.
+const serifFont = resolve(root, "scripts/fonts/source-serif-4.ttf");
+
+// 64x64 viewBox. Initials centred; baseline nudged so the caps sit optically
+// centred in the tile. `fontFamily` is swapped between the on-disk SVG (serif
+// stack) and the resvg raster pass (exact Source Serif).
+const tile = (fontFamily) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Christopher Nielson">
   <defs>
     <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#1b1f23" />
-      <stop offset="1" stop-color="#101316" />
-    </linearGradient>
-    <linearGradient id="hub" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#6aa6ff" />
-      <stop offset="1" stop-color="#2362d2" />
+      <stop offset="0" stop-color="#151b25" />
+      <stop offset="1" stop-color="#0a0e14" />
     </linearGradient>
   </defs>
   <rect width="64" height="64" rx="14" fill="url(#tile)" />
-  <g stroke="#46525f" stroke-width="4" stroke-linecap="round">
-    <line x1="29" y1="32" x2="48" y2="15" />
-    <line x1="29" y1="32" x2="51" y2="40" />
-    <line x1="29" y1="32" x2="27" y2="52" />
-    <line x1="29" y1="32" x2="13" y2="24" />
-    <line x1="48" y1="15" x2="51" y2="40" />
-  </g>
-  <g fill="#9aa6b2">
-    <circle cx="48" cy="15" r="5" />
-    <circle cx="51" cy="40" r="5" />
-    <circle cx="27" cy="52" r="4.5" />
-    <circle cx="13" cy="24" r="4.5" />
-  </g>
-  <circle cx="29" cy="32" r="8.5" fill="url(#hub)" stroke="#bcd6ff" stroke-opacity="0.55" stroke-width="1.4" />
+  <rect x="1" y="1" width="62" height="62" rx="13" fill="none" stroke="#88a8ff" stroke-opacity="0.20" stroke-width="1.5" />
+  <text x="32" y="45.5" text-anchor="middle" font-family="${fontFamily}" font-size="40" font-weight="600" letter-spacing="-2" fill="#eef2f7">CN</text>
 </svg>`;
+
+const svgFile = tile(
+  "'Source Serif 4 Variable', Georgia, 'Times New Roman', serif",
+);
+const svgRaster = tile("Source Serif 4");
 
 // --- write the SVG favicon (modern browsers prefer this) ---
 const svgOut = resolve(root, "public/favicon.svg");
-writeFileSync(svgOut, svg + "\n");
-console.log(`Wrote ${svgOut} (${svg.length} bytes)`);
+writeFileSync(svgOut, svgFile + "\n");
+console.log(`Wrote ${svgOut} (${svgFile.length} bytes)`);
+
+const renderPng = (size) =>
+  Buffer.from(
+    new Resvg(svgRaster, {
+      fitTo: { mode: "width", value: size },
+      font: {
+        fontFiles: [serifFont],
+        loadSystemFonts: false,
+        defaultFontFamily: "Source Serif 4",
+      },
+    })
+      .render()
+      .asPng(),
+  );
 
 // --- rasterize PNGs and assemble a PNG-based .ico (Vista+ format) ---
 const SIZES = [16, 32, 48];
-
-const pngs = SIZES.map((size) => {
-  const png = new Resvg(svg, { fitTo: { mode: "width", value: size } })
-    .render()
-    .asPng();
-  return { size, data: Buffer.from(png) };
-});
+const pngs = SIZES.map((size) => ({ size, data: renderPng(size) }));
 
 function buildIco(images) {
   const header = Buffer.alloc(6);
@@ -89,12 +97,16 @@ const ico = buildIco(pngs);
 writeFileSync(icoOut, ico);
 console.log(`Wrote ${icoOut} (${ico.length} bytes, sizes: ${SIZES.join(", ")})`);
 
-// Optional larger preview to eyeball the design: node scripts/generate-favicon.mjs --preview
+// --- PWA icons referenced by manifest.json ---
+for (const size of [192, 512]) {
+  const out = resolve(root, `public/logo${size}.png`);
+  writeFileSync(out, renderPng(size));
+  console.log(`Wrote ${out} (${size}x${size})`);
+}
+
+// Optional larger preview to eyeball the design.
 if (process.argv.includes("--preview")) {
-  const preview = new Resvg(svg, { fitTo: { mode: "width", value: 256 } })
-    .render()
-    .asPng();
   const previewOut = resolve(root, "public/favicon-preview.png");
-  writeFileSync(previewOut, preview);
+  writeFileSync(previewOut, renderPng(256));
   console.log(`Wrote ${previewOut} (preview, 256x256)`);
 }
