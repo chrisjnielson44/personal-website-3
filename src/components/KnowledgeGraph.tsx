@@ -227,7 +227,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
   const selectedIdRef = useRef<string | null>(null);
   const categoryRef = useRef<Set<GraphCategory>>(new Set());
   const resultIdsRef = useRef<Set<string>>(new Set());
-  const edgeLabelsVisibleRef = useRef(true);
+  const edgeLabelsVisibleRef = useRef(false);
   const questionInputRef = useRef<HTMLInputElement>(null);
   const drawerRef = useRef<HTMLElement>(null);
   const selectNodeRef = useRef<(id: string, focus?: boolean) => void>(
@@ -267,7 +267,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
   );
   const [results, setResults] =
     useState<GraphSearchResult[]>(initialResults);
-  const [edgeLabelsVisible, setEdgeLabelsVisible] = useState(true);
+  const [edgeLabelsVisible, setEdgeLabelsVisible] = useState(false);
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [suggestIndex, setSuggestIndex] = useState(-1);
   // The top-left orientation card. Resets to visible on every mount (reload /
@@ -523,6 +523,8 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+    const reduceGraphMotion =
+      reducedMotion || window.CSS.supports("-moz-appearance", "none");
     const graphNodes: GraphNode[] = knowledgeNodes.map((node) => ({ ...node }));
     const graphLinks: GraphLink[] = knowledgeLinks.map((link) => ({ ...link }));
     const neighbors = new Map<string, Set<string>>();
@@ -639,23 +641,29 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
       }, 180);
     };
 
+    const updateRelationPositions = () => {
+      relationSelection
+        .attr(
+          "x",
+          (link) =>
+            ((link.source as GraphNode).x! + (link.target as GraphNode).x!) /
+            2,
+        )
+        .attr(
+          "y",
+          (link) =>
+            ((link.source as GraphNode).y! + (link.target as GraphNode).y!) /
+            2,
+        );
+    };
+
     const updatePositions = () => {
       linkSelection
         .attr("x1", (link) => (link.source as GraphNode).x ?? 0)
         .attr("y1", (link) => (link.source as GraphNode).y ?? 0)
         .attr("x2", (link) => (link.target as GraphNode).x ?? 0)
         .attr("y2", (link) => (link.target as GraphNode).y ?? 0);
-      relationSelection
-        .attr(
-          "x",
-          (link) =>
-            ((link.source as GraphNode).x! + (link.target as GraphNode).x!) / 2,
-        )
-        .attr(
-          "y",
-          (link) =>
-            ((link.source as GraphNode).y! + (link.target as GraphNode).y!) / 2,
-        );
+      if (edgeLabelsVisibleRef.current) updateRelationPositions();
       nodeSelection.attr(
         "transform",
         (node) => `translate(${node.x ?? 0},${node.y ?? 0})`,
@@ -744,39 +752,33 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
       .velocityDecay(0.45)
       .stop();
 
-    // A low, non-zero alphaTarget keeps the simulation gently "floating" — the
-    // forces never fully rest, so nodes drift in slow, subtle motion instead of
-    // freezing solid. This intentionally re-introduces a light perpetual tick
-    // (the thing we removed to kill lag), so it's the perf knob to watch: set
-    // back to 0 to freeze the layout, or raise for more drift. Interactions
-    // (drag) re-warm it the same way.
-    const FLOAT_ALPHA = 0.03;
+    // Keep the graph fully idle once entrance/interaction settles. Firefox-
+    // based browsers pay a noticeable paint cost for continuous SVG updates.
+    const FLOAT_ALPHA = 0;
+    const ENABLE_IDLE_FLOAT = false;
 
     // Pre-settle once (off-screen) so the camera can frame the eventual
     // layout before the entrance plays.
     for (let index = 0; index < 460; index += 1) simulation.tick();
     updatePositions();
 
-    // Gentle perpetual "float". The low alphaTarget keeps the timer alive, but a
-    // settled layout has ~zero net force, so nothing would actually move on its
-    // own. This custom force injects a slow, per-node sine nudge each tick
-    // (then velocityDecay damps it), so nodes drift continuously while the
-    // anchors + collision still hold the overall shape. Registered after the
-    // pre-settle so framing stays deterministic; skipped under reduced motion
-    // and for any node being dragged. Amplitude/speed below are the dials.
-    let floatTick = 0;
-    simulation.force("float", () => {
-      if (reducedMotion) return;
-      floatTick += 1;
-      const t = floatTick * 0.013;
-      for (let index = 0; index < graphNodes.length; index += 1) {
-        const node = graphNodes[index];
-        if (node.fx != null || node.fy != null) continue;
-        const phase = index * 0.7;
-        node.vx = (node.vx ?? 0) + Math.cos(t + phase) * 0.16;
-        node.vy = (node.vy ?? 0) + Math.sin(t * 1.17 + phase) * 0.16;
-      }
-    });
+    // Optional ambient drift. Disabled by default because it keeps D3's timer
+    // and SVG painting hot after the page has visually settled.
+    if (ENABLE_IDLE_FLOAT) {
+      let floatTick = 0;
+      simulation.force("float", () => {
+        if (reduceGraphMotion) return;
+        floatTick += 1;
+        const t = floatTick * 0.013;
+        for (let index = 0; index < graphNodes.length; index += 1) {
+          const node = graphNodes[index];
+          if (node.fx != null || node.fy != null) continue;
+          const phase = index * 0.7;
+          node.vx = (node.vx ?? 0) + Math.cos(t + phase) * 0.16;
+          node.vy = (node.vy ?? 0) + Math.sin(t * 1.17 + phase) * 0.16;
+        }
+      });
+    }
 
     zoomBehavior = zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.2, 3.4])
@@ -849,7 +851,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
 
       svg
         .transition()
-        .duration(reducedMotion ? 0 : 240)
+        .duration(reduceGraphMotion ? 0 : 240)
         .call(zoomBehavior.transform, transform);
     };
 
@@ -881,7 +883,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
         .translate(-(node.x ?? 0), -(node.y ?? 0));
       svg
         .transition()
-        .duration(reducedMotion ? 0 : 220)
+        .duration(reduceGraphMotion ? 0 : 220)
         .call(zoomBehavior.transform, transform);
     };
 
@@ -959,6 +961,10 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
           const target = getNodeId(link.target);
           return !visibleNodeIds.has(source) || !visibleNodeIds.has(target);
         });
+
+      if (selectedId || hasResults || edgeLabelsVisibleRef.current) {
+        updateRelationPositions();
+      }
     };
 
     const activateNode = (node: GraphNode) =>
@@ -1001,13 +1007,8 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
         .on("end", (_event, node) => {
           node.fx = null;
           node.fy = null;
-          if (reducedMotion) {
-            simulation.alphaTarget(0);
-            window.setTimeout(() => simulation.stop(), 320);
-          } else {
-            // Let the simulation cool back to rest and stop (no perpetual tick).
-            simulation.alphaTarget(FLOAT_ALPHA);
-          }
+          simulation.alphaTarget(FLOAT_ALPHA);
+          window.setTimeout(() => simulation.stop(), 320);
         }),
     );
     // Hide the labels whenever the layout is in motion. Any per-frame position
@@ -1017,10 +1018,8 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
     // visually settled (below), so this still reveals the names quickly.
     simulation.on("tick", () => {
       updatePositions();
-      // Only ENERGETIC motion (entrance burst, drag, zoom) hides the labels for
-      // performance. The gentle perpetual float settles at ~FLOAT_ALPHA, so
-      // anything at or below that energy keeps the node names visible instead of
-      // dropping them forever (which it did when every tick counted as motion).
+      // Only energetic motion (entrance burst, drag, zoom) hides the labels for
+      // performance.
       if (simulation.alpha() > FLOAT_ALPHA + 0.01) markInteracting();
     });
 
@@ -1031,7 +1030,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
       zoomBy: (factor) => {
         svg
           .transition()
-          .duration(reducedMotion ? 0 : 140)
+          .duration(reduceGraphMotion ? 0 : 140)
           .call(zoomBehavior.scaleBy, factor);
       },
     };
@@ -1043,7 +1042,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
     // then cools to rest and stops (no perpetual ticking).
     let entranceTimer = 0;
     let entranceBurstTimer = 0;
-    if (reducedMotion) {
+    if (reduceGraphMotion) {
       requestAnimationFrame(() => fitIds(resultIdsRef.current));
     } else {
       // Frame the eventual layout first so the burst happens in view.
@@ -1145,7 +1144,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
           .style("animation", "knowledge-layer-enter 860ms ease-out backwards")
           .style("animation-delay", "260ms");
 
-        // Detonate, then cool to rest (alphaTarget 0) and stop.
+        // Detonate, then cool to rest and stop.
         simulation.alpha(1).alphaTarget(FLOAT_ALPHA).restart();
       }, HUB_BEAT);
 
