@@ -143,6 +143,69 @@
   }
 }
 
+/* ===========================================================================
+   iOS-26 LIQUID GLASS — opt-in. Translucent tint + heavy backdrop blur +
+   saturation lift + a glossy top sheen + specular inset highlight. Use on
+   floating chrome, overlays, hero cards, and the call cockpit.
+   ========================================================================= */
+@layer components {
+  /* Primary liquid glass: frosted, translucent floating chrome with a
+     specular top edge and soft depth shadow. */
+  .liquid-glass {
+    position: relative;
+    background-image: linear-gradient(180deg, var(--glass-highlight), transparent 42%);
+    background-color: var(--glass-bg-strong);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 0 var(--glass-highlight);
+  }
+
+  /* A lighter weight for chips / small surfaces. */
+  .liquid-glass-soft {
+    position: relative;
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(14px) saturate(150%);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    border: 1px solid var(--glass-border);
+    box-shadow: inset 0 1px 0 0 var(--glass-highlight);
+  }
+
+  /* Specular edge-light running along the top — adds the "wet" iOS look.
+     Apply alongside .liquid-glass on elements with overflow visible/hidden. */
+  .liquid-glass-edge::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      180deg,
+      var(--glass-highlight),
+      transparent 35%,
+      transparent 70%,
+      var(--glass-border)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+/* Honor a reduced-transparency preference: fall back to flat surfaces. */
+@media (prefers-reduced-transparency: reduce) {
+  .liquid-glass,
+  .liquid-glass-soft {
+    background-image: none;
+    background-color: var(--color-card);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
 html {
   color-scheme: light dark;
   scroll-behavior: smooth;
@@ -1776,21 +1839,27 @@ pre code {
   padding: 0.5rem 0.25rem;
 }
 
-/* Soft, edgeless scrim behind the hero: darkens the graph just enough for the
-   copy to read, then fades to nothing — no card border. Kept clear of the meta
-   row above so it never dims the node/connection count or the instructions. */
+/* Dramatic hero fade: bounded to the masthead so it cannot cover the top HUD. */
 .graph-welcome::before {
   content: "";
   position: absolute;
   z-index: -1;
-  inset: -0.3rem -3.5rem -1.75rem -2.25rem;
-  background: radial-gradient(
-    120% 100% at 16% 24%,
-    color-mix(in srgb, var(--color-background) 88%, transparent) 0%,
-    color-mix(in srgb, var(--color-background) 68%, transparent) 44%,
-    transparent 78%
-  );
-  filter: blur(6px);
+  inset: -0.85rem -5.5rem -2.25rem -2.1rem;
+  background:
+    radial-gradient(
+      105% 96% at 16% 18%,
+      color-mix(in srgb, var(--color-background) 96%, transparent) 0%,
+      color-mix(in srgb, var(--color-background) 88%, transparent) 40%,
+      color-mix(in srgb, var(--color-background) 44%, transparent) 67%,
+      transparent 88%
+    ),
+    linear-gradient(
+      98deg,
+      color-mix(in srgb, var(--color-background) 92%, transparent) 0%,
+      color-mix(in srgb, var(--color-background) 62%, transparent) 52%,
+      transparent 84%
+    );
+  filter: blur(8px);
   pointer-events: none;
 }
 
@@ -2769,6 +2838,43 @@ pre code {
 
   .graph-welcome-title {
     font-size: clamp(1.85rem, 9vw, 2.3rem);
+  }
+}
+
+/* Firefox/Zen: Gecko is noticeably more expensive with SVG text strokes plus
+   backdrop-filter over a frequently transformed graph. Keep the same layout,
+   but flatten graph chrome and simplify labels for smoother interaction. */
+@supports (-moz-appearance: none) {
+  .graph-workspace-title,
+  .graph-meta-reopen,
+  .graph-filter-panel,
+  .graph-view-controls,
+  .edge-label-toggle,
+  .graph-question-bar,
+  .question-help-tip,
+  .question-suggest,
+  .knowledge-inspector {
+    background: color-mix(in srgb, var(--color-card) 94%, transparent);
+    box-shadow: inset 0 1px 0 var(--glass-highlight);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .graph-question-bar:focus-within {
+    box-shadow:
+      inset 0 1px 0 var(--glass-highlight),
+      0 0 0 3px color-mix(in srgb, var(--color-accent) 14%, transparent);
+  }
+
+  .knowledge-link-label,
+  .knowledge-label {
+    paint-order: normal;
+    stroke: transparent;
+    stroke-width: 0;
+  }
+
+  .knowledge-link-label.is-visible {
+    opacity: 0.55;
   }
 }
 

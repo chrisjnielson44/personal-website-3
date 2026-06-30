@@ -5,14 +5,9 @@ export const socialLinks = [
     icon: "github",
   },
   {
-    name: "LinkedIn",
-    url: "https://www.linkedin.com/in/christopherjnielson/",
-    icon: "linkedin",
-  },
-  {
-    name: "X",
-    url: "https://twitter.com/chrisjnielson",
-    icon: "twitter",
+    name: "HuggingFace",
+    url: "https://huggingface.co/cjnielson44",
+    icon: "huggingface",
   },
   {
     name: "Email",
