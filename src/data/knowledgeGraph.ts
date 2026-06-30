@@ -6,6 +6,7 @@ export type KnowledgeNodeKind =
   | "skill"
   | "project"
   | "article"
+  | "reading"
   | "resource"
   | "personal"
   | "course"
@@ -42,6 +43,7 @@ export const knowledgeKindLabels: Record<KnowledgeNodeKind, string> = {
   skill: "Technology",
   project: "Project",
   article: "Article",
+  reading: "Reading",
   resource: "Resource",
   personal: "Personal",
   course: "Course",

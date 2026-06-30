@@ -112,6 +112,7 @@ const baseNodeRadius: Record<KnowledgeNodeKind, number> = {
   skill: 9,
   project: 12,
   article: 11,
+  reading: 10,
   resource: 10,
   personal: 10,
   course: 6,
@@ -129,6 +130,7 @@ const kindAnchors: Record<KnowledgeNodeKind, [number, number]> = {
   skill: [0.5, 0.17], // top band
   project: [0.84, 0.5], // right output island
   article: [0.85, 0.22], // upper right
+  reading: [0.85, 0.38], // below articles
   resource: [0.86, 0.8], // lower right
   personal: [0.13, 0.88], // bottom-left corner
   course: [0.18, 0.58], // left academic island (with FSU)
@@ -1441,7 +1443,7 @@ export function KnowledgeGraph({ initialSearch = {} }: KnowledgeGraphProps) {
                   rel="noopener noreferrer"
                   className="graph-welcome-social-link is-cta"
                 >
-                  book a call
+                  contact
                 </a>
               </div>
             </motion.aside>
